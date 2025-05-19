@@ -1,0 +1,6 @@
+@isc.time.report.be_HostAddress = http://localhost:5032
+
+GET {{isc.time.report.be_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
