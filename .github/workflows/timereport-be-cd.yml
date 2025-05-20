@@ -25,6 +25,9 @@ jobs:
 
       - name: Restore dependencies
         run: cd isc.time.report.be
+
+      - name: Restore dependencies
+        run: dir
         
       - name: Restore dependencies
         run: dotnet restore
