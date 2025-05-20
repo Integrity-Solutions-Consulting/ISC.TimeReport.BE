@@ -29,10 +29,11 @@ jobs:
 
       - name: Set Variables
         run: |
-         Import-Module WebAdministration
-         $appPoolName = "DefaultAppPool"
-         Set-ItemProperty IIS:\AppPools\$appPoolName -Name processModel.environmentVariables.ISC_TIME_REPORT_BD_USER -Value "timereport"
-         Set-ItemProperty IIS:\AppPools\$appPoolName -Name processModel.environmentVariables.ISC_TIME_REPORT_BD_PASSWORD -Value "password"
+         #Import-Module WebAdministration
+         #$appPoolName = "DefaultAppPool"
+         #Set-ItemProperty IIS:\AppPools\$appPoolName -Name processModel.environmentVariables.ISC_TIME_REPORT_BD_USER -Value "timereport"
+         #Set-ItemProperty IIS:\AppPools\$appPoolName -Name processModel.environmentVariables.ISC_TIME_REPORT_BD_PASSWORD -Value "password"
+         echo "Pending"
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
