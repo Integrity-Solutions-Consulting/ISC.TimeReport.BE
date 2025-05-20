@@ -24,6 +24,7 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Open solution folder 
+        run: echo "In solution folder"
         working-directory: ./isc.time.report.be
       
       - name: Restore dependencies
