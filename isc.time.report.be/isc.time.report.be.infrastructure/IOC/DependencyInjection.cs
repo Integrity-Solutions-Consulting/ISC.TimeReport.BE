@@ -28,8 +28,8 @@ namespace isc.time.report.be.infrastructure.IOC
 
             string conection = configuration["ConecctionStrings:ConexionBD"]!.ToString();
 
-            var username = Environment.GetEnvironmentVariable("FACTURACION_BD_USER");
-            var password = Environment.GetEnvironmentVariable("FACTURACION_BD_PASSWORD");
+            var username = Environment.GetEnvironmentVariable("ISC_TIME_REPORT_BD_USER");
+            var password = Environment.GetEnvironmentVariable("ISC_TIME_REPORT_BD_PASSWORD");
 
             var conecctionBuilder = new SqlConnectionStringBuilder(conection)
             {
