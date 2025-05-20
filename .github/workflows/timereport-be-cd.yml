@@ -29,8 +29,11 @@ jobs:
 
       - name: Set Variables
         run: |
-         [System.Environment]::SetEnvironmentVariable("ISC_TIME_REPORT_BD_USER", "timereport", "Machine")
-         [System.Environment]::SetEnvironmentVariable("ISC_TIME_REPORT_BD_PASSWORD", "P@ssw0rd01", "Machine")
+          if (Test-Path "IIS:\AppPools\$appPoolName") {
+          Write-Output "El grupo de aplicaciones '$appPoolName' ya existe."
+          } else {
+            Write-Output "El grupo de aplicaciones '$appPoolName' no existe."
+          }
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
