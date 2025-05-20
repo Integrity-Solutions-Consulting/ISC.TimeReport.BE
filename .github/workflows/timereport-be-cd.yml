@@ -29,6 +29,7 @@ jobs:
 
       - name: Set Variables
         run: |
+          $appPoolName = "DefaultAppPool"
           if (Test-Path "IIS:\AppPools\$appPoolName") {
           Write-Output "El grupo de aplicaciones '$appPoolName' ya existe."
           } else {
