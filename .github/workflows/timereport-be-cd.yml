@@ -37,7 +37,7 @@ jobs:
 
       - name: Deploy to IIS
         run: |
-          $destination = 'C:\inetpub\wwwroot\YourApp'
+          $destination = 'C:\inetpub\wwwroot\time-report.be'
           if (Test-Path $destination) {
             New-Item -ItemType File -Path "$destination\app_offline.htm" -Force
           } else {
