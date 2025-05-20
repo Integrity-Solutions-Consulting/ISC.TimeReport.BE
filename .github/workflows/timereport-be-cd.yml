@@ -28,7 +28,7 @@ jobs:
         working-directory: ./isc.time.report.be
 
       - name: Set VAriables
-        run:
+        run: |
          Import-Module WebAdministration
          $appPoolName = "DefaultAppPool"
          
