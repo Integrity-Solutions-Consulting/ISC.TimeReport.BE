@@ -27,13 +27,10 @@ jobs:
         run: dotnet restore
         working-directory: ./isc.time.report.be
 
-      - name: Set VAriables
+      - name: Set Variables
         run: |
-         Import-Module WebAdministration
-         $appPoolName = "DefaultAppPool"
-         
-         Set-ItemProperty IIS:\AppPools\$appPoolName -Name processModel.environmentVariables.ISC_TIME_REPORT_BD_USER -Value "timereport"
-         Set-ItemProperty IIS:\AppPools\$appPoolName -Name processModel.environmentVariables.ISC_TIME_REPORT_BD_PASSWORD -Value "P@ssw0rd01"
+         [System.Environment]::SetEnvironmentVariable("ISC_TIME_REPORT_BD_USER", "timereport", "Machine")
+         [System.Environment]::SetEnvironmentVariable("ISC_TIME_REPORT_BD_PASSWORD", "P@ssw0rd01", "Machine")
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
