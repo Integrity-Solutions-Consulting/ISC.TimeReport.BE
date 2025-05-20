@@ -23,8 +23,8 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Restore dependencies
-        run: cd isc.time.report.be
+      - name: Open solution folder 
+        run: cd isc.time.report.be/isc.time.report.be
       
       - name: Restore dependencies
         run: dir 
