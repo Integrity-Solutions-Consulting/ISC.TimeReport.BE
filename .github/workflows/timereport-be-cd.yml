@@ -40,7 +40,7 @@ jobs:
         working-directory: ./isc.time.report.be
 
       - name: Publish
-        run: dotnet publish --configuration Release --output ./publish
+        run: dotnet publish --configuration Development --output ./publish
         working-directory: ./isc.time.report.be
 
       - name: Deploy to IIS
