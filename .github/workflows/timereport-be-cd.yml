@@ -22,22 +22,18 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
-
-      - name: Open solution folder 
-        run: dir
-        working-directory: ./isc.time.report.be
-      
-      - name: Restore dependencies
-        run: dir 
-      
+          
       - name: Restore dependencies
         run: dotnet restore
+        working-directory: ./isc.time.report.be
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
+        working-directory: ./isc.time.report.be
 
       - name: Publish
         run: dotnet publish --configuration Release --output ./publish
+        working-directory: ./isc.time.report.be
 
       - name: Deploy to IIS
         run: |
@@ -49,3 +45,4 @@ jobs:
           }
           Copy-Item -Path ".\publish\*" -Destination $destination -Recurse -Force
           Remove-Item "$destination\app_offline.htm" -Force
+        working-directory: ./isc.time.report.be
