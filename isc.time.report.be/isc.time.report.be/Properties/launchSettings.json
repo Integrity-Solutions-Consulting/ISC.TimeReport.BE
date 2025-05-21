@@ -16,7 +16,9 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5032",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ISC_TIME_REPORT_BD_USER": "timereport",
+        "ISC_TIME_REPORT_BD_PASSWORD": "P@ssw0rd01"
       }
     },
     "https": {
@@ -26,18 +28,20 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7094;http://localhost:5032",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ISC_TIME_REPORT_BD_USER": "timereport",
+        "ISC_TIME_REPORT_BD_PASSWORD": "P@ssw0rd01"
       }
     },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
       "launchUrl": "swagger",
-        "environmentVariables": {
-            "ASPNETCORE_ENVIRONMENT": "Development",
-            "FACTURACION_BD_USER": "timereport",
-            "FACTURACION_BD_PASSWORD": "P@ssw0rd01"
-        }
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ISC_TIME_REPORT_BD_USER": "timereport",
+        "ISC_TIME_REPORT_BD_PASSWORD": "P@ssw0rd01"
+      }
     }
   }
 }

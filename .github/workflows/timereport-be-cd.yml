@@ -1,0 +1,58 @@
+name: ISC.TimeReport.FE-DEV-CI/CD
+
+on:
+  pull_request:
+    branches:
+      - develop
+    types:
+      - closed
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    if: github.event.pull_request.merged == true
+    runs-on: self-hosted
+    defaults:
+      run:
+        shell: powershell
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+          
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: ./isc.time.report.be
+
+      - name: Set Variables
+        run: |
+         #Import-Module WebAdministration
+         #$appPoolName = "DefaultAppPool"
+         #Set-ItemProperty IIS:\AppPools\$appPoolName -Name processModel.environmentVariables.ISC_TIME_REPORT_BD_USER -Value "timereport"
+         #Set-ItemProperty IIS:\AppPools\$appPoolName -Name processModel.environmentVariables.ISC_TIME_REPORT_BD_PASSWORD -Value "password"
+         echo "Pending"
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+        working-directory: ./isc.time.report.be
+
+      - name: Publish
+        run: dotnet publish --configuration Debug --output ./publish
+        working-directory: ./isc.time.report.be
+
+      - name: Deploy to IIS
+        run: |
+          $destination = 'C:\inetpub\wwwroot\time-report.be'
+          if (Test-Path $destination) {
+            New-Item -ItemType File -Path "$destination\app_offline.htm" -Force
+          } else {
+            New-Item -ItemType Directory -Path $destination -Force
+          }
+          Copy-Item -Path ".\publish\*" -Destination $destination -Recurse -Force
+          Remove-Item "$destination\app_offline.htm" -Force
+        working-directory: ./isc.time.report.be
