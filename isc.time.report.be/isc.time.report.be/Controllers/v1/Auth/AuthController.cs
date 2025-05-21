@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace isc.time.report.be.api.Controllers.v1.Auth
 {
     [ApiController]
-    [Route("api/[controller]")]    
+    [Route("api/auth")]    
 
     public class AuthController : ControllerBase
     {
