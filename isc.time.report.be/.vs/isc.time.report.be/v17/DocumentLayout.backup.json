@@ -1,22 +1,18 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\User\\source\\repos\\isc.time.report.be\\",
+  "WorkspaceRootPath": "C:\\Users\\User\\Desktop\\ISC.TimeReport.BE\\isc.time.report.be\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{E93EFCD4-0953-4D0C-A572-B2A834EBE362}|isc.time.report.be\\isc.time.report.be.api.csproj|c:\\users\\user\\source\\repos\\isc.time.report.be\\isc.time.report.be\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{E93EFCD4-0953-4D0C-A572-B2A834EBE362}|isc.time.report.be\\isc.time.report.be.api.csproj|c:\\users\\user\\desktop\\isc.timereport.be\\isc.time.report.be\\isc.time.report.be\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E93EFCD4-0953-4D0C-A572-B2A834EBE362}|isc.time.report.be\\isc.time.report.be.api.csproj|solutionrelative:isc.time.report.be\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E93EFCD4-0953-4D0C-A572-B2A834EBE362}|isc.time.report.be\\isc.time.report.be.api.csproj|c:\\users\\user\\source\\repos\\isc.time.report.be\\isc.time.report.be\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "AbsoluteMoniker": "D:0:0:{E93EFCD4-0953-4D0C-A572-B2A834EBE362}|isc.time.report.be\\isc.time.report.be.api.csproj|c:\\users\\user\\desktop\\isc.timereport.be\\isc.time.report.be\\isc.time.report.be\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{E93EFCD4-0953-4D0C-A572-B2A834EBE362}|isc.time.report.be\\isc.time.report.be.api.csproj|solutionrelative:isc.time.report.be\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E93EFCD4-0953-4D0C-A572-B2A834EBE362}|isc.time.report.be\\isc.time.report.be.api.csproj|c:\\users\\user\\source\\repos\\isc.time.report.be\\isc.time.report.be\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{E93EFCD4-0953-4D0C-A572-B2A834EBE362}|isc.time.report.be\\isc.time.report.be.api.csproj|solutionrelative:isc.time.report.be\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E93EFCD4-0953-4D0C-A572-B2A834EBE362}|isc.time.report.be\\isc.time.report.be.api.csproj|c:\\users\\user\\source\\repos\\isc.time.report.be\\isc.time.report.be\\isc.time.report.be.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{E93EFCD4-0953-4D0C-A572-B2A834EBE362}|isc.time.report.be\\isc.time.report.be.api.csproj|solutionrelative:isc.time.report.be\\isc.time.report.be.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+      "AbsoluteMoniker": "D:0:0:{E93EFCD4-0953-4D0C-A572-B2A834EBE362}|isc.time.report.be\\isc.time.report.be.api.csproj|c:\\users\\user\\desktop\\isc.timereport.be\\isc.time.report.be\\isc.time.report.be\\controllers\\v1\\auth\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E93EFCD4-0953-4D0C-A572-B2A834EBE362}|isc.time.report.be\\isc.time.report.be.api.csproj|solutionrelative:isc.time.report.be\\controllers\\v1\\auth\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -32,52 +28,39 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\isc.time.report.be\\isc.time.report.be\\Program.cs",
+              "DocumentMoniker": "C:\\Users\\User\\Desktop\\ISC.TimeReport.BE\\isc.time.report.be\\isc.time.report.be\\Program.cs",
               "RelativeDocumentMoniker": "isc.time.report.be\\Program.cs",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\isc.time.report.be\\isc.time.report.be\\Program.cs",
+              "ToolTip": "C:\\Users\\User\\Desktop\\ISC.TimeReport.BE\\isc.time.report.be\\isc.time.report.be\\Program.cs",
               "RelativeToolTip": "isc.time.report.be\\Program.cs",
-              "ViewState": "AgIAACoAAAAAAAAAAAAmwDgAAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAAGMAAAAAAAAAAAAAAHAAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-19T23:06:00.1Z",
+              "WhenOpened": "2025-05-21T14:44:09.682Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\isc.time.report.be\\isc.time.report.be\\appsettings.json",
+              "DocumentMoniker": "C:\\Users\\User\\Desktop\\ISC.TimeReport.BE\\isc.time.report.be\\isc.time.report.be\\appsettings.json",
               "RelativeDocumentMoniker": "isc.time.report.be\\appsettings.json",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\isc.time.report.be\\isc.time.report.be\\appsettings.json",
+              "ToolTip": "C:\\Users\\User\\Desktop\\ISC.TimeReport.BE\\isc.time.report.be\\isc.time.report.be\\appsettings.json",
               "RelativeToolTip": "isc.time.report.be\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-05-19T23:05:52.588Z",
+              "WhenOpened": "2025-05-21T14:44:51.719Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "appsettings.Development.json",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\isc.time.report.be\\isc.time.report.be\\appsettings.Development.json",
-              "RelativeDocumentMoniker": "isc.time.report.be\\appsettings.Development.json",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\isc.time.report.be\\isc.time.report.be\\appsettings.Development.json",
-              "RelativeToolTip": "isc.time.report.be\\appsettings.Development.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-05-19T23:05:49.403Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "isc.time.report.be.api",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\isc.time.report.be\\isc.time.report.be\\isc.time.report.be.api.csproj",
-              "RelativeDocumentMoniker": "isc.time.report.be\\isc.time.report.be.api.csproj",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\isc.time.report.be\\isc.time.report.be\\isc.time.report.be.api.csproj",
-              "RelativeToolTip": "isc.time.report.be\\isc.time.report.be.api.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-05-19T23:05:03.986Z",
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\Users\\User\\Desktop\\ISC.TimeReport.BE\\isc.time.report.be\\isc.time.report.be\\Controllers\\v1\\Auth\\AuthController.cs",
+              "RelativeDocumentMoniker": "isc.time.report.be\\Controllers\\v1\\Auth\\AuthController.cs",
+              "ToolTip": "C:\\Users\\User\\Desktop\\ISC.TimeReport.BE\\isc.time.report.be\\isc.time.report.be\\Controllers\\v1\\Auth\\AuthController.cs",
+              "RelativeToolTip": "isc.time.report.be\\Controllers\\v1\\Auth\\AuthController.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAUwBwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-21T14:35:49.332Z",
               "EditorCaption": ""
             }
           ]
