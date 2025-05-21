@@ -22,6 +22,13 @@ namespace isc.time.report.be.infrastructure.Database
             modelBuilder.Entity<Customer>(entity =>
             {
                 entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnName("Id_Customer");
+                entity.Property(e => e.IdentificationType).HasColumnName("identification_type");
+                entity.Property(e => e.IdentificationNumber).HasColumnName("identification_number");
+                entity.Property(e => e.CommercialName).HasColumnName("commercial_name");
+                entity.Property(e => e.CompanyName).HasColumnName("company_name");
+                entity.Property(e => e.CellPhoneNumber).HasColumnName("cellphone_number");
+                entity.Property(e => e.Email).HasColumnName("email");
                 entity.Property(e => e.CreatedAt).HasColumnName("created_at");
                 entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
 
