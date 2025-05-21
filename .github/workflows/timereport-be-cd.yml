@@ -1,12 +1,16 @@
 name: ISC.TimeReport.FE-DEV-CI/CD
 
 on:
-  push:
-    branches: [ "develop" ]
+  pull_request:
+    branches:
+      - develop
+    types:
+      - closed
   workflow_dispatch:
 
 jobs:
   build-and-deploy:
+    if: github.event.pull_request.merged == true
     runs-on: self-hosted
     defaults:
       run:
