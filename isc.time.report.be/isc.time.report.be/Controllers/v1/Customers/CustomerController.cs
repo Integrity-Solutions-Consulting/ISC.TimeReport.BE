@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace isc.time.report.be.api.Controllers.v1.Customers
 {
+
     [ApiExplorerSettings(GroupName = "v1")]
-    [Route("api/customer")]
     [ApiController]
+    [Route("api/customer")]
     public class CustomerController : ControllerBase
     {
         private readonly ICustomerService customerService;
