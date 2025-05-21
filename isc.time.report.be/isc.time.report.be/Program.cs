@@ -25,6 +25,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("OrigenEspecificos", policy =>
+    {
+        policy.WithOrigins(allowedOrigins ?? Array.Empty<string>())
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddControllers();
 
 builder.Services.AddAuthentication(options =>
@@ -99,6 +111,8 @@ app.ConfigureExcepcionHandler();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseCors("OrigenEspecificos");
 
 app.MapControllers();
 
