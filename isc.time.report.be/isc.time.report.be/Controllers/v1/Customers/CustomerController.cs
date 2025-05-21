@@ -22,7 +22,7 @@ namespace isc.time.report.be.api.Controllers.v1.Customers
         [HttpPost("create")]
         public async Task<ActionResult<SuccessResponse<CreateResponse>>> CreateCustomer(CreateRequest createRequest)
         {
-            var customer = await customerService.CreateCustomer(createRequest);
+            var customer = await customerService.Create(createRequest);
 
             return Ok(new SuccessResponse<CreateResponse>());
         }

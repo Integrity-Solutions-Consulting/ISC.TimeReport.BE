@@ -10,7 +10,7 @@ namespace isc.time.report.be.application.Interfaces.Service.Customers
 {
     public interface ICustomerService
     {
-        public Task<CreateResponse> CreateCustomer(CreateRequest customerRequest);
+        public Task<CreateResponse> Create(CreateRequest customerRequest);
 
     }
 }

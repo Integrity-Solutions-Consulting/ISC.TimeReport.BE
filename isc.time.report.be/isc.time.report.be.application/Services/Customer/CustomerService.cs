@@ -21,7 +21,7 @@ namespace isc.time.report.be.application.Services.Customer
         }
 
 
-        public async Task<CreateResponse> CreateCustomer(CreateRequest createRequest)
+        public async Task<CreateResponse> Create(CreateRequest createRequest)
         {
             var newCustomer = new entityCustomer.Customer
             {
