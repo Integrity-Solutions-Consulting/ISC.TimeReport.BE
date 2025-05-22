@@ -33,6 +33,13 @@ namespace isc.time.report.be.infrastructure.Repositories.Customers
             return customer;
         }
 
+        public async Task<List<Customer>> GetAllCustomers()
+        {
+            return await _dbContext.Customers
+                .Where(c => c.Status)
+                .ToListAsync();
+        }
+
         public async Task<Customer> GetCustomerById(int customerId)
         {
             return await _dbContext.Customers.FindAsync(customerId);

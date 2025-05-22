@@ -9,6 +9,7 @@ using isc.time.report.be.application.Interfaces.Service.Customers;
 using isc.time.report.be.domain.Models.Response.Customers;
 using System.ComponentModel.DataAnnotations;
 using isc.time.report.be.domain.Models.Request.Customers;
+using isc.time.report.be.domain.Models.Dto;
 
 namespace isc.time.report.be.application.Services.Customer
 {
@@ -35,5 +36,21 @@ namespace isc.time.report.be.application.Services.Customer
             await customerRepository.CreateCustomer(newCustomer);
             return new CreateResponse();
         }
+
+        public async Task<List<CustomerListResponse>> GetAll()
+        {
+            var customers = await customerRepository.GetAllCustomers();
+
+            return customers.Select(c => new CustomerListResponse
+            {
+                IdentificationType = c.IdentificationType,
+                IdentificationNumber = c.IdentificationNumber,
+                CommercialName = c.CommercialName,
+                CompanyName = c.CompanyName,
+                CellPhoneNumber = c.CellPhoneNumber,
+                Email = c.Email
+            }).ToList();
+        }
+
     }
 }

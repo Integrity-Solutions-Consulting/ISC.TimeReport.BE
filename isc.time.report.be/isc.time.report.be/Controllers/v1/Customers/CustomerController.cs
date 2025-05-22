@@ -1,4 +1,5 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.Customers;
+using isc.time.report.be.application.Services.Customer;
 using isc.time.report.be.domain.Models.Dto;
 using isc.time.report.be.domain.Models.Request.Customers;
 using isc.time.report.be.domain.Models.Response.Customers;
@@ -17,6 +18,13 @@ namespace isc.time.report.be.api.Controllers.v1.Customers
         public CustomerController(ICustomerService customerService)
         {
             this.customerService = customerService;
+        }
+
+        [HttpGet("get")]
+        public async Task<IActionResult> GetAllCustomers()
+        {
+            var customers = await customerService.GetAll();
+            return Ok(customers);
         }
 
         [HttpPost("create")]

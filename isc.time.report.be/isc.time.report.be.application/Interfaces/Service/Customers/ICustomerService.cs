@@ -12,5 +12,7 @@ namespace isc.time.report.be.application.Interfaces.Service.Customers
     {
         public Task<CreateResponse> Create(CreateRequest customerRequest);
 
+        public Task<List<CustomerListResponse>> GetAll();
+
     }
 }
