@@ -23,6 +23,7 @@ namespace isc.time.report.be.infrastructure.Database
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id).HasColumnName("Id_Customer");
+
                 entity.Property(e => e.IdentificationType).HasColumnName("identification_type");
                 entity.Property(e => e.IdentificationNumber).HasColumnName("identification_number");
                 entity.Property(e => e.CommercialName).HasColumnName("commercial_name");
@@ -31,37 +32,58 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.Email).HasColumnName("email");
                 entity.Property(e => e.CreatedAt).HasColumnName("created_at");
                 entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
-
-
             });
 
             modelBuilder.Entity<Bill>(entity =>
             {
                 entity.HasKey(e => e.Id);
+
                 entity.Property(e => e.CreatedAt).HasColumnName("created_at");
                 entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
             });
 
             modelBuilder.Entity<User>(entity =>
-
             {
-
                 entity.HasKey(e => e.Id);
-
                 entity.Property(e => e.Id).HasColumnName("users_id");
+
                 entity.Property(e => e.Username).HasColumnName("username");
                 entity.Property(e => e.Password).HasColumnName("password");
                 entity.Property(e => e.CreatedAt).HasColumnName("created_at");
                 entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
-
-
-
             });
 
+            modelBuilder.Entity<Rols>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnName("rols_id");
+
+                entity.Property(e => e.RolName).HasColumnName("rol_name");
+
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+            });
+
+            modelBuilder.Entity<UsersRols>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnName("users_rols_id");
+
+                entity.Property(e => e.UsersId).HasColumnName("users_id");
+                entity.Property(e => e.RolsId).HasColumnName("rols_id");
+
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
 
 
+                entity.HasOne(ur => ur.User)
+                      .WithMany(u => u.UsersRols)
+                      .HasForeignKey(ur => ur.UsersId);
 
-
+                entity.HasOne(ur => ur.Rols)
+                      .WithMany(r => r.UsersRols)
+                      .HasForeignKey(ur => ur.RolsId);
+            });
 
 
 
@@ -71,7 +93,8 @@ namespace isc.time.report.be.infrastructure.Database
         }
 
         public DbSet<Customer> Customers { get; set; }
-
         public DbSet<User> Users { get; set; }
+        public DbSet<Rols> Rols { get; set; }
+        public DbSet<UsersRols> Users_Rols { get; set; }
     }
 }

@@ -110,6 +110,8 @@ app.ConfigureExcepcionHandler();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.UseCors("OrigenEspecificos");
