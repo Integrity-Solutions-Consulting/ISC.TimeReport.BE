@@ -51,6 +51,32 @@ namespace isc.time.report.be.application.Services.Customer
                 Email = c.Email
             }).ToList();
         }
+        public async Task<UpdateResponse> Update(UpdateRequest request)
+        {
+            var customer = await customerRepository.GetCustomerById(request.Id);
 
+            if (customer == null) 
+            {
+                return new UpdateResponse
+                {
+                    Success = false,
+                    Message = "Cliente no Encontrado"
+                };
+            }
+            customer.IdentificationType = request.IdentificationType;
+            customer.IdentificationNumber = request.IdentificationNumber;
+            customer.CommercialName = request.CommercialName;
+            customer.CompanyName = request.CompanyName;
+            customer.CellPhoneNumber = request.CellPhoneNumber;
+            customer.Email = request.Email;
+
+            await customerRepository.UpdateCustomer(customer);
+
+            return new UpdateResponse
+            {
+                Success = true,
+                Message = "Cliente actualizado"
+            };
+        }
     }
 }
