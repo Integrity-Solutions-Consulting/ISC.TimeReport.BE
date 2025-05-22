@@ -22,7 +22,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
             project.CreatedAt = DateTime.Now;
             project.UpdatedAt = null;
             project.Status = "Activo";
-            await _dBContext.Projects.AddAsync(project);
+            //await _dBContext.Projects.AddAsync(project);
             await _dBContext.SaveChangesAsync();
             return project;
         }

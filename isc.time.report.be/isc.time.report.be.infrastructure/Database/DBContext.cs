@@ -35,26 +35,6 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
             });
 
-            modelBuilder.Entity<Project>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-<<<<<<< Updated upstream
-
-=======
-                entity.Property(e => e.Id).HasColumnName("Id_Project");
-                entity.Property(e => e.ProjectCode).HasColumnName("project_code");
-                entity.Property(e => e.StartDate).HasColumnName("start_date");
-                entity.Property(e => e.FinishDate).HasColumnName("finish_date");
-                entity.Property(e => e.CreationDate).HasColumnName("creation_date");
-                entity.Property(e => e.Status).HasColumnName("status");
-                entity.Property(e => e.IdCustomer).HasColumnName("Id_Customer");
-                entity.Property(e => e.IdCompany).HasColumnName("Id_Company");
-                entity.Property(e => e.IdLeader).HasColumnName("Id_Leader");
->>>>>>> Stashed changes
-                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
-                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
-            });
-
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -106,10 +86,6 @@ namespace isc.time.report.be.infrastructure.Database
         }
 
         public DbSet<Customer> Customers { get; set; }
-<<<<<<< Updated upstream
-=======
-        public DbSet<Project> Projects { get; set; }
->>>>>>> Stashed changes
         public DbSet<User> Users { get; set; }
         public DbSet<Rols> Rols { get; set; }
         public DbSet<UsersRols> Users_Rols { get; set; }
