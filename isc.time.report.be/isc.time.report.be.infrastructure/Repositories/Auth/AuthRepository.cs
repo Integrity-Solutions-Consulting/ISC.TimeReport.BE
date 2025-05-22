@@ -21,7 +21,12 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
 
         public async Task<User> GetUserByUsername(string username)
         {
-            return await _dbContext.Users.FirstOrDefaultAsync(user => user.Username.Equals(username));
+            var user = await _dbContext.Users
+                .Include(u => u.UsersRols)
+                    .ThenInclude(ur => ur.Rols)
+                .FirstOrDefaultAsync(u => u.Username == username);
+
+            return user;
         }
 
         public async Task<User> CreateUser(User user)
@@ -58,11 +63,13 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
         {
             return await _dbContext.Users.FindAsync(userId);
         }
+
+        public async Task<List<Rols>> GetAllRols()
+        {
+            var rols = await _dbContext.Rols.ToListAsync();
+
+            return rols;
+        }
     }
-
-
-
-
-
 }
 

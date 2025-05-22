@@ -26,20 +26,26 @@ namespace isc.time.report.be.application.Utils.Auth
             var tokenHandler = new JwtSecurityTokenHandler();
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:JWTSecretKey"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new List<Claim>
+    {
+                        new Claim(ClaimTypes.Name, user.Username),
+                        new Claim("id", user.Id.ToString())
+    };
+
+            // Añadir roles directamente
+            if (user.UsersRols != null)
+            {
+                foreach (var ur in user.UsersRols)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, ur.Rols.RolName));
+                }
+            }
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
 
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-
-
-                    //new Claim(ClaimTypes.Name, user.Username),
-                    //new Claim(ClaimTypes.Email, user.Email),
-
-
-
-                    new Claim("id",user.Id.ToString())
-                }),
+                Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = credentials
             };
@@ -47,13 +53,5 @@ namespace isc.time.report.be.application.Utils.Auth
 
             return tokenHandler.WriteToken(token);
         }
-
-
-
-
-
-
-
-
     }
 }
