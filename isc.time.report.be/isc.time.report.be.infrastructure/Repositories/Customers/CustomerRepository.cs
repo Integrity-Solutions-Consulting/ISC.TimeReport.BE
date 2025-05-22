@@ -40,9 +40,18 @@ namespace isc.time.report.be.infrastructure.Repositories.Customers
                 .ToListAsync();
         }
 
-        public async Task<Customer> GetCustomerById(int customerId)
+        public async Task<Customer> UpdateCustomer(Customer customer)
         {
-            return await _dbContext.Customers.FindAsync(customerId);
+            customer.UpdatedAt = DateTime.Now;
+            _dbContext.Customers.Update(customer);
+            await _dbContext.SaveChangesAsync();
+            return customer;
+        }
+
+        public async Task<Customer?> GetCustomerById(int customerId)
+        {
+            return await _dbContext.Customers
+                .FirstOrDefaultAsync(c=>c.Id == customerId && c.Status);
         }
     }
 }

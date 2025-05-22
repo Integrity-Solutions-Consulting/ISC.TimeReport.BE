@@ -34,5 +34,23 @@ namespace isc.time.report.be.api.Controllers.v1.Customers
 
             return Ok(new SuccessResponse<CreateResponse>());
         }
+
+        [HttpPut("update/{id}")]
+        public async Task<ActionResult<SuccessResponse<UpdateResponse>>> UpdateCustomer(int id, UpdateRequest request)
+        {
+            if (id != request.Id)
+            {
+                return BadRequest("ID no coincide");
+            }
+
+            var response = await customerService.Update(request);
+
+            if (!response.Success)
+            {
+                return NotFound(response.Message);
+            }
+
+            return Ok(response);
+        }
     }
 }

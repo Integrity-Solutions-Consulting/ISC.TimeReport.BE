@@ -15,6 +15,7 @@ namespace isc.time.report.be.application.Interfaces.Repository.Customers
 
         public Task<List<Customer>> GetAllCustomers();
         public Task<Customer> CreateCustomer(Customer customer);
+        public Task<Customer> UpdateCustomer(Customer customer);
 
     }
 }
