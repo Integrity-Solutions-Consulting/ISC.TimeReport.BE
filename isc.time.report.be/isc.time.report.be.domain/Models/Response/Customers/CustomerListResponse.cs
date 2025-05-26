@@ -8,6 +8,7 @@ namespace isc.time.report.be.domain.Models.Response.Customers
 {
     public class CustomerListResponse
     {
+        public string Id { get; set; }
         public string IdentificationType { get; set; }
         public string IdentificationNumber { get; set; }
         public string CommercialName { get; set; }

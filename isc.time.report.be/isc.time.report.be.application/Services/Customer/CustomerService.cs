@@ -43,6 +43,7 @@ namespace isc.time.report.be.application.Services.Customer
 
             return customers.Select(c => new CustomerListResponse
             {
+                Id = c.Id.ToString(),
                 IdentificationType = c.IdentificationType,
                 IdentificationNumber = c.IdentificationNumber,
                 CommercialName = c.CommercialName,
@@ -63,6 +64,7 @@ namespace isc.time.report.be.application.Services.Customer
                     Message = "Cliente no Encontrado"
                 };
             }
+            customer.Id = request.Id;
             customer.IdentificationType = request.IdentificationType;
             customer.IdentificationNumber = request.IdentificationNumber;
             customer.CommercialName = request.CommercialName;

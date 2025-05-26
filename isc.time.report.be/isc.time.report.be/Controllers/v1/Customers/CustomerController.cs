@@ -21,7 +21,7 @@ namespace isc.time.report.be.api.Controllers.v1.Customers
         }
 
         [HttpGet("get")]
-        public async Task<IActionResult> GetAllCustomers()
+        public async Task<ActionResult<SuccessResponse<GetResponse>>> GetAllCustomers()
         {
             var customers = await customerService.GetAll();
             return Ok(customers);
