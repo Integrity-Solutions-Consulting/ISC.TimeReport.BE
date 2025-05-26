@@ -22,7 +22,7 @@ namespace isc.time.report.be.application.Services.Customer
         }
 
 
-        public async Task<CreateResponse> Create(CreateRequest createRequest)
+        public async Task<CreateCustomerResponse> Create(CreateCustomerRequest createRequest)
         {
             var newCustomer = new entityCustomer.Customer
             {
@@ -34,7 +34,7 @@ namespace isc.time.report.be.application.Services.Customer
                 Email = createRequest.Email,
             };
             await customerRepository.CreateCustomer(newCustomer);
-            return new CreateResponse();
+            return new CreateCustomerResponse();
         }
 
         public async Task<List<CustomerListResponse>> GetAll()

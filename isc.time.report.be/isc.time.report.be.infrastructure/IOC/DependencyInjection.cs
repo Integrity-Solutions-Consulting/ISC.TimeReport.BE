@@ -5,9 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using isc.time.report.be.application.Interfaces.Repository.Auth;
 using isc.time.report.be.application.Interfaces.Repository.Customers;
+using isc.time.report.be.application.Interfaces.Repository.People;
 using isc.time.report.be.infrastructure.Database;
 using isc.time.report.be.infrastructure.Repositories.Auth;
 using isc.time.report.be.infrastructure.Repositories.Customers;
+using isc.time.report.be.infrastructure.Repositories.People;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +24,7 @@ namespace isc.time.report.be.infrastructure.IOC
         {
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<IPersonRepository, PersonRepository>();
 
             return services;
         }
