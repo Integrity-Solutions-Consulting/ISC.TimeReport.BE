@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace isc.time.report.be.domain.Models.Request.Customers
 {
-    public class CreateRequest
+    public class CreateCustomerRequest
     {
         public string IdentificationType { get; set; }
         public string IdentificationNumber { get; set; }
