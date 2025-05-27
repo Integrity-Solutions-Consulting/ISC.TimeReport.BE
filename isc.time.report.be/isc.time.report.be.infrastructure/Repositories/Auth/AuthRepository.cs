@@ -25,7 +25,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
             var user = await _dbContext.Users
                 .Include(u => u.UsersRols)
                     .ThenInclude(ur => ur.Rols)
-                .FirstOrDefaultAsync(u => u.Username == username);
+                .FirstOrDefaultAsync(u => u.email == username);
 
             return user;
         }
@@ -75,7 +75,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
         public async Task<List<Menu>> GetMenusByUsername(string username)
         {
             var menus = await _dbContext.Users
-                .Where(u => u.Username == username)
+                .Where(u => u.email == username)
                 .SelectMany(u => u.UsersRols) // accedemos a los roles del usuario
                 .SelectMany(ur => ur.Rols.MenuRols) // accedemos a los menús de esos roles
                 .Select(mr => mr.Menu) // obtenemos el menú

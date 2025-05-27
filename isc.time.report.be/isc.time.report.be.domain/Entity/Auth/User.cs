@@ -10,7 +10,7 @@ namespace isc.time.report.be.domain.Entity.Auth
     public class User : BaseEntity
     {
 
-        public string Username { get; set; }
+        public string email { get; set; }
         public string Password { get; set; }
         public ICollection<UsersRols> UsersRols { get; set; }
     }

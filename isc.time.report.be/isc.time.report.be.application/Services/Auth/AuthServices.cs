@@ -27,7 +27,19 @@ namespace isc.time.report.be.application.Services.Auth
 
         public async Task<LoginResponse> Login(LoginRequest loginRequest)
         {
-            var user = await authRepository.GetUserByUsername(loginRequest.Username);
+
+            if (loginRequest.email == "string" || loginRequest.Password == "string")
+            {
+                throw new ClientFaultException("Complete los campos faltantes.", 401);
+            }
+
+            if (string.IsNullOrWhiteSpace(loginRequest.email) || string.IsNullOrWhiteSpace(loginRequest.Password))
+            {
+                throw new ClientFaultException("Complete los campos faltantes.", 401);
+            }
+
+            var user = await authRepository.GetUserByUsername(loginRequest.email);
+
 
             if (user == null)
             {
@@ -43,21 +55,26 @@ namespace isc.time.report.be.application.Services.Auth
 
             return new LoginResponse
             {
-                Username = user.Username,
-
-
-                //Names = user.Names,
-                //Surnames = user.Surnames,
-                //Email = user.Email,
-
-
+                email = user.email,
                 Token = jwtUtils.GenerateToken(user)
             };
         }
 
         public async Task<RegisterResponse> Register(RegisterRequest registerRequest)
         {
-            var user = await authRepository.GetUserByUsername(registerRequest.Username);
+
+            if (registerRequest.email == "string" || registerRequest.Password == "string")
+            {
+                throw new ClientFaultException("Complete los campos faltantes.", 401);
+            }
+
+            if (string.IsNullOrWhiteSpace(registerRequest.email) || string.IsNullOrWhiteSpace(registerRequest.Password))
+            {
+                throw new ClientFaultException("Complete los campos faltantes.", 401);
+            }
+
+
+            var user = await authRepository.GetUserByUsername(registerRequest.email);
 
             if (user != null)
             {
@@ -68,14 +85,8 @@ namespace isc.time.report.be.application.Services.Auth
 
             await authRepository.CreateUser(new User
             {
-                Username = registerRequest.Username,
-                Password = passwordUtils.HashPassword(registerRequest.Password),
-                
-                //Names = registerRequest.Names,
-                //Surnames = registerRequest.Surnames,
-                //Email = registerRequest.Email
-            
-            
+                email = registerRequest.email,
+                Password = passwordUtils.HashPassword(registerRequest.Password),   
             });
 
             return new RegisterResponse();

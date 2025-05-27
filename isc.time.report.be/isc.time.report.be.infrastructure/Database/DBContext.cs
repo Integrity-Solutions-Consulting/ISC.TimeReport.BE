@@ -59,7 +59,7 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id).HasColumnName("users_id");
 
-                entity.Property(e => e.Username).HasColumnName("username");
+                entity.Property(e => e.email).HasColumnName("username");
                 entity.Property(e => e.Password).HasColumnName("password");
                 entity.Property(e => e.CreatedAt).HasColumnName("created_at");
                 entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
