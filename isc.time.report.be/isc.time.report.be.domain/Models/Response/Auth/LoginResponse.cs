@@ -8,10 +8,10 @@ namespace isc.time.report.be.domain.Models.Response.Auth
 {
     public class LoginResponse
     {
-        public string Username { get; set; }
+        public string email { get; set; }
         public string Names { get; set; }
         public string Surnames { get; set; }
-        public string Email { get; set; }
+        public string corr { get; set; }
         public string Token { get; set; }
 
     }

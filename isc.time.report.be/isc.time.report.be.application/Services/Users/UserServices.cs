@@ -29,14 +29,14 @@ namespace isc.time.report.be.application.Services.Users
             if (user == null)
                 throw new Exception("Usuario no encontrado");
 
-            user.Username = request.Username;
+            user.email = request.email;
             user.Password = passwordUtils.HashPassword(request.Password);
 
             var updatedUser = await userRepository.UpdateUser(user);
 
             return new UserResponse
             {
-                Username = updatedUser.Username,
+                email = updatedUser.email,
                 Password = updatedUser.Password
             };
         }
@@ -53,7 +53,7 @@ namespace isc.time.report.be.application.Services.Users
 
             return new UserResponse
             {
-                Username = updatedUser.Username,
+                email = updatedUser.email,
             };
         }
 
@@ -69,7 +69,7 @@ namespace isc.time.report.be.application.Services.Users
 
             return new UserResponse
             {
-                Username = updatedUser.Username,
+                email = updatedUser.email,
             };
         }
 
@@ -85,7 +85,7 @@ namespace isc.time.report.be.application.Services.Users
 
             return new UserResponse
             {
-                Username = updatedUser.Username,
+                email = updatedUser.email,
                 Password = updatedUser.Password
             };
         }
@@ -97,7 +97,7 @@ namespace isc.time.report.be.application.Services.Users
             var result = users.Select(user => new GetAllUsersResponse
             {
                 Id = user.Id,
-                Username = user.Username,
+                email = user.email,
                 Status = user.Status,
                 Roles = user.UsersRols.Select(ur => ur.Rols.RolName).ToList()
             });

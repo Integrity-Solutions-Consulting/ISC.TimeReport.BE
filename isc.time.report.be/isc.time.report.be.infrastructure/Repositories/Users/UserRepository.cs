@@ -35,7 +35,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Users
             return await _dbContext.Users
                 .Include(u => u.UsersRols)
                     .ThenInclude(ur => ur.Rols)
-                .FirstOrDefaultAsync(u => u.Username == username);
+                .FirstOrDefaultAsync(u => u.email == username);
         }
 
         public async Task<List<User>> GetAllUsers()

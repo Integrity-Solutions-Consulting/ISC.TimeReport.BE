@@ -9,7 +9,7 @@ namespace isc.time.report.be.domain.Models.Response.Users
 {
     public class UserResponse
     {
-        public string Username { get; set; }
+        public string email { get; set; }
         public string Password { get; set; }
     }
 }
