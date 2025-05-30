@@ -14,6 +14,8 @@ using isc.time.report.be.application.Services.Leaders;
 using isc.time.report.be.application.Utils.Auth;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using isc.time.report.be.application.Interfaces.Service.Menus;
+using isc.time.report.be.application.Services.Menus;
 
 namespace isc.time.report.be.application.IOC
 {
@@ -29,6 +31,7 @@ namespace isc.time.report.be.application.IOC
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<ILeaderService, LeaderService>();
             services.AddScoped<IUserServices, UserServices>();
+            services.AddScoped<IMenuService, MenuService>();
 
             return services;
         }

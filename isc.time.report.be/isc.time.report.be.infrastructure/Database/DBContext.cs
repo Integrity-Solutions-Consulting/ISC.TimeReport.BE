@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using isc.time.report.be.domain.Entity.Auth;
 using isc.time.report.be.domain.Entity.Customers;
 using isc.time.report.be.domain.Entity.Leaders;
+using isc.time.report.be.domain.Entity.Menu;
 using isc.time.report.be.domain.Entity.Projects;
 using Microsoft.EntityFrameworkCore;
 
@@ -97,7 +98,38 @@ namespace isc.time.report.be.infrastructure.Database
                       .HasForeignKey(ur => ur.RolsId);
             });
 
+            modelBuilder.Entity<Menu>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnName("menu_id");
 
+                entity.Property(e => e.NombreMenu).HasColumnName("nombre_menu");
+                entity.Property(e => e.RutaMenu).HasColumnName("ruta_menu");
+
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+            });
+
+            modelBuilder.Entity<MenuRols>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnName("menu_rols_id");
+
+                entity.Property(e => e.MenuId).HasColumnName("menu_id");
+                entity.Property(e => e.RolsId).HasColumnName("rols_id");
+
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+
+                entity.HasOne(ur => ur.Menu)
+                      .WithMany(u => u.MenusRols)
+                      .HasForeignKey(ur => ur.MenuId);
+
+                entity.HasOne(ur => ur.Rols)
+                      .WithMany(r => r.MenuRols)
+                      .HasForeignKey(ur => ur.RolsId);
+
+            });
 
 
 
@@ -109,5 +141,7 @@ namespace isc.time.report.be.infrastructure.Database
         public DbSet<User> Users { get; set; }
         public DbSet<Rols> Rols { get; set; }
         public DbSet<UsersRols> Users_Rols { get; set; }
+        public DbSet<Menu> Menu { get; set; }
+        public DbSet<MenuRols> Menu_Rols { get; set; }
     }
 }
