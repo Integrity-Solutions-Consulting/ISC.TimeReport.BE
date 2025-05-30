@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using isc.time.report.be.domain.Entity.Shared;
 
-namespace isc.time.report.be.domain.Entity.People
+namespace isc.time.report.be.domain.Models.Request.Leaders
 {
-    public class Person : BaseEntity
+    public class GetLeaderRequest
     {
         public string IdentificationType { get; set; }
         public string IdentificationNumber { get; set; }
@@ -19,6 +18,5 @@ namespace isc.time.report.be.domain.Entity.People
         public string PersonalEmail { get; set; }
         public string CorporateEmail { get; set; }
         public string HomeAddress { get; set; }
-
     }
 }

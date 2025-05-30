@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using isc.time.report.be.domain.Models.Request.Leaders;
+using isc.time.report.be.domain.Models.Response.Leaders;
+
+namespace isc.time.report.be.application.Interfaces.Service.Leaders
+{
+    public interface ILeaderService
+    {
+        public Task<CreateLeaderResponse> Create(CreateLeaderRequest request);
+
+        public Task<List<GetLeaderListResponse>> GetAll();
+    }
+}

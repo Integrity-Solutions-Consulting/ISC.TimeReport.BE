@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using isc.time.report.be.domain.Entity.Shared;
 
-namespace isc.time.report.be.domain.Models.Request.People
+namespace isc.time.report.be.domain.Entity.Leaders
 {
-    public class CreatePersonRequest
+    [Table("Leaders")]
+    public class Leader : BaseEntity
     {
         public string IdentificationType { get; set; }
         public string IdentificationNumber { get; set; }
@@ -18,5 +21,6 @@ namespace isc.time.report.be.domain.Models.Request.People
         public string PersonalEmail { get; set; }
         public string CorporateEmail { get; set; }
         public string HomeAddress { get; set; }
+
     }
 }

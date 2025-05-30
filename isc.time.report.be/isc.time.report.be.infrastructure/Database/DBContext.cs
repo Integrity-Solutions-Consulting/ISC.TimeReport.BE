@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using isc.time.report.be.domain.Entity.Auth;
 using isc.time.report.be.domain.Entity.Customers;
-using isc.time.report.be.domain.Entity.People;
+using isc.time.report.be.domain.Entity.Leaders;
 using isc.time.report.be.domain.Entity.Projects;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,10 +36,10 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
             });
 
-            modelBuilder.Entity<Person>(entity =>
+            modelBuilder.Entity<Leader>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Id).HasColumnName("Id_Person");
+                entity.Property(e => e.Id).HasColumnName("Id_Leader");
                 entity.Property(e => e.IdentificationType).HasColumnName("identification_type");
                 entity.Property(e => e.IdentificationNumber).HasColumnName("identification_number");
                 entity.Property(e => e.Names).HasColumnName("names");
@@ -105,7 +105,7 @@ namespace isc.time.report.be.infrastructure.Database
         }
 
         public DbSet<Customer> Customers { get; set; }
-        public DbSet<Person> People { get; set; }
+        public DbSet<Leader> People { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Rols> Rols { get; set; }
         public DbSet<UsersRols> Users_Rols { get; set; }
