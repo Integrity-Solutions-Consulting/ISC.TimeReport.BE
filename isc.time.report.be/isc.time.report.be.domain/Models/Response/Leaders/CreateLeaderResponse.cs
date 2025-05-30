@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace isc.time.report.be.domain.Models.Response.People
+namespace isc.time.report.be.domain.Models.Response.Leaders
 {
-    public class CreatePersonResponse
+    public class CreateLeaderResponse
     {
         public string IdentificationType { get; set; }
         public string IdentificationNumber { get; set; }
