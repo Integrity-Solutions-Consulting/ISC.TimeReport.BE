@@ -1,12 +1,13 @@
-﻿using System;
+﻿using isc.time.report.be.application.Interfaces.Repository.Auth;
+using isc.time.report.be.domain.Entity.Auth;
+using isc.time.report.be.domain.Entity.Menu;
+using isc.time.report.be.infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using isc.time.report.be.application.Interfaces.Repository.Auth;
-using isc.time.report.be.domain.Entity.Auth;
-using isc.time.report.be.infrastructure.Database;
-using Microsoft.EntityFrameworkCore;
 
 namespace isc.time.report.be.infrastructure.Repositories.Auth
 {
@@ -24,7 +25,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
             var user = await _dbContext.Users
                 .Include(u => u.UsersRols)
                     .ThenInclude(ur => ur.Rols)
-                .FirstOrDefaultAsync(u => u.Username == username);
+                .FirstOrDefaultAsync(u => u.email == username);
 
             return user;
         }
@@ -69,6 +70,19 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
             var rols = await _dbContext.Rols.ToListAsync();
 
             return rols;
+        }
+
+        public async Task<List<Menu>> GetMenusByUsername(string username)
+        {
+            var menus = await _dbContext.Users
+                .Where(u => u.email == username)
+                .SelectMany(u => u.UsersRols) // accedemos a los roles del usuario
+                .SelectMany(ur => ur.Rols.MenuRols) // accedemos a los menús de esos roles
+                .Select(mr => mr.Menu) // obtenemos el menú
+                .Distinct() // evitamos duplicados
+                .ToListAsync();
+
+            return menus;
         }
     }
 }

@@ -29,7 +29,7 @@ namespace isc.time.report.be.application.Utils.Auth
 
             var claims = new List<Claim>
     {
-                        new Claim(ClaimTypes.Name, user.Username),
+                        new Claim(ClaimTypes.Name, user.email),
                         new Claim("id", user.Id.ToString())
     };
 

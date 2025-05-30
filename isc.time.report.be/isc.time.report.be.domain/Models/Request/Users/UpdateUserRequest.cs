@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using isc.time.report.be.domain.Entity.Shared;
 
-namespace isc.time.report.be.domain.Entity.Auth
+namespace isc.time.report.be.domain.Models.Request.Users
 {
-    public class User : BaseEntity
+    public class UpdateUserRequest
     {
-
         public string email { get; set; }
         public string Password { get; set; }
-        public ICollection<UsersRols> UsersRols { get; set; }
     }
 }

@@ -4,15 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace isc.time.report.be.domain.Models.Request.Auth
+namespace isc.time.report.be.domain.Models.Request.Users
 {
-    public class LoginRequest
+    public class UpdatePasswordRequest
     {
-
-        public string email { get; set; }
         public string Password { get; set; }
-
-
-
     }
 }

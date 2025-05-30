@@ -8,7 +8,7 @@ namespace isc.time.report.be.domain.Models.Request.Auth
 {
     public class RegisterRequest
     {
-        public string Username { get; set; }
+        public string email { get; set; }
         public string Password { get; set; }
 
         /*
