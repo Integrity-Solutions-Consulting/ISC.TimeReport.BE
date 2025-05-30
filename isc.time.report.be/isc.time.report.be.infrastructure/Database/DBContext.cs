@@ -43,6 +43,7 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.Id).HasColumnName("Id_Leader");
                 entity.Property(e => e.IdentificationType).HasColumnName("identification_type");
                 entity.Property(e => e.IdentificationNumber).HasColumnName("identification_number");
+                entity.Property(e => e.LeaderType).HasColumnName("leader_type");
                 entity.Property(e => e.Names).HasColumnName("names");
                 entity.Property(e => e.Surnames).HasColumnName("surnames");
                 entity.Property(e => e.Gender).HasColumnName("gender");
@@ -137,7 +138,7 @@ namespace isc.time.report.be.infrastructure.Database
         }
 
         public DbSet<Customer> Customers { get; set; }
-        public DbSet<Leader> People { get; set; }
+        public DbSet<Leader> Leader { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Rols> Rols { get; set; }
         public DbSet<UsersRols> Users_Rols { get; set; }

@@ -26,6 +26,7 @@ namespace isc.time.report.be.application.Services.Leaders
             {
                 IdentificationType = createRequest.IdentificationType,
                 IdentificationNumber = createRequest.IdentificationNumber,
+                LeaderType = createRequest.LeaderType,
                 Names = createRequest.Names,
                 Surnames = createRequest.Surnames,
                 Gender = createRequest.Gender,
@@ -48,6 +49,7 @@ namespace isc.time.report.be.application.Services.Leaders
                 Id = c.Id.ToString(),
                 IdentificationType = c.IdentificationType,
                 IdentificationNumber = c.IdentificationNumber,
+                LeaderType = c.LeaderType,
                 Names = c.Names,
                 Surnames = c.Surnames,
                 Gender = c.Gender,

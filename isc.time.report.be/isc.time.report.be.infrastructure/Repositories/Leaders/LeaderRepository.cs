@@ -24,7 +24,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
             leader.CreatedAt = DateTime.Now;
             leader.UpdatedAt = null;
             leader.Status = true;
-            await dBContext.People.AddAsync(leader);
+            await dBContext.Leader.AddAsync(leader);
             Console.WriteLine(leader);
             await dBContext.SaveChangesAsync();
             return leader;
@@ -32,7 +32,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
 
         public async Task<List<Leader>> GetLeaders()
         {
-            return await dBContext.People
+            return await dBContext.Leader
                 .Where(c => c.Status)
                 .ToListAsync();
         }

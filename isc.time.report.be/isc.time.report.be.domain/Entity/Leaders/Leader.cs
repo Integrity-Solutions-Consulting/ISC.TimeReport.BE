@@ -13,6 +13,7 @@ namespace isc.time.report.be.domain.Entity.Leaders
     {
         public string IdentificationType { get; set; }
         public string IdentificationNumber { get; set; }
+        public string LeaderType { get; set; }
         public string Names { get; set; }
         public string Surnames { get; set; }
         public string Gender { get; set; }
