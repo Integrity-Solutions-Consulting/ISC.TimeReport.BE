@@ -7,6 +7,7 @@ using isc.time.report.be.domain.Entity.Auth;
 using isc.time.report.be.domain.Entity.Customers;
 using isc.time.report.be.domain.Entity.Leaders;
 using isc.time.report.be.domain.Entity.Menu;
+using isc.time.report.be.domain.Entity.Persons;
 using isc.time.report.be.domain.Entity.Projects;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,13 +38,13 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
             });
 
-            modelBuilder.Entity<Leader>(entity =>
+            modelBuilder.Entity<Person>(entity =>
             {
+                entity.ToTable("Persons");
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Id).HasColumnName("Id_Leader");
+                entity.Property(e => e.Id).HasColumnName("Id_Person");
                 entity.Property(e => e.IdentificationType).HasColumnName("identification_type");
                 entity.Property(e => e.IdentificationNumber).HasColumnName("identification_number");
-                entity.Property(e => e.LeaderType).HasColumnName("leader_type");
                 entity.Property(e => e.Names).HasColumnName("names");
                 entity.Property(e => e.Surnames).HasColumnName("surnames");
                 entity.Property(e => e.Gender).HasColumnName("gender");
@@ -54,6 +55,22 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.HomeAddress).HasColumnName("home_address");
                 entity.Property(e => e.CreatedAt).HasColumnName("created_at");
                 entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+            });
+
+            modelBuilder.Entity<Leader>(entity =>
+            {
+                entity.ToTable("Leaders");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnName("Id_Leader");
+                entity.Property(e => e.LeaderType).HasColumnName("leader_type");
+                entity.Property(e => e.ProjectCode).HasColumnName("project_code");
+                entity.Property(e => e.CustomerCode).HasColumnName("customer_code");
+                entity.Property(e => e.IdPerson).HasColumnName("Id_Person");
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+                entity.HasOne(l => l.Person)
+                    .WithOne()
+                    .HasForeignKey<Leader>(l => l.IdPerson);
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -138,6 +155,7 @@ namespace isc.time.report.be.infrastructure.Database
         }
 
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<Person> Person { get; set; }
         public DbSet<Leader> Leader { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Rols> Rols { get; set; }
