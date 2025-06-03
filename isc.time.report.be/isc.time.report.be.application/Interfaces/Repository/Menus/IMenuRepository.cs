@@ -18,5 +18,6 @@ namespace isc.time.report.be.application.Interfaces.Repository.Menus
         Task<bool> ActivateMenuAsync(int id);
         Task<List<Menu>> GetMenuByRolIdAsync(int rolId);
         Task<List<Menu>> GetMenusByUserId(int UserId);
+        Task<List<Menu>> GetAllMenusByUserIdDetailsAsync(int userId);
     }
 }

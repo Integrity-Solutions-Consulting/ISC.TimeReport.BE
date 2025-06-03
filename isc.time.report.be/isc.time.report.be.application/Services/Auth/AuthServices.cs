@@ -4,25 +4,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using isc.time.report.be.application.Interfaces.Repository.Auth;
+using isc.time.report.be.application.Interfaces.Repository.Menus;
 using isc.time.report.be.application.Interfaces.Service.Auth;
 using isc.time.report.be.application.Utils.Auth;
 using isc.time.report.be.domain.Entity.Auth;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.Auth;
 using isc.time.report.be.domain.Models.Response.Auth;
+using isc.time.report.be.domain.Models.Response.Menus;
+using isc.time.report.be.domain.Models.Response.Users;
 
 namespace isc.time.report.be.application.Services.Auth
 {
     public class AuthService : IAuthService
     {
         private readonly IAuthRepository authRepository;
+        private readonly IMenuRepository menuRepository;
         private readonly PasswordUtils passwordUtils;
         private readonly JWTUtils jwtUtils;
-        public AuthService(IAuthRepository authRepository, PasswordUtils passwordUtils, JWTUtils jwtUtils)
+        public AuthService(IAuthRepository authRepository, PasswordUtils passwordUtils, JWTUtils jwtUtils, IMenuRepository menuRepository)
         {
             this.authRepository = authRepository;
             this.passwordUtils = passwordUtils;
             this.jwtUtils = jwtUtils;
+            this.menuRepository = menuRepository;
         }
 
         public async Task<LoginResponse> Login(LoginRequest loginRequest)
@@ -52,11 +57,30 @@ namespace isc.time.report.be.application.Services.Auth
             }
 
             //await authRepository.UpdateUserLastLogin(user.Id);
+            var userRoles = user.UsersRols?.Select(ur => ur.Rols)
+                                            .Select(r => new RoleResponse
+                                            {
+                                                Id = r.Id,
+                                                RolName = r.RolName
+                                            })
+                                            .ToList() ?? new List<RoleResponse>();
+
+
+            var accessibleMenuEntities = await menuRepository.GetAllMenusByUserIdDetailsAsync(user.Id);
+
+            var accessibleMenus = accessibleMenuEntities.Select(m => new GetAllUserMenusResponse
+            {
+                Id = m.Id,
+                NombreMenu = m.NombreMenu,
+                RutaMenu = m.RutaMenu
+            }).ToList();
 
             return new LoginResponse
             {
                 email = user.email,
-                Token = jwtUtils.GenerateToken(user)
+                Token = jwtUtils.GenerateToken(user),
+                Roles = userRoles,
+                Menus = accessibleMenus
             };
         }
 

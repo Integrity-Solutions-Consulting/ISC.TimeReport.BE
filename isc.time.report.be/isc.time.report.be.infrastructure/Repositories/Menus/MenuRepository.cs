@@ -39,6 +39,29 @@ namespace isc.time.report.be.infrastructure.Repositories.Menus
             return await _dbContext.Menu.ToListAsync();
         }
 
+        public async Task<List<Menu>> GetAllMenusByUserIdDetailsAsync(int userId)
+        {
+            // Asegúrate de incluir las colecciones necesarias para navegar la relación
+            return await _dbContext.Users
+                .Where(u => u.Id == userId)
+                .Include(u => u.UsersRols) // Incluye la tabla intermedia UserRole
+                    .ThenInclude(ur => ur.Rols) // Luego incluye el Role
+                        .ThenInclude(r => r.MenuRols) // Luego incluye la tabla intermedia MenuRole
+                            .ThenInclude(mr => mr.Menu) // Finalmente incluye el Menu
+                .SelectMany(u => u.UsersRols) // Accede a los roles del usuario
+                .Select(ur => ur.Rols)      // Obtiene el objeto Role
+                .SelectMany(r => r.MenuRols) // Accede a los MenuRoles de ese rol
+                .Select(mr => mr.Menu)      // Obtiene el objeto Menu
+                .Distinct()                 // ¡Importante para evitar menús duplicados!
+                .Select(m => new Menu
+                {
+                    Id = m.Id,
+                    NombreMenu = m.NombreMenu,
+                    RutaMenu = m.RutaMenu
+                })
+                .ToListAsync();
+        }
+
         public async Task<Menu?> GetMenuByIdAsync(int id)
         {
             return await _dbContext.Menu
