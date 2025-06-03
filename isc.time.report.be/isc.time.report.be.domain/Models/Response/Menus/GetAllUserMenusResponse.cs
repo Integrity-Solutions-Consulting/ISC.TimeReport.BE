@@ -9,6 +9,7 @@ namespace isc.time.report.be.domain.Models.Response.Menus
 {
     public class GetAllUserMenusResponse
     {
+        public int Id { get; set; }
         public string NombreMenu { get; set; }
         public string RutaMenu { get; set; }
     }
