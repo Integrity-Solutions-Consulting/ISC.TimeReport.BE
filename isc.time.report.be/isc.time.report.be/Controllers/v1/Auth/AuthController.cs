@@ -28,7 +28,8 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
                 return Ok(new SuccessResponse<LoginResponse>(200, "Login èxitoso.", login));
             }
 
-            [HttpPost("register")]
+        [HttpPost("register")]
+        [Authorize(Roles = "Admin")]
             public async Task<ActionResult<SuccessResponse<RegisterResponse>>> Register(RegisterRequest registerRequest)
             {
                 var register = await authService.Register(registerRequest);

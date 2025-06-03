@@ -7,6 +7,7 @@ using isc.time.report.be.domain.Models.Request.Customers;
 using isc.time.report.be.domain.Models.Request.Users;
 using isc.time.report.be.domain.Models.Response.Customers;
 using isc.time.report.be.domain.Models.Response.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +16,7 @@ namespace isc.time.report.be.api.Controllers.v1.Users
     [ApiExplorerSettings(GroupName = "v1")]
     [ApiController]
     [Route("api/users")]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserServices userService;
