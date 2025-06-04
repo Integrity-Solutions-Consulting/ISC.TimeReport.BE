@@ -34,6 +34,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
         {
             return await dBContext.Leader
                 .Where(l => l.Status)
+                .Include(l => l.Person)
                 .ToListAsync();
         }
     }
