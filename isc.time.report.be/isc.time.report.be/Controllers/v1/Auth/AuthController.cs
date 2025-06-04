@@ -29,7 +29,7 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
             }
 
         [HttpPost("register")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "admin")]
             public async Task<ActionResult<SuccessResponse<RegisterResponse>>> Register(RegisterRequest registerRequest)
             {
                 var register = await authService.Register(registerRequest);
