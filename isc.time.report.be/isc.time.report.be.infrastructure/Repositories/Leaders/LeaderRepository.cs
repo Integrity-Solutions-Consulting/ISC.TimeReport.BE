@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using isc.time.report.be.application.Interfaces.Repository.Leaders;
+using isc.time.report.be.domain.Entity.Customers;
 using isc.time.report.be.domain.Entity.Leaders;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,9 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
             leader.CreatedAt = DateTime.Now;
             leader.UpdatedAt = null;
             leader.Status = true;
+            leader.Person.CreatedAt = DateTime.Now;
+            leader.Person.UpdatedAt = null;
+            leader.Person.Status = true;
             await dBContext.Leader.AddAsync(leader);
             Console.WriteLine(leader);
             await dBContext.SaveChangesAsync();
@@ -36,6 +40,22 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
                 .Where(l => l.Status)
                 .Include(l => l.Person)
                 .ToListAsync();
+        }
+
+        public async Task<Leader> UpdateLeader(Leader leader)
+        {
+            leader.UpdatedAt = DateTime.Now;
+            leader.Person.UpdatedAt = DateTime.Now;
+            dBContext.Leader.Update(leader);
+            await dBContext.SaveChangesAsync();
+            return leader;
+        }
+
+        public async Task<Leader?> GetLeaderById(int leaderId)
+        {
+            return await dBContext.Leader
+                .Include(l => l.Person)
+                .FirstOrDefaultAsync(l => l.Id == leaderId && l.Status);
         }
     }
 }

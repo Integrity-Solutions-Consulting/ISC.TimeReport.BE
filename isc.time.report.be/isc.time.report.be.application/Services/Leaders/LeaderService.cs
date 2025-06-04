@@ -70,5 +70,44 @@ namespace isc.time.report.be.application.Services.Leaders
                 }).ToList();
             
         }
+
+        public async Task<UpdateLeaderResponse> Update(UpdateLeaderRequest request)
+        {
+            var leader = await leaderRepository.GetLeaderById(request.Id);
+
+            if (leader == null)
+            {
+                return new UpdateLeaderResponse
+                {
+                    Success = false,
+                    Message = "Líder no Encontrado"
+                };
+            }
+            leader.LeaderType = request.LeaderType;
+            leader.ProjectCode = request.ProjectCode;
+            leader.CustomerCode = request.CustomerCode;
+
+            if(leader.Person != null)
+            {
+                leader.Person.IdentificationType = request.Person.IdentificationType;
+                leader.Person.IdentificationNumber = request.Person.IdentificationNumber;
+                leader.Person.Names = request.Person.Names;
+                leader.Person.Surnames = request.Person.Surnames;
+                leader.Person.Gender = request.Person.Gender;
+                leader.Person.CellPhoneNumber = request.Person.CellPhoneNumber;
+                leader.Person.Position = request.Person.Position;
+                leader.Person.PersonalEmail = request.Person.PersonalEmail;
+                leader.Person.CorporateEmail = request.Person.CorporateEmail;
+                leader.Person.HomeAddress = request.Person.HomeAddress;
+            }
+
+            await leaderRepository.UpdateLeader(leader);
+
+            return new UpdateLeaderResponse
+            {
+                Success = true,
+                Message = "Líder actualizado"
+            };
+        }
     }
 }

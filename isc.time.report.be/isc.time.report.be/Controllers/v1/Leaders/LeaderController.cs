@@ -35,5 +35,22 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
 
             return Ok(new SuccessResponse<CreateLeaderResponse>());
         }
+
+        [HttpPut("update/{id}")]
+        public async Task<ActionResult<SuccessResponse<UpdateLeaderResponse>>> UpdateLeader(int id, UpdateLeaderRequest updateLeaderRequest)
+        {
+            if (id != updateLeaderRequest.Id)
+            {
+                return BadRequest("ID no coincide");
+            }
+
+            var response = await _leaderService.Update(updateLeaderRequest);
+
+            if (!response.Success)
+            {
+                return NotFound(response.Message);
+            }
+            return Ok(response);
+        }
     }
 }
