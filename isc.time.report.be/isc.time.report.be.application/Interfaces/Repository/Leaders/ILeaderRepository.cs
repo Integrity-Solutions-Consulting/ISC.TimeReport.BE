@@ -11,5 +11,7 @@ namespace isc.time.report.be.application.Interfaces.Repository.Leaders
     {
         public Task<List<Leader>> GetLeaders();
         public Task<Leader> CreateLeader(Leader leader);
+        public Task<Leader> GetLeaderById(int id);
+        public Task<Leader> UpdateLeader(Leader leader);
     }
 }
