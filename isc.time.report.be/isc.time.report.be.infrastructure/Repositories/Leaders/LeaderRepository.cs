@@ -33,7 +33,8 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
         public async Task<List<Leader>> GetLeaders()
         {
             return await dBContext.Leader
-                .Where(c => c.Status)
+                .Where(l => l.Status)
+                .Include(l => l.Person)
                 .ToListAsync();
         }
     }

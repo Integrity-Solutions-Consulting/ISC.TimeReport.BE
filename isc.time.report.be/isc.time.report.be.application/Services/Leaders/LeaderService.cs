@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using isc.time.report.be.application.Interfaces.Repository.Leaders;
 using isc.time.report.be.application.Interfaces.Service.Leaders;
 using isc.time.report.be.domain.Entity.Leaders;
+using entityPerson = isc.time.report.be.domain.Entity.Persons;
 using isc.time.report.be.domain.Models.Request.Leaders;
 using isc.time.report.be.domain.Models.Response.Leaders;
+using isc.time.report.be.domain.Models.Request.Persons;
 
 namespace isc.time.report.be.application.Services.Leaders
 {
@@ -20,13 +23,12 @@ namespace isc.time.report.be.application.Services.Leaders
             this.leaderRepository = leaderRepository;
         }
 
-        public async Task<CreateLeaderResponse> Create(CreateLeaderRequest createRequest)
+        public async Task<CreateLeaderWithPersonResponse> Create(CreateLeaderWithPersonRequest createRequest)
         {
-            var newLeader = new Leader
+            var newPerson = new entityPerson.Person
             {
                 IdentificationType = createRequest.IdentificationType,
                 IdentificationNumber = createRequest.IdentificationNumber,
-                LeaderType = createRequest.LeaderType,
                 Names = createRequest.Names,
                 Surnames = createRequest.Surnames,
                 Gender = createRequest.Gender,
@@ -36,29 +38,37 @@ namespace isc.time.report.be.application.Services.Leaders
                 CorporateEmail = createRequest.CorporateEmail,
                 HomeAddress = createRequest.HomeAddress,
             };
+
+            var newLeader = new Leader
+            {
+                LeaderType = createRequest.LeaderType,
+                ProjectCode = createRequest.ProjectCode,
+                CustomerCode = createRequest.CustomerCode,
+                Person = newPerson
+            };
             await leaderRepository.CreateLeader(newLeader);
-            return new CreateLeaderResponse();
+            return new CreateLeaderWithPersonResponse();
         }
 
         public async Task<List<GetLeaderListResponse>> GetAll()
         {
-            var people = await leaderRepository.GetLeaders();
+            var leader = await leaderRepository.GetLeaders();
 
-            return people.Select(c => new GetLeaderListResponse
-            {
-                Id = c.Id.ToString(),
-                IdentificationType = c.IdentificationType,
-                IdentificationNumber = c.IdentificationNumber,
-                LeaderType = c.LeaderType,
-                Names = c.Names,
-                Surnames = c.Surnames,
-                Gender = c.Gender,
-                CellPhoneNumber = c.CellPhoneNumber,
-                Position = c.Position,
-                PersonalEmail = c.PersonalEmail,
-                CorporateEmail = c.CorporateEmail,
-                HomeAddress = c.HomeAddress,
-            }).ToList();
+            return leader
+                .Select(l => new GetLeaderListResponse
+                {
+
+                    Id = l.Id.ToString(),
+                    LeaderType = l.LeaderType,
+                    ProjectCode = l.ProjectCode,
+                    CustomerCode = l.CustomerCode,
+                    Id_Person = l.IdPerson.ToString(),
+                    Person = l.Person,
+                    Names = l.Person.Names,
+                    Surnames = l.Person.Surnames,
+
+                }).ToList();
+            
         }
     }
 }

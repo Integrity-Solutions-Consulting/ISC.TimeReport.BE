@@ -10,7 +10,7 @@ namespace isc.time.report.be.application.Interfaces.Service.Leaders
 {
     public interface ILeaderService
     {
-        public Task<CreateLeaderResponse> Create(CreateLeaderRequest request);
+        public Task<CreateLeaderWithPersonResponse> Create(CreateLeaderWithPersonRequest createRequest);
 
         public Task<List<GetLeaderListResponse>> GetAll();
     }
