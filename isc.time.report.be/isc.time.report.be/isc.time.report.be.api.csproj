@@ -20,4 +20,8 @@
     <ProjectReference Include="..\isc.time.report.be.infrastructure\isc.time.report.be.infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\v1\Menus\" />
+  </ItemGroup>
+
 </Project>

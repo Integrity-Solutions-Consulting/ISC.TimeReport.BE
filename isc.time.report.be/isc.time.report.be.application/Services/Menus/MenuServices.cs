@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace isc.time.report.be.domain.Models.Response.Menus
+namespace isc.time.report.be.application.Services.Menus
 {
-    internal class GetAllMenusResponse
+    internal class MenuServices
     {
     }
 }
