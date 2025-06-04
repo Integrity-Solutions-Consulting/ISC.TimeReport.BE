@@ -54,14 +54,21 @@ namespace isc.time.report.be.application.Services.Leaders
         {
             var leader = await leaderRepository.GetLeaders();
 
-            return leader.Select(l => new GetLeaderListResponse
-            {
-                Id = l.Id.ToString(),
-                LeaderType = l.LeaderType,
-                ProjectCode = l.ProjectCode,
-                CustomerCode = l.CustomerCode,
-                Person = l.Person,
-            }).ToList();
+            return leader
+                .Select(l => new GetLeaderListResponse
+                {
+
+                    Id = l.Id.ToString(),
+                    LeaderType = l.LeaderType,
+                    ProjectCode = l.ProjectCode,
+                    CustomerCode = l.CustomerCode,
+                    Id_Person = l.IdPerson.ToString(),
+                    Person = l.Person,
+                    Names = l.Person.Names,
+                    Surnames = l.Person.Surnames,
+
+                }).ToList();
+            
         }
     }
 }

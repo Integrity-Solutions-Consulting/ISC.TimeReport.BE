@@ -68,9 +68,10 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.IdPerson).HasColumnName("Id_Person");
                 entity.Property(e => e.CreatedAt).HasColumnName("created_at");
                 entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
-                entity.HasOne(l => l.Person)
+                entity.HasOne(e => e.Person)
                     .WithOne()
-                    .HasForeignKey<Leader>(l => l.IdPerson);
+                    .HasForeignKey<Leader>(e => e.IdPerson)
+                    .HasPrincipalKey<Person>(p => p.Id);
             });
 
             modelBuilder.Entity<User>(entity =>
