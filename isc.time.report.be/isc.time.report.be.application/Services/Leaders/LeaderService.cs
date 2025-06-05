@@ -62,10 +62,16 @@ namespace isc.time.report.be.application.Services.Leaders
                     LeaderType = l.LeaderType,
                     ProjectCode = l.ProjectCode,
                     CustomerCode = l.CustomerCode,
-                    Id_Person = l.IdPerson.ToString(),
-                    Person = l.Person,
+                    IdentificationType = l.Person.IdentificationType,
+                    IdentificationNumber = l.Person.IdentificationNumber,
                     Names = l.Person.Names,
                     Surnames = l.Person.Surnames,
+                    Gender = l.Person.Gender,
+                    CellPhoneNumber = l.Person.CellPhoneNumber,
+                    Position = l.Person.Position,
+                    PersonalEmail = l.Person.PersonalEmail,
+                    CorporateEmail = l.Person.CorporateEmail,
+                    HomeAddress = l.Person.HomeAddress,
 
                 }).ToList();
             
@@ -89,16 +95,16 @@ namespace isc.time.report.be.application.Services.Leaders
 
             if(leader.Person != null)
             {
-                leader.Person.IdentificationType = request.Person.IdentificationType;
-                leader.Person.IdentificationNumber = request.Person.IdentificationNumber;
-                leader.Person.Names = request.Person.Names;
-                leader.Person.Surnames = request.Person.Surnames;
-                leader.Person.Gender = request.Person.Gender;
-                leader.Person.CellPhoneNumber = request.Person.CellPhoneNumber;
-                leader.Person.Position = request.Person.Position;
-                leader.Person.PersonalEmail = request.Person.PersonalEmail;
-                leader.Person.CorporateEmail = request.Person.CorporateEmail;
-                leader.Person.HomeAddress = request.Person.HomeAddress;
+                leader.Person.IdentificationType = request.IdentificationType;
+                leader.Person.IdentificationNumber = request.IdentificationNumber;
+                leader.Person.Names = request.Names;
+                leader.Person.Surnames = request.Surnames;
+                leader.Person.Gender = request.Gender;
+                leader.Person.CellPhoneNumber = request.CellPhoneNumber;
+                leader.Person.Position = request.Position;
+                leader.Person.PersonalEmail = request.PersonalEmail;
+                leader.Person.CorporateEmail = request.CorporateEmail;
+                leader.Person.HomeAddress = request.HomeAddress;
             }
 
             await leaderRepository.UpdateLeader(leader);

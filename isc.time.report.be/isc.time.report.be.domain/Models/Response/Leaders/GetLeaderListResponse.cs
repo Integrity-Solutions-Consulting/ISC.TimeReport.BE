@@ -13,9 +13,15 @@ namespace isc.time.report.be.domain.Models.Response.Leaders
         public string LeaderType { get; set; }
         public string ProjectCode { get; set; }
         public string CustomerCode { get; set; }
-        public string Id_Person { get; set; }
-        public Person Person { get; set; }
+        public string IdentificationType { get; set; }
+        public string IdentificationNumber { get; set; }
         public string Names { get; set; }
         public string Surnames { get; set; }
+        public string Gender { get; set; }
+        public string CellPhoneNumber { get; set; }
+        public string Position { get; set; }
+        public string PersonalEmail { get; set; }
+        public string CorporateEmail { get; set; }
+        public string HomeAddress { get; set; }
     }
 }
