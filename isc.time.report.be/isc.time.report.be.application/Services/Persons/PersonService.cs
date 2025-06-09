@@ -8,7 +8,6 @@ using entityPerson = isc.time.report.be.domain.Entity.Persons;
 using isc.time.report.be.domain.Models.Response.Persons;
 using isc.time.report.be.domain.Models.Request.Persons;
 using isc.time.report.be.application.Interfaces.Service.Persons;
-using isc.time.report.be.domain.Models.Response.Leaders;
 
 namespace isc.time.report.be.application.Services.Person
 {
@@ -25,16 +24,17 @@ namespace isc.time.report.be.application.Services.Person
         {
             var newPerson = new entityPerson.Person
             {
-                IdentificationType = createRequest.IdentificationType,
+                GenderId = createRequest.GenderId,
+                NationalityId = createRequest.NationalityId,
+                IdentificationTypeId = createRequest.IdentificationTypeId,
                 IdentificationNumber = createRequest.IdentificationNumber,
-                Names = createRequest.Names,
-                Surnames = createRequest.Surnames,
-                Gender = createRequest.Gender,
-                CellPhoneNumber = createRequest.CellPhoneNumber,
-                Position = createRequest.Position,
-                PersonalEmail = createRequest.PersonalEmail,
-                CorporateEmail = createRequest.CorporateEmail,
-                HomeAddress = createRequest.HomeAddress,
+                PersonType = createRequest.PersonType,
+                FirstName = createRequest.FirstName,
+                LastName = createRequest.LastName,
+                BirthDate = createRequest.BirthDate,
+                Email = createRequest.Email,
+                Phone = createRequest.Phone,
+                Address = createRequest.Address,
             };
             await PersonRepository.CreatePerson(newPerson);
             return new CreatePersonResponse();
@@ -46,18 +46,53 @@ namespace isc.time.report.be.application.Services.Person
 
             return person.Select(p => new GetPersonListResponse
             {
-                Id = p.Id.ToString(),
-                IdentificationType = p.IdentificationType,
+                Id = p.Id,
+                GenderId = p.GenderId,
+                NationalityId = p.NationalityId,
+                IdentificationTypeId = p.IdentificationTypeId,
                 IdentificationNumber = p.IdentificationNumber,
-                Names = p.Names,
-                Surnames = p.Surnames,
-                Gender = p.Gender,
-                CellPhoneNumber = p.CellPhoneNumber,
-                Position = p.Position,
-                PersonalEmail = p.PersonalEmail,
-                CorporateEmail = p.CorporateEmail,
-                HomeAddress = p.HomeAddress,
+                PersonType = p.PersonType,
+                FirstName = p.FirstName,
+                LastName = p.LastName,
+                BirthDate= p.BirthDate,
+                Phone = p.Phone,
+                Email = p.Email,
+                Address = p.Address,
             }).ToList();
+        }
+
+        public async Task<UpdatePersonResponse> Update(UpdatePersonRequest request)
+        {
+            var person = await PersonRepository.GetPersonById(request.Id);
+
+            if (person == null)
+            {
+                return new UpdatePersonResponse
+                {
+                    Success = false,
+                    Message = "Persona no Encontrada"
+                };
+            }
+            person.Id = request.Id;
+            person.GenderId = request.GenderId; 
+            person.NationalityId = request.NationalityId;
+            person.IdentificationTypeId = request.IdentificationTypeId;
+            person.IdentificationNumber = request.IdentificationNumber;
+            person.PersonType = request.PersonType;
+            person.FirstName = request.FirstName;
+            person.LastName = request.LastName;
+            person.BirthDate = request.BirthDate;
+            person.Phone = request.Phone;
+            person.Email = request.Email;
+            person.Address = request.Address;
+
+            await PersonRepository.UpdatePerson(person);
+
+            return new UpdatePersonResponse
+            {
+                Success = true,
+                Message = "Persona actualizada"
+            };
         }
     }
 }

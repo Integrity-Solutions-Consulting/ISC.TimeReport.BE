@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace isc.time.report.be.domain.Models.Response.Persons
+namespace isc.time.report.be.domain.Models.Request.Persons
 {
-    public class GetPersonListResponse
+    public class UpdatePersonRequest
     {
         public int Id { get; set; }
         public int GenderId { get; set; }

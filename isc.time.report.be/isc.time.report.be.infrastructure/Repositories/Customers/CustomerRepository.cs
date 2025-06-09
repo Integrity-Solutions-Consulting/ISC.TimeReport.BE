@@ -25,8 +25,8 @@ namespace isc.time.report.be.infrastructure.Repositories.Customers
 
         public async Task<Customer> CreateCustomer(Customer customer)
         {
-            customer.CreatedAt = DateTime.Now;
-            customer.UpdatedAt = null;
+            customer.CreationDate = DateTime.Now;
+            customer.ModificationDate = null;
             customer.Status = true;
             await _dbContext.Customers.AddAsync(customer);
             await _dbContext.SaveChangesAsync();
@@ -42,7 +42,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Customers
 
         public async Task<Customer> UpdateCustomer(Customer customer)
         {
-            customer.UpdatedAt = DateTime.Now;
+            customer.ModificationDate = DateTime.Now;
             _dbContext.Customers.Update(customer);
             await _dbContext.SaveChangesAsync();
             return customer;
