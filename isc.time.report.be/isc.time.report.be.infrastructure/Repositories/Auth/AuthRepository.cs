@@ -32,8 +32,8 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
 
         public async Task<User> CreateUser(User user)
         {
-            user.CreatedAt = DateTime.Now;
-            user.UpdatedAt = null;
+            user.CreationDate = DateTime.Now;
+            user.ModificationDate = null;
             user.Status = true;
             await _dbContext.Users.AddAsync(user);
 
@@ -51,7 +51,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
         {
             var user = await _dbContext.Users.FindAsync(userId);
 
-            user.UpdatedAt = DateTime.Now;
+            user.ModificationDate = DateTime.Now;
 
             //user.LastLogin = DateTime.Now;
 

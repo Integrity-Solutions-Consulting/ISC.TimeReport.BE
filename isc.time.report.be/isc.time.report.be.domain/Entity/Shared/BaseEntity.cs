@@ -10,8 +10,12 @@ namespace isc.time.report.be.domain.Entity.Shared
     {
 
         public int Id { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
+        public string CreationUser { get; set; }
+        public string ModificationUser { get; set; }
+        public DateTime CreationDate { get; set; }
+        public DateTime? ModificationDate { get; set; }
+        public string CreationIp { get; set; }
+        public string ModificationIp { get; set; }
         public bool Status { get; set; }
 
 

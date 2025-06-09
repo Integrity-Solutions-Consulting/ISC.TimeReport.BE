@@ -78,8 +78,8 @@ namespace isc.time.report.be.infrastructure.Repositories.Menus
         public async Task<Menu> CreateMenuAsync(Menu menu)
         {
 
-            menu.CreatedAt = DateTime.Now;
-            menu.UpdatedAt = null;
+            menu.CreationDate = DateTime.Now;
+            menu.ModificationDate = null;
             menu.Status = true;
             await _dbContext.Menu.AddAsync(menu);
 
@@ -95,8 +95,8 @@ namespace isc.time.report.be.infrastructure.Repositories.Menus
 
             existingMenu.NombreMenu = updatedMenu.NombreMenu;
             existingMenu.RutaMenu = updatedMenu.RutaMenu;
-            existingMenu.CreatedAt = DateTime.UtcNow;
-            existingMenu.UpdatedAt = updatedMenu.UpdatedAt;
+            existingMenu.CreationDate = DateTime.UtcNow;
+            existingMenu.ModificationDate = updatedMenu.ModificationDate;
 
             await _dbContext.SaveChangesAsync();
             return true;
@@ -108,7 +108,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Menus
             if (menu == null) return false;
 
             menu.Status = false;
-            menu.UpdatedAt = DateTime.UtcNow;
+            menu.ModificationDate = DateTime.UtcNow;
             await _dbContext.SaveChangesAsync();
             return true;
         }
@@ -119,7 +119,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Menus
             if (menu == null) return false;
 
             menu.Status = true;
-            menu.UpdatedAt = DateTime.UtcNow;
+            menu.ModificationDate = DateTime.UtcNow;
             await _dbContext.SaveChangesAsync();
             return true;
         }

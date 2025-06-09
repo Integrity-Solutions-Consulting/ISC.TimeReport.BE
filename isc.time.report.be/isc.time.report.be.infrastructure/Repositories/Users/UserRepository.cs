@@ -71,8 +71,8 @@ namespace isc.time.report.be.infrastructure.Repositories.Users
                 {
                     UsersId = userId,
                     RolsId = rolId,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
+                    CreationDate = DateTime.Now,
+                    ModificationDate = DateTime.Now
                 });
             }
 

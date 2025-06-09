@@ -21,22 +21,22 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             _leaderService = personService;
         }
 
-        [HttpGet("get")]
+        /*[HttpGet("get")]
         public async Task<ActionResult<SuccessResponse<GetLeaderResponse>>> GetAll()
         {
             var leader = await _leaderService.GetAll();
             return Ok(leader);
-        }
+        }*/
 
-        [HttpPost("create")]
+        /*[HttpPost("create")]
         public async Task<ActionResult<SuccessResponse<CreateLeaderWithPersonResponse>>> CreateLeader(CreateLeaderWithPersonRequest createRequest)
         {
             var leader = await _leaderService.Create(createRequest);
 
             return Ok(new SuccessResponse<CreateLeaderResponse>());
-        }
+        }*/
 
-        [HttpPut("update/{id}")]
+        /*[HttpPut("update/{id}")]
         public async Task<ActionResult<SuccessResponse<UpdateLeaderResponse>>> UpdateLeader(int id, UpdateLeaderRequest updateLeaderRequest)
         {
             if (id != updateLeaderRequest.Id)
@@ -51,6 +51,6 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
                 return NotFound(response.Message);
             }
             return Ok(response);
-        }
+        }*/
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using isc.time.report.be.domain.Entity.Auth;
 using isc.time.report.be.domain.Entity.Customers;
+using isc.time.report.be.domain.Entity.IdentificationTypes;
 using isc.time.report.be.domain.Entity.Leaders;
 using isc.time.report.be.domain.Entity.Menu;
 using isc.time.report.be.domain.Entity.Persons;
@@ -34,27 +35,33 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.CompanyName).HasColumnName("company_name");
                 entity.Property(e => e.CellPhoneNumber).HasColumnName("cellphone_number");
                 entity.Property(e => e.Email).HasColumnName("email");
-                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
-                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+                entity.Property(e => e.CreationDate).HasColumnName("created_at");
+                entity.Property(e => e.ModificationDate).HasColumnName("updated_at");
             });
 
             modelBuilder.Entity<Person>(entity =>
             {
                 entity.ToTable("Persons");
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Id).HasColumnName("Id_Person");
-                entity.Property(e => e.IdentificationType).HasColumnName("identification_type");
+                entity.Property(e => e.Id).HasColumnName("PersonID");
+                entity.Property(e => e.GenderId).HasColumnName("GenderID");
+                entity.Property(e => e.NationalityId).HasColumnName("nationality_id");
+                entity.Property(e => e.IdentificationTypeId).HasColumnName("identification_type_id");
                 entity.Property(e => e.IdentificationNumber).HasColumnName("identification_number");
-                entity.Property(e => e.Names).HasColumnName("names");
-                entity.Property(e => e.Surnames).HasColumnName("surnames");
-                entity.Property(e => e.Gender).HasColumnName("gender");
-                entity.Property(e => e.CellPhoneNumber).HasColumnName("cell_phone_number");
-                entity.Property(e => e.Position).HasColumnName("position");
-                entity.Property(e => e.PersonalEmail).HasColumnName("personal_email");
-                entity.Property(e => e.CorporateEmail).HasColumnName("corporate_email");
-                entity.Property(e => e.HomeAddress).HasColumnName("home_address");
-                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
-                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+                entity.Property(e => e.PersonType).HasColumnName("person_type");
+                entity.Property(e => e.FirstName).HasColumnName("first_name");
+                entity.Property(e => e.LastName).HasColumnName("last_name");
+                entity.Property(e => e.BirthDate).HasColumnName("birth_date");
+                entity.Property(e => e.Email).HasColumnName("email");
+                entity.Property(e => e.Phone).HasColumnName("phone");
+                entity.Property(e => e.Address).HasColumnName("address");
+                entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.CreationUser).HasColumnName("creation_user");
+                entity.Property(e => e.ModificationUser).HasColumnName("modification_user");
+                entity.Property(e => e.CreationDate).HasColumnName("creation_date");
+                entity.Property(e => e.ModificationDate).HasColumnName("modification_date");
+                entity.Property(e => e.CreationIp).HasColumnName("creation_ip");
+                entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
             });
 
             modelBuilder.Entity<Leader>(entity =>
@@ -66,8 +73,8 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.ProjectCode).HasColumnName("project_code");
                 entity.Property(e => e.CustomerCode).HasColumnName("customer_code");
                 entity.Property(e => e.IdPerson).HasColumnName("Id_Person");
-                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
-                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+                entity.Property(e => e.CreationDate).HasColumnName("created_at");
+                entity.Property(e => e.ModificationDate).HasColumnName("updated_at");
                 entity.HasOne(e => e.Person)
                     .WithOne()
                     .HasForeignKey<Leader>(e => e.IdPerson)
@@ -81,8 +88,8 @@ namespace isc.time.report.be.infrastructure.Database
 
                 entity.Property(e => e.email).HasColumnName("username");
                 entity.Property(e => e.Password).HasColumnName("password");
-                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
-                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+                entity.Property(e => e.CreationDate).HasColumnName("created_at");
+                entity.Property(e => e.ModificationDate).HasColumnName("updated_at");
             });
 
             modelBuilder.Entity<Rols>(entity =>
@@ -92,8 +99,8 @@ namespace isc.time.report.be.infrastructure.Database
 
                 entity.Property(e => e.RolName).HasColumnName("rol_name");
 
-                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
-                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+                entity.Property(e => e.CreationDate).HasColumnName("created_at");
+                entity.Property(e => e.ModificationDate).HasColumnName("updated_at");
             });
 
             modelBuilder.Entity<UsersRols>(entity =>
@@ -104,8 +111,8 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.UsersId).HasColumnName("users_id");
                 entity.Property(e => e.RolsId).HasColumnName("rols_id");
 
-                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
-                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+                entity.Property(e => e.CreationDate).HasColumnName("created_at");
+                entity.Property(e => e.ModificationDate).HasColumnName("updated_at");
 
 
                 entity.HasOne(ur => ur.User)
@@ -125,8 +132,8 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.NombreMenu).HasColumnName("nombre_menu");
                 entity.Property(e => e.RutaMenu).HasColumnName("ruta_menu");
 
-                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
-                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+                entity.Property(e => e.CreationDate).HasColumnName("created_at");
+                entity.Property(e => e.ModificationDate).HasColumnName("updated_at");
             });
 
             modelBuilder.Entity<MenuRols>(entity =>
@@ -137,8 +144,8 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.MenuId).HasColumnName("menu_id");
                 entity.Property(e => e.RolsId).HasColumnName("rols_id");
 
-                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
-                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+                entity.Property(e => e.CreationDate).HasColumnName("created_at");
+                entity.Property(e => e.ModificationDate).HasColumnName("updated_at");
 
                 entity.HasOne(ur => ur.Menu)
                       .WithMany(u => u.MenusRols)

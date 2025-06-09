@@ -8,15 +8,16 @@ namespace isc.time.report.be.domain.Models.Response.Persons
 {
     public class CreatePersonResponse
     {
-        public string IdentificationType { get; set; }
+        public int GenderId { get; set; }
+        public int NationalityId { get; set; }
+        public int IdentificationTypeId { get; set; }
         public string IdentificationNumber { get; set; }
-        public string Names { get; set; }
-        public string Surnames { get; set; }
-        public string Gender { get; set; }
-        public string CellPhoneNumber { get; set; }
-        public string Position { get; set; }
-        public string PersonalEmail { get; set; }
-        public string CorporateEmail { get; set; }
-        public string HomeAddress { get; set; }
+        public string PersonType { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public DateOnly BirthDate { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public string Address { get; set; }
     }
 }

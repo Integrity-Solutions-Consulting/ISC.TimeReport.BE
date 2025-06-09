@@ -22,11 +22,11 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
 
         public async Task<Leader> CreateLeader(Leader leader)
         {
-            leader.CreatedAt = DateTime.Now;
-            leader.UpdatedAt = null;
+            leader.CreationDate = DateTime.Now;
+            leader.ModificationDate = null;
             leader.Status = true;
-            leader.Person.CreatedAt = DateTime.Now;
-            leader.Person.UpdatedAt = null;
+            leader.Person.CreationDate = DateTime.Now;
+            leader.Person.ModificationDate = null;
             leader.Person.Status = true;
             await dBContext.Leader.AddAsync(leader);
             Console.WriteLine(leader);
@@ -44,8 +44,8 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
 
         public async Task<Leader> UpdateLeader(Leader leader)
         {
-            leader.UpdatedAt = DateTime.Now;
-            leader.Person.UpdatedAt = DateTime.Now;
+            leader.ModificationDate = DateTime.Now;
+            leader.Person.ModificationDate = DateTime.Now;
             dBContext.Leader.Update(leader);
             await dBContext.SaveChangesAsync();
             return leader;
