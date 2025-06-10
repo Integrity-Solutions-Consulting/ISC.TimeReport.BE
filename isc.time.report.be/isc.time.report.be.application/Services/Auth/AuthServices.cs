@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using isc.time.report.be.application.Interfaces.Repository.Auth;
+﻿using isc.time.report.be.application.Interfaces.Repository.Auth;
 using isc.time.report.be.application.Interfaces.Repository.Menus;
 using isc.time.report.be.application.Interfaces.Service.Auth;
 using isc.time.report.be.application.Utils.Auth;
@@ -13,6 +8,12 @@ using isc.time.report.be.domain.Models.Request.Auth;
 using isc.time.report.be.domain.Models.Response.Auth;
 using isc.time.report.be.domain.Models.Response.Menus;
 using isc.time.report.be.domain.Models.Response.Users;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace isc.time.report.be.application.Services.Auth
 {
@@ -97,15 +98,22 @@ namespace isc.time.report.be.application.Services.Auth
                 throw new ClientFaultException("Complete los campos faltantes.", 401);
             }
 
-
-            var user = await authRepository.GetUserByUsername(registerRequest.email);
-
-            if (user != null)
+            var emailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+            if (!emailRegex.IsMatch(registerRequest.email))
             {
-                throw new ClientFaultException("El nombre de usuario no està disponible.", 401);
+                throw new ClientFaultException("Ingrese un correo electrónico válido.", 401);
             }
 
-           
+            if (registerRequest.Password.Length < 8)
+            {
+                throw new ClientFaultException("La contraseña debe tener al menos 8 caracteres.", 401);
+            }
+
+            var user = await authRepository.GetUserByUsername(registerRequest.email);
+            if (user != null)
+            {
+                throw new ClientFaultException("El nombre de usuario no está disponible.", 401);
+            }
 
             await authRepository.CreateUser(new User
             {
