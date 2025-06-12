@@ -1,5 +1,6 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.Auth;
 using isc.time.report.be.application.Interfaces.Repository.Customers;
+using isc.time.report.be.application.Interfaces.Repository.Employees;
 using isc.time.report.be.application.Interfaces.Repository.Leaders;
 using isc.time.report.be.application.Interfaces.Repository.Menus;
 using isc.time.report.be.application.Interfaces.Repository.Persons;
@@ -7,6 +8,7 @@ using isc.time.report.be.application.Interfaces.Repository.Users;
 using isc.time.report.be.infrastructure.Database;
 using isc.time.report.be.infrastructure.Repositories.Auth;
 using isc.time.report.be.infrastructure.Repositories.Customers;
+using isc.time.report.be.infrastructure.Repositories.Employees;
 using isc.time.report.be.infrastructure.Repositories.Leaders;
 using isc.time.report.be.infrastructure.Repositories.Menus;
 using isc.time.report.be.infrastructure.Repositories.Persons;
@@ -30,6 +32,7 @@ namespace isc.time.report.be.infrastructure.IOC
         {
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IClientRepository, ClientRepository>();
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<ILeaderRepository, LeaderRepository>();
             services.AddScoped<IPersonRepository, PersonRepository>();
             services.AddScoped<IUserRepository, UserRepository>();

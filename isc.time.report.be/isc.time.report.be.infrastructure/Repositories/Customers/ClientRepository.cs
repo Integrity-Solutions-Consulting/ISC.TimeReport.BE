@@ -46,7 +46,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Customers
         public async Task<Client?> GetCustomerById(int customerId)
         {
             return await _dbContext.Clients
-                .FirstOrDefaultAsync(c=>c.Id == customerId && c.Status);
+                .FirstOrDefaultAsync(c => c.Id == customerId && c.Status);
         }
     }
 }
