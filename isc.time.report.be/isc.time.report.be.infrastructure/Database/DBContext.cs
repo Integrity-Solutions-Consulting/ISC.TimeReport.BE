@@ -108,8 +108,8 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.Id).HasColumnName("PersonID");
 
                 entity.Property(e => e.GenderID).HasColumnName("GenderID");
-                entity.Property(e => e.NationalityId).HasColumnName("nationality_id");
-                entity.Property(e => e.IdentificationTypeId).HasColumnName("identification_type_id");
+                entity.Property(e => e.NationalityId).HasColumnName("NationalityID");
+                entity.Property(e => e.IdentificationTypeId).HasColumnName("IdentificationTypeid");
                 entity.Property(e => e.IdentificationNumber).HasColumnName("identification_number");
                 entity.Property(e => e.PersonType).HasColumnName("person_type");
                 entity.Property(e => e.FirstName).HasColumnName("first_name");
