@@ -30,76 +30,84 @@ namespace isc.time.report.be.application.Services.Auth
             this.jwtUtils = jwtUtils;
             this.menuRepository = menuRepository;
         }
-
+        /// <summary>
+        /// SI SE ESTA USANDO
+        /// </summary>
+        /// <param name="loginRequest"></param>
+        /// <returns></returns>
+        /// <exception cref="ClientFaultException"></exception>
         public async Task<LoginResponse> Login(LoginRequest loginRequest)
         {
 
-            if (loginRequest.email == "string" || loginRequest.Password == "string")
+            if (loginRequest.Username == "string" || loginRequest.Password == "string")
             {
                 throw new ClientFaultException("Complete los campos faltantes.", 401);
             }
 
-            if (string.IsNullOrWhiteSpace(loginRequest.email) || string.IsNullOrWhiteSpace(loginRequest.Password))
+            if (string.IsNullOrWhiteSpace(loginRequest.Username) || string.IsNullOrWhiteSpace(loginRequest.Password))
             {
                 throw new ClientFaultException("Complete los campos faltantes.", 401);
             }
 
-            var user = await authRepository.GetUserByUsername(loginRequest.email);
-
+            var user = await authRepository.GetUserAndRoleByUsername(loginRequest.Username);
 
             if (user == null)
             {
                 throw new ClientFaultException("Usuario o contraseña incorrectos.", 401);
             }
 
-            if (!passwordUtils.VerifyPassword(loginRequest.Password, user.Password))
+            if (!passwordUtils.VerifyPassword(loginRequest.Password, user.PasswordHash))
             {
                 throw new ClientFaultException("Usuario o contraseña incorrectos.", 401);
             }
 
-            //await authRepository.UpdateUserLastLogin(user.Id);
-            var userRoles = user.UsersRols?.Select(ur => ur.Rols)
+            var accessibleBaseModule = await menuRepository.GetAllModulesByUserID(user.Id);
+
+            await authRepository.UpdateUserLastLoginByID(user.Id);
+
+            var userRoles = user.UserRole?.Select(ur => ur.Role)
                                             .Select(r => new RoleResponse
                                             {
                                                 Id = r.Id,
-                                                RolName = r.RolName
+                                                RoleName = r.RoleName
                                             })
                                             .ToList() ?? new List<RoleResponse>();
 
-
-            var accessibleMenuEntities = await menuRepository.GetAllMenusByUserIdDetailsAsync(user.Id);
-
-            var accessibleMenus = accessibleMenuEntities.Select(m => new GetAllUserMenusResponse
+            var accessibleModules = accessibleBaseModule.Select(m => new ModuleResponse
             {
                 Id = m.Id,
-                NombreMenu = m.NombreMenu,
-                RutaMenu = m.RutaMenu
-            }).ToList();
+                ModuleName = m.ModuleName,
+                ModulePath = m.ModulePath,
+                Icon = m.Icon,
+                DisplayOrder = m.DisplayOrder,
+
+            }).ToList() ?? new List<ModuleResponse>();
 
             return new LoginResponse
             {
-                email = user.email,
-                Token = jwtUtils.GenerateToken(user),
+                UserID = user.Id,
+                EmployeeID = user.EmployeeID,
+                TOKEN = jwtUtils.GenerateToken(user),
                 Roles = userRoles,
-                Menus = accessibleMenus
+                Modules = accessibleModules
             };
         }
 
         public async Task<RegisterResponse> Register(RegisterRequest registerRequest)
         {
 
-            if (registerRequest.email == "string" || registerRequest.Password == "string")
+            if (registerRequest.Username == "string" || registerRequest.Password == "string")
             {
                 throw new ClientFaultException("Complete los campos faltantes.", 401);
             }
 
-            if (string.IsNullOrWhiteSpace(registerRequest.email) || string.IsNullOrWhiteSpace(registerRequest.Password))
+            if (string.IsNullOrWhiteSpace(registerRequest.Username) || string.IsNullOrWhiteSpace(registerRequest.Password))
             {
                 throw new ClientFaultException("Complete los campos faltantes.", 401);
             }
 
             var emailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
-            if (!emailRegex.IsMatch(registerRequest.email))
+            if (!emailRegex.IsMatch(registerRequest.Username))
             {
                 throw new ClientFaultException("Ingrese un correo electrónico válido.", 401);
             }
@@ -109,19 +117,37 @@ namespace isc.time.report.be.application.Services.Auth
                 throw new ClientFaultException("La contraseña debe tener al menos 8 caracteres.", 401);
             }
 
-            var user = await authRepository.GetUserByUsername(registerRequest.email);
+            var user = await authRepository.GetUserAndRoleByUsername(registerRequest.Username);
             if (user != null)
             {
                 throw new ClientFaultException("El nombre de usuario no está disponible.", 401);
             }
 
-            await authRepository.CreateUser(new User
+            var userNew = await authRepository.CreateUser(new User
             {
-                email = registerRequest.email,
-                Password = passwordUtils.HashPassword(registerRequest.Password),   
-            });
+                EmployeeID = registerRequest.EmployeeID,
+                Username = registerRequest.Username,
+                PasswordHash = passwordUtils.HashPassword(registerRequest.Password),
+                IsActive = registerRequest.IsActive,
+            }, 
+            registerRequest.RolesID);
 
-            return new RegisterResponse();
+            var RolesList = await authRepository.GetAllRolesByRolesID(registerRequest.RolesID);
+
+            var Roles = RolesList.Select(r => new RoleResponse
+            {
+                Id = r.Id,
+                RoleName = r.RoleName
+            }).ToList();
+
+            return new RegisterResponse
+            {
+                EmployeeID = userNew.EmployeeID,
+                Username = userNew.Username,
+                IsActive = userNew.IsActive,
+                MustChangePassword= userNew.MustChangePassword,
+                Roles = Roles
+            };
         }
     }
 }

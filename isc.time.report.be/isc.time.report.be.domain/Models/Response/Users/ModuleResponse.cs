@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 
 namespace isc.time.report.be.domain.Models.Response.Users
 {
-    public class RoleResponse
+    public class ModuleResponse
     {
         public int Id { get; set; }
-        public string RoleName { get; set; } = null!;
+        public string ModuleName { get; set; } = null!;
+        public string? ModulePath { get; set; }
+        public string? Icon { get; set; }
+        public int? DisplayOrder { get; set; }
     }
 }

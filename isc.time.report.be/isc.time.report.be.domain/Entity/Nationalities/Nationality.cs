@@ -9,6 +9,6 @@ namespace isc.time.report.be.domain.Entity.Nationalities
 {
     public class Nationality : BaseEntity
     {
-        public string Description { get; set; }
+        public string? Description { get; set; }
     }
 }

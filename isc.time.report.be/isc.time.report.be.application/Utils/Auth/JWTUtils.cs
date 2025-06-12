@@ -29,16 +29,16 @@ namespace isc.time.report.be.application.Utils.Auth
 
             var claims = new List<Claim>
     {
-                        new Claim(ClaimTypes.Name, user.email),
+                        new Claim(ClaimTypes.Name, user.Username),
                         new Claim("id", user.Id.ToString())
     };
 
             // Añadir roles directamente
-            if (user.UsersRols != null)
+            if (user.UserRole != null)
             {
-                foreach (var ur in user.UsersRols)
+                foreach (var ur in user.UserRole)
                 {
-                    claims.Add(new Claim(ClaimTypes.Role, ur.Rols.RolName));
+                    claims.Add(new Claim(ClaimTypes.Role, ur.Role.RoleName));
                 }
             }
 

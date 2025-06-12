@@ -10,8 +10,9 @@ namespace isc.time.report.be.application.Interfaces.Repository.Auth
     public interface IAuthRepository
     {
         Task<User> GetUserById(int userId);
-        Task<User> GetUserByUsername(string username);
-        Task<User> CreateUser(User user);
-        Task UpdateUserLastLogin(int userId);
+        Task<User> GetUserAndRoleByUsername(string username);
+        Task<User> CreateUser(User user, List<int> RolesId);
+        Task UpdateUserLastLoginByID(int userId);
+        Task<List<Role>> GetAllRolesByRolesID(List<int> RolesId);
     }
 }

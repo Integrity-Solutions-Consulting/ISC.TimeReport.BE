@@ -9,7 +9,7 @@ namespace isc.time.report.be.domain.Entity.Genders
 {
     public class Gender : BaseEntity
     {
-        public string GenderCode { get; set; }
-        public string GenderName { get; set; }
+        public string GenderCode { get; set; } = null!;
+        public string GenderName { get; set; } = null!;
     }
 }

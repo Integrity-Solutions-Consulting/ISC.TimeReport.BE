@@ -25,24 +25,24 @@ namespace isc.time.report.be.infrastructure.Repositories.Users
         public async Task<User> GetUserById(int userId)
         {
             return await _dbContext.Users
-                .Include(u => u.UsersRols)
-                    .ThenInclude(ur => ur.Rols)
+                .Include(u => u.UserRole)
+                    .ThenInclude(ur => ur.Role)
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
         public async Task<User> GetUserByUsername(string username)
         {
             return await _dbContext.Users
-                .Include(u => u.UsersRols)
-                    .ThenInclude(ur => ur.Rols)
-                .FirstOrDefaultAsync(u => u.email == username);
+                .Include(u => u.UserRole)
+                    .ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(u => u.Username == username);
         }
 
         public async Task<List<User>> GetAllUsers()
         {
             return await _dbContext.Users
-                .Include(u => u.UsersRols)
-                    .ThenInclude(ur => ur.Rols)
+                .Include(u => u.UserRole)
+                    .ThenInclude(ur => ur.Role)
                 .ToListAsync();
         }
 
@@ -67,10 +67,10 @@ namespace isc.time.report.be.infrastructure.Repositories.Users
         {
             foreach (var rolId in rolIds)
             {
-                _dbContext.Users_Rols.Add(new UsersRols
+                _dbContext.UserRoles.Add(new UserRole
                 {
-                    UsersId = userId,
-                    RolsId = rolId,
+                    UserID = userId,
+                    RoleID = rolId,
                     CreationDate = DateTime.Now,
                     ModificationDate = DateTime.Now
                 });
