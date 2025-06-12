@@ -9,6 +9,6 @@ namespace isc.time.report.be.domain.Entity.IdentificationTypes
 {
     public class IdentificationType : BaseEntity
     {
-        public string Description { get; set; }
+        public string Description { get; set; } = null!;
     }
 }

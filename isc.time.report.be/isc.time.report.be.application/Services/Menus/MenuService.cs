@@ -25,8 +25,8 @@ namespace isc.time.report.be.application.Services.Menus
 
             var result = menus.Select(m => new GetAllUserMenusResponse
             {
-                NombreMenu = m.NombreMenu,
-                RutaMenu = m.RutaMenu,
+                ModuleName = m.ModuleName,
+                ModulePath = m.ModulePath,
             }).ToList();
 
             return result;

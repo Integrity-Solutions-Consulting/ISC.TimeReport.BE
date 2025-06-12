@@ -24,17 +24,17 @@ namespace isc.time.report.be.application.Services.Person
         {
             var newPerson = new entityPerson.Person
             {
-                GenderId = createRequest.GenderId,
-                NationalityId = createRequest.NationalityId,
-                IdentificationTypeId = createRequest.IdentificationTypeId,
-                IdentificationNumber = createRequest.IdentificationNumber,
-                PersonType = createRequest.PersonType,
-                FirstName = createRequest.FirstName,
-                LastName = createRequest.LastName,
-                BirthDate = createRequest.BirthDate,
-                Email = createRequest.Email,
-                Phone = createRequest.Phone,
-                Address = createRequest.Address,
+                //GenderId = createRequest.GenderId,
+                //NationalityId = createRequest.NationalityId,
+                //IdentificationTypeId = createRequest.IdentificationTypeId,
+                //IdentificationNumber = createRequest.IdentificationNumber,
+                //PersonType = createRequest.PersonType,
+                //FirstName = createRequest.FirstName,
+                //LastName = createRequest.LastName,
+                //BirthDate = createRequest.BirthDate,
+                //Email = createRequest.Email,
+                //Phone = createRequest.Phone,
+                //Address = createRequest.Address,
             };
             await PersonRepository.CreatePerson(newPerson);
             return new CreatePersonResponse();
@@ -46,18 +46,18 @@ namespace isc.time.report.be.application.Services.Person
 
             return person.Select(p => new GetPersonListResponse
             {
-                Id = p.Id,
-                GenderId = p.GenderId,
-                NationalityId = p.NationalityId,
-                IdentificationTypeId = p.IdentificationTypeId,
-                IdentificationNumber = p.IdentificationNumber,
-                PersonType = p.PersonType,
-                FirstName = p.FirstName,
-                LastName = p.LastName,
-                BirthDate= p.BirthDate,
-                Phone = p.Phone,
-                Email = p.Email,
-                Address = p.Address,
+                //Id = p.Id,
+                //GenderId = p.GenderId,
+                //NationalityId = p.NationalityId,
+                //IdentificationTypeId = p.IdentificationTypeId,
+                //IdentificationNumber = p.IdentificationNumber,
+                //PersonType = p.PersonType,
+                //FirstName = p.FirstName,
+                //LastName = p.LastName,
+                //BirthDate= p.BirthDate,
+                //Phone = p.Phone,
+                //Email = p.Email,
+                //Address = p.Address,
             }).ToList();
         }
 
@@ -73,18 +73,18 @@ namespace isc.time.report.be.application.Services.Person
                     Message = "Persona no Encontrada"
                 };
             }
-            person.Id = request.Id;
-            person.GenderId = request.GenderId; 
-            person.NationalityId = request.NationalityId;
-            person.IdentificationTypeId = request.IdentificationTypeId;
-            person.IdentificationNumber = request.IdentificationNumber;
-            person.PersonType = request.PersonType;
-            person.FirstName = request.FirstName;
-            person.LastName = request.LastName;
-            person.BirthDate = request.BirthDate;
-            person.Phone = request.Phone;
-            person.Email = request.Email;
-            person.Address = request.Address;
+            //person.Id = request.Id;
+            //person.GenderId = request.GenderId; 
+            //person.NationalityId = request.NationalityId;
+            //person.IdentificationTypeId = request.IdentificationTypeId;
+            //person.IdentificationNumber = request.IdentificationNumber;
+            //person.PersonType = request.PersonType;
+            //person.FirstName = request.FirstName;
+            //person.LastName = request.LastName;
+            //person.BirthDate = request.BirthDate;
+            //person.Phone = request.Phone;
+            //person.Email = request.Email;
+            //person.Address = request.Address;
 
             await PersonRepository.UpdatePerson(person);
 

@@ -18,11 +18,11 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
         }
         public async Task<Project> CreateProject(Project project)
         {
-            project.CreationDate = DateTime.Now;
-            project.CreationDate = DateTime.Now;
-            project.ModificationDate = null;
-            project.Status = "Activo";
-            //await _dBContext.Projects.AddAsync(project);
+            //project.CreationDate = DateTime.Now;
+            //project.CreationDate = DateTime.Now;
+            //project.ModificationDate = null;
+            //project.Status = "Activo";
+            ////await _dBContext.Projects.AddAsync(project);
             await _dBContext.SaveChangesAsync();
             return project;
         }

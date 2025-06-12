@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using isc.time.report.be.application.Interfaces.Repository.Leaders;
-using isc.time.report.be.domain.Entity.Customers;
+using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Leaders;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +28,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
             leader.Person.CreationDate = DateTime.Now;
             leader.Person.ModificationDate = null;
             leader.Person.Status = true;
-            await dBContext.Leader.AddAsync(leader);
+            await dBContext.Leaders.AddAsync(leader);
             Console.WriteLine(leader);
             await dBContext.SaveChangesAsync();
             return leader;
@@ -36,7 +36,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
 
         public async Task<List<Leader>> GetLeaders()
         {
-            return await dBContext.Leader
+            return await dBContext.Leaders
                 .Where(l => l.Status)
                 .Include(l => l.Person)
                 .ToListAsync();
@@ -46,14 +46,14 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
         {
             leader.ModificationDate = DateTime.Now;
             leader.Person.ModificationDate = DateTime.Now;
-            dBContext.Leader.Update(leader);
+            dBContext.Leaders.Update(leader);
             await dBContext.SaveChangesAsync();
             return leader;
         }
 
         public async Task<Leader?> GetLeaderById(int leaderId)
         {
-            return await dBContext.Leader
+            return await dBContext.Leaders
                 .Include(l => l.Person)
                 .FirstOrDefaultAsync(l => l.Id == leaderId && l.Status);
         }

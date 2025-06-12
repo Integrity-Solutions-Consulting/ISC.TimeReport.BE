@@ -7,7 +7,7 @@ using isc.time.report.be.application.Interfaces.Service.Auth;
 using isc.time.report.be.application.Interfaces.Service.Customers;
 using isc.time.report.be.application.Interfaces.Service.Leaders;
 using isc.time.report.be.application.Services.Auth;
-using isc.time.report.be.application.Services.Customer;
+using isc.time.report.be.application.Services.Clients;
 using isc.time.report.be.application.Interfaces.Service.Users;
 using isc.time.report.be.application.Services.Users;
 using isc.time.report.be.application.Services.Leaders;
@@ -30,7 +30,7 @@ namespace isc.time.report.be.application.IOC
             services.AddSingleton<JWTUtils>();
 
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IClientService, ClientService>();
             services.AddScoped<ILeaderService, LeaderService>();
             services.AddScoped<IPersonService, PersonService>();
             services.AddScoped<IUserServices, UserServices>();

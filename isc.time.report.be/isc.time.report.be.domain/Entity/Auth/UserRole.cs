@@ -7,13 +7,12 @@ using System.Threading.Tasks;
 
 namespace isc.time.report.be.domain.Entity.Auth
 {
-    public class UsersRols : BaseEntity
+    public class UserRole : BaseEntity
     {
-        public int UsersId { get; set; }
+        public int UserID { get; set; }
         public User User { get; set; }
-
-        public int RolsId { get; set; }
-        public Rols Rols { get; set; }
-
+        public int RoleID { get; set; }
+        public Role Role { get; set; }
     }
+
 }

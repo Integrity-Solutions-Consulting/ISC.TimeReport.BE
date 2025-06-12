@@ -1,6 +1,6 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.Auth;
 using isc.time.report.be.domain.Entity.Auth;
-using isc.time.report.be.domain.Entity.Menu;
+using isc.time.report.be.domain.Entity.Modules;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -19,41 +19,84 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
         {
             _dbContext = databaseContext;
         }
-
-        public async Task<User> GetUserByUsername(string username)
+        /// <summary>
+        /// ESTE SI SE USA PARA ALGO
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        public async Task<User> GetUserAndRoleByUsername(string username)
         {
             var user = await _dbContext.Users
-                .Include(u => u.UsersRols)
-                    .ThenInclude(ur => ur.Rols)
-                .FirstOrDefaultAsync(u => u.email == username);
+                .Include(u => u.UserRole)
+                    .ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(u => u.Username == username);
 
             return user;
         }
-
-        public async Task<User> CreateUser(User user)
+        /// <summary>
+        /// SI SE USA
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="RolesId"></param>
+        /// <returns></returns>
+        public async Task<User> CreateUser(User user, List<int> RolesId)
         {
             user.CreationDate = DateTime.Now;
             user.ModificationDate = null;
             user.Status = true;
+
+
+            if (user.UserRole == null)
+            {
+                user.UserRole = new List<UserRole>();
+            }
+
+            foreach (var roleId in RolesId)
+            {
+                user.UserRole.Add(new UserRole
+                {
+                    UserID = user.Id,
+                    RoleID = roleId
+                });
+            }
+
             await _dbContext.Users.AddAsync(user);
-
-            //Aqui no faltaria un manejo de errores antes de guardar?
-
 
             await _dbContext.SaveChangesAsync();
 
-            return user;
+            var userRegistrado = await _dbContext.Users.FindAsync(user.Id);
+
+            return userRegistrado;
+        }
+        /// <summary>
+        /// SI SE USA
+        /// </summary>
+        /// <param name="RolesId"></param>
+        /// <returns></returns>
+        public async Task<List<Role>> GetAllRolesByRolesID(List<int> RolesId)
+        {
+            if (RolesId == null || !RolesId.Any())
+            {
+                return new List<Role>();
+            }
+
+            var rolesList = await _dbContext.Roles
+                .Where(r => RolesId.Contains(r.Id))
+                .ToListAsync();
+
+            return rolesList;
         }
 
-
-        // NO SE USA AUN
-        public async Task UpdateUserLastLogin(int userId)
+        /// <summary>
+        /// SI SE USA PARA ALGO
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task UpdateUserLastLoginByID(int userId)
         {
             var user = await _dbContext.Users.FindAsync(userId);
 
-            user.ModificationDate = DateTime.Now;
-
-            //user.LastLogin = DateTime.Now;
+            user.LastLogin = DateTime.Now;
 
             _dbContext.Users.Update(user);
 
@@ -65,20 +108,20 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
             return await _dbContext.Users.FindAsync(userId);
         }
 
-        public async Task<List<Rols>> GetAllRols()
+        public async Task<List<Role>> GetAllRols()
         {
-            var rols = await _dbContext.Rols.ToListAsync();
+            var rols = await _dbContext.Roles.ToListAsync();
 
             return rols;
         }
 
-        public async Task<List<Menu>> GetMenusByUsername(string username)
+        public async Task<List<Module>> GetMenusByUsername(string username)
         {
             var menus = await _dbContext.Users
-                .Where(u => u.email == username)
-                .SelectMany(u => u.UsersRols) // accedemos a los roles del usuario
-                .SelectMany(ur => ur.Rols.MenuRols) // accedemos a los menús de esos roles
-                .Select(mr => mr.Menu) // obtenemos el menú
+                .Where(u => u.Username == username)
+                .SelectMany(u => u.UserRole) // accedemos a los roles del usuario
+                .SelectMany(ur => ur.Role.RoleModule) // accedemos a los menús de esos roles
+                .Select(mr => mr.Module) // obtenemos el menú
                 .Distinct() // evitamos duplicados
                 .ToListAsync();
 

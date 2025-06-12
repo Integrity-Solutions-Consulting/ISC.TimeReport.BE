@@ -1,5 +1,5 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.Customers;
-using isc.time.report.be.application.Services.Customer;
+using isc.time.report.be.application.Services.Clients;
 using isc.time.report.be.domain.Models.Dto;
 using isc.time.report.be.domain.Models.Request.Customers;
 using isc.time.report.be.domain.Models.Response.Customers;
@@ -14,8 +14,8 @@ namespace isc.time.report.be.api.Controllers.v1.Customers
     [Route("api/customer")]
     public class CustomerController : ControllerBase
     {
-        private readonly ICustomerService customerService;
-        public CustomerController(ICustomerService customerService)
+        private readonly IClientService customerService;
+        public CustomerController(IClientService customerService)
         {
             this.customerService = customerService;
         }

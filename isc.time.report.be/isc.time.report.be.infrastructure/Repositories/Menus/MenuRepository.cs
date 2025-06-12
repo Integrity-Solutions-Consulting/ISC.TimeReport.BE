@@ -1,7 +1,7 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.Auth;
 using isc.time.report.be.application.Interfaces.Repository.Menus;
 using isc.time.report.be.domain.Entity.Auth;
-using isc.time.report.be.domain.Entity.Menu;
+using isc.time.report.be.domain.Entity.Modules;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -21,80 +21,85 @@ namespace isc.time.report.be.infrastructure.Repositories.Menus
             _dbContext = databaseContext;
         }
 
-        public async Task<List<Menu>> GetAllMenusAsync()
+        public async Task<List<Module>> GetAllMenusAsync()
         {
-            return await _dbContext.Menu
+            return await _dbContext.Modules
                 .Where(m => m.Status)
-                .Select(m => new Menu
+                .Select(m => new Module
                 {
                     Id = m.Id,
-                    NombreMenu = m.NombreMenu,
-                    RutaMenu = m.RutaMenu
+                    ModuleName = m.ModuleName,
+                    ModulePath = m.ModulePath
                 })
                 .ToListAsync();
         }
 
-        public async Task<List<Menu>> GetAllMenusDetailAsync()
+        public async Task<List<Module>> GetAllMenusDetailAsync()
         {
-            return await _dbContext.Menu.ToListAsync();
+            return await _dbContext.Modules.ToListAsync();
         }
-
-        public async Task<List<Menu>> GetAllMenusByUserIdDetailsAsync(int userId)
+        /// <summary>
+        /// ESTE SI HACE COSAS
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<List<Module>> GetAllModulesByUserID(int userId)
         {
-            // Asegúrate de incluir las colecciones necesarias para navegar la relación
             return await _dbContext.Users
                 .Where(u => u.Id == userId)
-                .Include(u => u.UsersRols) // Incluye la tabla intermedia UserRole
-                    .ThenInclude(ur => ur.Rols) // Luego incluye el Role
-                        .ThenInclude(r => r.MenuRols) // Luego incluye la tabla intermedia MenuRole
-                            .ThenInclude(mr => mr.Menu) // Finalmente incluye el Menu
-                .SelectMany(u => u.UsersRols) // Accede a los roles del usuario
-                .Select(ur => ur.Rols)      // Obtiene el objeto Role
-                .SelectMany(r => r.MenuRols) // Accede a los MenuRoles de ese rol
-                .Select(mr => mr.Menu)      // Obtiene el objeto Menu
+                .Include(u => u.UserRole) // Incluye la tabla intermedia UserRole
+                    .ThenInclude(ur => ur.Role) // Luego incluye el Role
+                        .ThenInclude(r => r.RoleModule) // Luego incluye la tabla intermedia MenuRole
+                            .ThenInclude(mr => mr.Module) // Finalmente incluye el Modules
+                .SelectMany(u => u.UserRole) // Accede a los roles del usuario
+                .Select(ur => ur.Role)      // Obtiene el objeto Role
+                .SelectMany(r => r.RoleModule) // Accede a los MenuRoles de ese rol
+                .Select(mr => mr.Module)      // Obtiene el objeto Modules
                 .Distinct()                 // ¡Importante para evitar menús duplicados!
-                .Select(m => new Menu
+                .Select(m => new Module
                 {
                     Id = m.Id,
-                    NombreMenu = m.NombreMenu,
-                    RutaMenu = m.RutaMenu
+                    ModuleName = m.ModuleName,
+                    ModulePath = m.ModulePath,
+                    Icon = m.Icon,
+                    DisplayOrder = m.DisplayOrder,
                 })
                 .ToListAsync();
         }
 
-        public async Task<Menu?> GetMenuByIdAsync(int id)
+        public async Task<Module?> GetMenuByIdAsync(int id)
         {
-            return await _dbContext.Menu
+            return await _dbContext.Modules
                 .Where(m => m.Id == id)
-                .Select(m => new Menu
+                .Select(m => new Module
                 {
                     Id = m.Id,
-                    NombreMenu = m.NombreMenu,
-                    RutaMenu = m.RutaMenu
+                    ModuleName = m.ModuleName,
+                    ModulePath = m.ModulePath
                 })
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<Menu> CreateMenuAsync(Menu menu)
+        public async Task<Module> CreateMenuAsync(Module menu)
         {
 
             menu.CreationDate = DateTime.Now;
             menu.ModificationDate = null;
             menu.Status = true;
-            await _dbContext.Menu.AddAsync(menu);
+            await _dbContext.Modules.AddAsync(menu);
 
-            _dbContext.Menu.Add(menu);
+            _dbContext.Modules.Add(menu);
             await _dbContext.SaveChangesAsync();
             return menu;
         }
 
-        public async Task<bool> UpdateMenuAsync(Menu updatedMenu)
+        public async Task<bool> UpdateMenuAsync(Module updatedMenu)
         {
-            var existingMenu = await _dbContext.Menu.FindAsync(updatedMenu.Id);
+            var existingMenu = await _dbContext.Modules.FindAsync(updatedMenu.Id);
             if (existingMenu == null) return false;
 
-            existingMenu.NombreMenu = updatedMenu.NombreMenu;
-            existingMenu.RutaMenu = updatedMenu.RutaMenu;
+            existingMenu.ModuleName = updatedMenu.ModuleName;
+            existingMenu.ModulePath = updatedMenu.ModulePath;
             existingMenu.CreationDate = DateTime.UtcNow;
             existingMenu.ModificationDate = updatedMenu.ModificationDate;
 
@@ -104,7 +109,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Menus
 
         public async Task<bool> InactivateMenuAsync(int id)
         {
-            var menu = await _dbContext.Menu.FindAsync(id);
+            var menu = await _dbContext.Modules.FindAsync(id);
             if (menu == null) return false;
 
             menu.Status = false;
@@ -115,7 +120,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Menus
 
         public async Task<bool> ActivateMenuAsync(int id)
         {
-            var menu = await _dbContext.Menu.FindAsync(id);
+            var menu = await _dbContext.Modules.FindAsync(id);
             if (menu == null) return false;
 
             menu.Status = true;
@@ -124,24 +129,24 @@ namespace isc.time.report.be.infrastructure.Repositories.Menus
             return true;
         }
 
-        public async Task<List<Menu>> GetMenuByRolIdAsync(int rolId)
+        public async Task<List<Module>> GetMenuByRolIdAsync(int rolId)
         {
 
-            var menus = await _dbContext.Menu_Rols
-                .Where(mr => mr.RolsId == rolId)
-                .Select(mr => mr.Menu)
+            var menus = await _dbContext.RoleModules
+                .Where(mr => mr.RoleID == rolId)
+                .Select(mr => mr.Module)
                 .ToListAsync();
 
             return menus;
         }
 
-        public async Task<List<Menu>> GetMenusByUserId(int UserId)
+        public async Task<List<Module>> GetMenusByUserId(int UserId)
         {
             var menus = await _dbContext.Users
                 .Where(u => u.Id == UserId)
-                .SelectMany(u => u.UsersRols) // accedemos a los roles del usuario
-                .SelectMany(ur => ur.Rols.MenuRols) // accedemos a los menús de esos roles
-                .Select(mr => mr.Menu) // obtenemos el menú
+                .SelectMany(u => u.UserRole) // accedemos a los roles del usuario
+                .SelectMany(ur => ur.Role.RoleModule) // accedemos a los menús de esos roles
+                .Select(mr => mr.Module) // obtenemos el menú
                 .Distinct() // evitamos duplicados
                 .ToListAsync();
 

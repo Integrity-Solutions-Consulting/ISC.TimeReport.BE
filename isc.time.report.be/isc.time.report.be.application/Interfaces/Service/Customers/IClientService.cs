@@ -8,7 +8,7 @@ using isc.time.report.be.domain.Models.Response.Customers;
 
 namespace isc.time.report.be.application.Interfaces.Service.Customers
 {
-    public interface ICustomerService
+    public interface IClientService
     {
         public Task<CreateCustomerResponse> Create(CreateCustomerRequest customerRequest);
 

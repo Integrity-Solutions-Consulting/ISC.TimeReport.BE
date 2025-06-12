@@ -1,4 +1,4 @@
-﻿using isc.time.report.be.domain.Entity.Menu;
+﻿using isc.time.report.be.domain.Entity.Modules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ namespace isc.time.report.be.domain.Models.Response.Menus
     public class GetAllUserMenusResponse
     {
         public int Id { get; set; }
-        public string NombreMenu {  get; set; }
-        public string RutaMenu { get; set; }
+        public string ModuleName {  get; set; }
+        public string ModulePath { get; set; }
     }
 }

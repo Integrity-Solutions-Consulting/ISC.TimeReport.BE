@@ -29,7 +29,7 @@ namespace isc.time.report.be.infrastructure.IOC
         public static IServiceCollection AddInfraestructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<IAuthRepository, AuthRepository>();
-            services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<ILeaderRepository, LeaderRepository>();
             services.AddScoped<IPersonRepository, PersonRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
