@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using isc.time.report.be.domain.Models.Response.Shared;
 
-namespace isc.time.report.be.domain.Models.Request.Customers
+namespace isc.time.report.be.domain.Models.Response.Customers
 {
     public class UpdateRequest
     {

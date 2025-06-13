@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace isc.time.report.be.domain.Models.Request.Leaders
+namespace isc.time.report.be.domain.Models.Response.Leaders
 {
     public class CreateLeaderWithPersonRequest
     {

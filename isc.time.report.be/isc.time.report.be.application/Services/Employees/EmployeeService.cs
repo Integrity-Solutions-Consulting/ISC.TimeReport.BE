@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using isc.time.report.be.application.Interfaces.Repository.Employees;
 using isc.time.report.be.application.Interfaces.Repository.Persons;
-using isc.time.report.be.domain.Models.Request.Employees;
 using isc.time.report.be.domain.Models.Response.Employees;
 using entityPerson = isc.time.report.be.domain.Entity.Persons;
 using entityEmployee = isc.time.report.be.domain.Entity.Employees;
@@ -59,6 +58,36 @@ namespace isc.time.report.be.application.Services.Employees
             await EmployeeRepository.CreateEmployee(newEmployee);
 
             return new CreateEmployeeResponse();
+        }
+        public async Task<List<GetEmployeeResponse>> GetAll()
+        {
+            var employees = await EmployeeRepository.GetAllEmployees();
+            
+            return employees
+                .Select(x => new GetEmployeeResponse 
+                {
+                    Id = x.Id,
+                    GenderId = x.Person.GenderID,
+                    NationalityId = x.Person.NationalityId,
+                    IdentificationTypeId = x.Person.IdentificationTypeId,
+                    IdentificationNumber = x.Person.IdentificationNumber,
+                    PersonType = x.Person.PersonType,
+                    FirstName = x.Person.FirstName,
+                    LastName = x.Person.LastName,
+                    BirthDate = x.Person.BirthDate,
+                    Email = x.Person.Email,
+                    Phone = x.Person.Phone,
+                    Address = x.Person.Address,
+                    PositionID = x.PositionID,
+                    EmployeeCode = x.EmployeeCode,
+                    HireDate = x.HireDate,
+                    TerminationDate = x.TerminationDate,
+                    ContractType = x.ContractType,
+                    Department = x.Department,
+                    CorporateEmail = x.CorporateEmail,
+                    Salary = x.Salary,
+
+                }).ToList();
         }
     }
 }

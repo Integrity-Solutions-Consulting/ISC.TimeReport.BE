@@ -1,5 +1,5 @@
 ﻿using isc.time.report.be.domain.Entity.Auth;
-using isc.time.report.be.domain.Models.Request.Users;
+using isc.time.report.be.domain.Models.Response.Users;
 using isc.time.report.be.domain.Models.Response.Users;
 using System;
 using System.Collections.Generic;

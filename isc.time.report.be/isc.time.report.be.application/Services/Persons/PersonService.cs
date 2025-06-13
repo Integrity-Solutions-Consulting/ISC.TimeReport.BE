@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using isc.time.report.be.application.Interfaces.Repository.Persons;
 using entityPerson = isc.time.report.be.domain.Entity.Persons;
 using isc.time.report.be.domain.Models.Response.Persons;
-using isc.time.report.be.domain.Models.Request.Persons;
+using isc.time.report.be.domain.Models.Response.Persons;
 using isc.time.report.be.application.Interfaces.Service.Persons;
 
 namespace isc.time.report.be.application.Services.Person
