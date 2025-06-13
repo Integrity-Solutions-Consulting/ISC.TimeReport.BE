@@ -20,6 +20,8 @@ using isc.time.report.be.application.Interfaces.Service.Persons;
 using isc.time.report.be.application.Services.Person;
 using isc.time.report.be.application.Interfaces.Service.Employees;
 using isc.time.report.be.application.Services.Employees;
+using isc.time.report.be.application.Interfaces.Service.Projects;
+using isc.time.report.be.application.Services.Projects;
 
 namespace isc.time.report.be.application.IOC
 {
@@ -38,6 +40,7 @@ namespace isc.time.report.be.application.IOC
             services.AddScoped<IPersonService, PersonService>();
             services.AddScoped<IUserServices, UserServices>();
             services.AddScoped<IMenuService, MenuService>();
+            services.AddScoped<IProjectService, ProjectService>();
 
             return services;
         }
