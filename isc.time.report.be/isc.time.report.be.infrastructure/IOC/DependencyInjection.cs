@@ -4,6 +4,7 @@ using isc.time.report.be.application.Interfaces.Repository.Employees;
 using isc.time.report.be.application.Interfaces.Repository.Leaders;
 using isc.time.report.be.application.Interfaces.Repository.Menus;
 using isc.time.report.be.application.Interfaces.Repository.Persons;
+using isc.time.report.be.application.Interfaces.Repository.Projects;
 using isc.time.report.be.application.Interfaces.Repository.Users;
 using isc.time.report.be.infrastructure.Database;
 using isc.time.report.be.infrastructure.Repositories.Auth;
@@ -12,6 +13,7 @@ using isc.time.report.be.infrastructure.Repositories.Employees;
 using isc.time.report.be.infrastructure.Repositories.Leaders;
 using isc.time.report.be.infrastructure.Repositories.Menus;
 using isc.time.report.be.infrastructure.Repositories.Persons;
+using isc.time.report.be.infrastructure.Repositories.Projects;
 using isc.time.report.be.infrastructure.Repositories.Users;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +39,7 @@ namespace isc.time.report.be.infrastructure.IOC
             services.AddScoped<IPersonRepository, PersonRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IMenuRepository, MenuRepository>();
+            services.AddScoped<IProjectRepository, ProjectRepository>();
 
             return services;
         }

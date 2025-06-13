@@ -10,7 +10,7 @@ namespace isc.time.report.be.api.Controllers.v1.Persons
 {
     [ApiExplorerSettings(GroupName = "v1")]
     [ApiController]
-    [Route("api/person")]
+    [Route("api/[controller]")]
     public class PersonController : ControllerBase
     {
         private readonly IPersonService _personService;

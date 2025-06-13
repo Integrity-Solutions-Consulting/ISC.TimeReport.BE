@@ -181,7 +181,7 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.Id).HasColumnName("ProjectID");
 
                 entity.Property(e => e.ClientID).HasColumnName("ClientID");
-                entity.Property(e => e.ProjectStatusID).HasColumnName("status_id");
+                entity.Property(e => e.ProjectStatusID).HasColumnName("ProjectStatusID");
                 entity.Property(e => e.Code).HasColumnName("code");
                 entity.Property(e => e.Name).HasColumnName("name");
                 entity.Property(e => e.Description).HasColumnName("description");

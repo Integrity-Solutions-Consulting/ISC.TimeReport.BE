@@ -9,7 +9,7 @@ namespace isc.time.report.be.domain.Entity.Shared
     public abstract class BaseEntity
     {
         public int Id { get; set; }
-        public bool Status { get; set; }
+        public bool Status { get; set; } 
         public string CreationUser { get; set; } = "SYSTEM";
         public string? ModificationUser { get; set; }
         public DateTime CreationDate { get; set; } = DateTime.Now;
