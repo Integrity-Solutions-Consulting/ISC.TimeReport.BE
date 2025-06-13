@@ -7,7 +7,7 @@ using isc.time.report.be.domain.Entity.Genders;
 using isc.time.report.be.domain.Entity.IdentificationTypes;
 using isc.time.report.be.domain.Entity.Nationalities;
 
-namespace isc.time.report.be.domain.Models.Request.Persons
+namespace isc.time.report.be.domain.Models.Response.Persons
 {
     public class CreatePersonRequest
     {

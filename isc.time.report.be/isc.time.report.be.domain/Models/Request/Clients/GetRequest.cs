@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace isc.time.report.be.domain.Models.Request.Clients
+namespace isc.time.report.be.domain.Models.Response.Clients
 {
     public class GetRequest
     {

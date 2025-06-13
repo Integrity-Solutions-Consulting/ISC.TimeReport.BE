@@ -1,10 +1,7 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.Employees;
 using isc.time.report.be.application.Interfaces.Service.Employees;
 using isc.time.report.be.domain.Models.Dto;
-using isc.time.report.be.domain.Models.Request.Employees;
-using isc.time.report.be.domain.Models.Request.Leaders;
 using isc.time.report.be.domain.Models.Response.Employees;
-using isc.time.report.be.domain.Models.Response.Leaders;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isc.time.report.be.api.Controllers.v1.Employees
@@ -19,6 +16,13 @@ namespace isc.time.report.be.api.Controllers.v1.Employees
         public EmployeeController(IEmployeeService employeeService)
         {
             this._employeeService = employeeService;
+        }
+
+        [HttpGet("get")]
+        public async Task<ActionResult<SuccessResponse<GetEmployeeResponse>>> GetAll()
+        {
+            var leader = await _employeeService.GetAll();
+            return Ok(leader);
         }
 
         [HttpPost("create")]

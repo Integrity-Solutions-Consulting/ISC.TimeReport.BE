@@ -10,5 +10,6 @@ namespace isc.time.report.be.application.Interfaces.Repository.Employees
     public interface IEmployeeRepository
     {
         public Task<Employee> CreateEmployee(Employee employee);
+        public Task<List<Employee>> GetAllEmployees();
     }
 }

@@ -1,7 +1,7 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.Clients;
 using isc.time.report.be.application.Services.Clients;
 using isc.time.report.be.domain.Models.Dto;
-using isc.time.report.be.domain.Models.Request.Clients;
+using isc.time.report.be.domain.Models.Response.Clients;
 using isc.time.report.be.domain.Models.Response.Clients;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

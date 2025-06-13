@@ -4,7 +4,7 @@ using isc.time.report.be.application.Interfaces.Service.Auth;
 using isc.time.report.be.application.Utils.Auth;
 using isc.time.report.be.domain.Entity.Auth;
 using isc.time.report.be.domain.Exceptions;
-using isc.time.report.be.domain.Models.Request.Auth;
+using isc.time.report.be.domain.Models.Response.Auth;
 using isc.time.report.be.domain.Models.Response.Auth;
 using isc.time.report.be.domain.Models.Response.Menus;
 using isc.time.report.be.domain.Models.Response.Users;

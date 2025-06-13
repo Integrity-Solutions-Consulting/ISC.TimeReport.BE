@@ -8,6 +8,7 @@ using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Persons;
 using isc.time.report.be.infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace isc.time.report.be.infrastructure.Repositories.Employees
 {
@@ -30,6 +31,14 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
             await _dbContext.Employees.AddAsync(employee);
             await _dbContext.SaveChangesAsync();
             return employee;
+        }
+        public async Task<List<Employee>> GetAllEmployees()
+        {
+            return await _dbContext.Employees
+                .Where(e => e.Status)
+                .Include(e => e.Person)
+                .Include(e => e.Position)
+                .ToListAsync();
         }
     }
 }

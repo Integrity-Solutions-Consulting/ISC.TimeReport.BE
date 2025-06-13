@@ -3,7 +3,7 @@ using isc.time.report.be.application.Interfaces.Repository.Users;
 using isc.time.report.be.application.Interfaces.Service.Users;
 using isc.time.report.be.application.Utils.Auth;
 using isc.time.report.be.domain.Entity.Auth;
-using isc.time.report.be.domain.Models.Request.Users;
+using isc.time.report.be.domain.Models.Response.Users;
 using isc.time.report.be.domain.Models.Response.Users;
 using System;
 using System.Collections.Generic;

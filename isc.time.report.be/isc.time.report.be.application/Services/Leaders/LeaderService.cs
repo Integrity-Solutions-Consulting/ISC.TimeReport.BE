@@ -8,9 +8,9 @@ using isc.time.report.be.application.Interfaces.Repository.Leaders;
 using isc.time.report.be.application.Interfaces.Service.Leaders;
 using isc.time.report.be.domain.Entity.Leaders;
 using entityPerson = isc.time.report.be.domain.Entity.Persons;
-using isc.time.report.be.domain.Models.Request.Leaders;
 using isc.time.report.be.domain.Models.Response.Leaders;
-using isc.time.report.be.domain.Models.Request.Persons;
+using isc.time.report.be.domain.Models.Response.Leaders;
+using isc.time.report.be.domain.Models.Response.Persons;
 
 namespace isc.time.report.be.application.Services.Leaders
 {
