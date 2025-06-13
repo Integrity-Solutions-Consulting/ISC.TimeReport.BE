@@ -130,6 +130,11 @@ namespace isc.time.report.be.application.Services.Projects
             projectGet.ActualEndDate = projectParaUpdate.ActualEndDate;
             projectGet.Budget = projectParaUpdate.Budget;
 
+            if (projectGet.StartDate < projectGet.EndDate)
+            {
+                throw new ClientFaultException("No puede ingresar una fecha de Inicio anterior a la fecha de fin.", 401);
+            }
+
             var projectUpdated = await projectRepository.UpdateProjectAsync(projectGet);
 
             return new UpdateProjectResponse

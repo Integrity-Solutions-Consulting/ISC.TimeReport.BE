@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace isc.time.report.be.domain.Models.Response.Customers
+namespace isc.time.report.be.domain.Models.Response.Persons
 {
-    public class UpdateResponse
+    public class GetPersonResponseXXX
     {
+        public List<GetPersonListResponseXXX> Persons { get; set; }
         public bool Success { get; set; }
         public string Message { get; set; }
     }

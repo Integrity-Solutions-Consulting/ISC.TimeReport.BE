@@ -20,7 +20,7 @@ namespace isc.time.report.be.application.Services.Person
             PersonRepository = personRepository;
         }
         
-        public async Task<CreatePersonResponse> Create(CreatePersonRequest createRequest)
+        public async Task<CreatePersonResponseXXX> Create(CreatePersonRequest createRequest)
         {
             var newPerson = new entityPerson.Person
             {
@@ -37,14 +37,14 @@ namespace isc.time.report.be.application.Services.Person
                 //Address = createRequest.Address,
             };
             await PersonRepository.CreatePerson(newPerson);
-            return new CreatePersonResponse();
+            return new CreatePersonResponseXXX();
         }
 
-        public async Task<List<GetPersonListResponse>> GetAll()
+        public async Task<List<GetPersonListResponseXXX>> GetAll()
         {
             var person = await PersonRepository.GetPersons();
 
-            return person.Select(p => new GetPersonListResponse
+            return person.Select(p => new GetPersonListResponseXXX
             {
                 //Id = p.Id,
                 //GenderId = p.GenderId,
@@ -61,13 +61,13 @@ namespace isc.time.report.be.application.Services.Person
             }).ToList();
         }
 
-        public async Task<UpdatePersonResponse> Update(UpdatePersonRequest request)
+        public async Task<UpdatePersonResponseXXX> Update(UpdatePersonRequest request)
         {
             var person = await PersonRepository.GetPersonById(request.Id);
 
             if (person == null)
             {
-                return new UpdatePersonResponse
+                return new UpdatePersonResponseXXX
                 {
                     Success = false,
                     Message = "Persona no Encontrada"
@@ -88,7 +88,7 @@ namespace isc.time.report.be.application.Services.Person
 
             await PersonRepository.UpdatePerson(person);
 
-            return new UpdatePersonResponse
+            return new UpdatePersonResponseXXX
             {
                 Success = true,
                 Message = "Persona actualizada"

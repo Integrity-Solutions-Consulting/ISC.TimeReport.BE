@@ -4,10 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using isc.time.report.be.application.Interfaces.Service.Auth;
-using isc.time.report.be.application.Interfaces.Service.Customers;
 using isc.time.report.be.application.Interfaces.Service.Leaders;
 using isc.time.report.be.application.Services.Auth;
-using isc.time.report.be.application.Services.Clients;
 using isc.time.report.be.application.Interfaces.Service.Users;
 using isc.time.report.be.application.Services.Users;
 using isc.time.report.be.application.Services.Leaders;
@@ -34,7 +32,6 @@ namespace isc.time.report.be.application.IOC
             services.AddSingleton<JWTUtils>();
 
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IClientService, ClientService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<ILeaderService, LeaderService>();
             services.AddScoped<IPersonService, PersonService>();

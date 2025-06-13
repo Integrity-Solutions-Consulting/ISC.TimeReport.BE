@@ -21,22 +21,22 @@ namespace isc.time.report.be.api.Controllers.v1.Persons
         }
 
         [HttpGet("get")]
-        public async Task<ActionResult<SuccessResponse<GetPersonListResponse>>> GetAll()
+        public async Task<ActionResult<SuccessResponse<GetPersonListResponseXXX>>> GetAll()
         {
             var person = await _personService.GetAll();
             return Ok(person);
         }
 
         [HttpPost("create")]
-        public async Task<ActionResult<SuccessResponse<CreatePersonResponse>>> CreatePerson(CreatePersonRequest request)
+        public async Task<ActionResult<SuccessResponse<CreatePersonResponseXXX>>> CreatePerson(CreatePersonRequest request)
         {
             var person = await _personService.Create(request);
 
-            return Ok(new SuccessResponse<CreatePersonResponse>());
+            return Ok(new SuccessResponse<CreatePersonResponseXXX>());
         }
 
         [HttpPut("update/{id}")]
-        public async Task<ActionResult<SuccessResponse<UpdatePersonResponse>>> UpdateLeader(int id, UpdatePersonRequest updatePersonRequest)
+        public async Task<ActionResult<SuccessResponse<UpdatePersonResponseXXX>>> UpdateLeader(int id, UpdatePersonRequest updatePersonRequest)
         {
             if (id != updatePersonRequest.Id)
             {

@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace isc.time.report.be.domain.Models.Response.Persons
 {
-    public class CreatePersonResponse
+    public class GetPersonListResponseXXX
     {
+        public int Id { get; set; }
         public int GenderId { get; set; }
         public int NationalityId { get; set; }
         public int IdentificationTypeId { get; set; }
