@@ -1,6 +1,7 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.Persons;
 using isc.time.report.be.application.Interfaces.Service.Projects;
-using isc.time.report.be.application.Services.Person;
+using isc.time.report.be.application.Services.Persons;
+using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Models.Dto;
 using isc.time.report.be.domain.Models.Request.Projects;
 using isc.time.report.be.domain.Models.Response.Persons;
@@ -23,10 +24,10 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
         }
 
         [HttpGet("GetAllProjects")]
-        public async Task<ActionResult<SuccessResponse<List<GetAllProjectsResponse>>>> GetAllProjects()
+        public async Task<ActionResult<SuccessResponse<PagedResult<GetAllProjectsResponse>>>> GetAllProjects([FromQuery] PaginationParams paginationParams)
         {
-            var projects = await _projectService.GetAllProjects();
-            return Ok(projects);
+            var projects = await _projectService.GetAllProjectsPaginated(paginationParams);
+            return Ok((projects));
         }
 
         [HttpGet("GetProjectByID/{id}")]

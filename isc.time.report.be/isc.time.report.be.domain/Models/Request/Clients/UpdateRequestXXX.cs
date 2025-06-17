@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using isc.time.report.be.domain.Models.Response.Shared;
 
 namespace isc.time.report.be.domain.Models.Response.Clients
 {
-    public class CustomerListResponse
+    public class UpdateRequestXXX
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string IdentificationType { get; set; }
         public string IdentificationNumber { get; set; }
         public string CommercialName { get; set; }

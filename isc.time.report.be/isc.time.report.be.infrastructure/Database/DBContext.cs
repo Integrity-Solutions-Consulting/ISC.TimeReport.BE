@@ -178,7 +178,7 @@ namespace isc.time.report.be.infrastructure.Database
             {
                 entity.ToTable("Projects");
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Id).HasColumnName("ProjectID");
+                entity.Property(e => e.Id).HasColumnName("Id");
 
                 entity.Property(e => e.ClientID).HasColumnName("ClientID");
                 entity.Property(e => e.ProjectStatusID).HasColumnName("ProjectStatusID");
@@ -263,7 +263,7 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.HasKey(e => new { e.EmployeeID, e.ProjectID });
 
                 entity.Property(e => e.EmployeeID).HasColumnName("EmployeeID");
-                entity.Property(e => e.ProjectID).HasColumnName("ProjectID");
+                entity.Property(e => e.ProjectID).HasColumnName("Id");
                 entity.Property(e => e.AssignmentDate).HasColumnName("assignment_date");
                 entity.Property(e => e.AssignmentEndDate).HasColumnName("assignment_end_date");
 
@@ -321,7 +321,7 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id).HasColumnName("DailyActivityID");
                 entity.Property(e => e.EmployeeID).HasColumnName("EmployeeID");
-                entity.Property(e => e.ProjectID).HasColumnName("ProjectID");
+                entity.Property(e => e.ProjectID).HasColumnName("Id");
                 entity.Property(e => e.ActivityTypeID).HasColumnName("ActivityTypeID");
                 entity.Property(e => e.HoursQuantity).HasColumnName("HoursQuantity");
                 entity.Property(e => e.ActivityDate).HasColumnName("activity_date");
@@ -350,7 +350,7 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id).HasColumnName("LeaderID");
                 entity.Property(e => e.PersonID).HasColumnName("PersonID");
-                entity.Property(e => e.ProjectID).HasColumnName("ProjectID");
+                entity.Property(e => e.ProjectID).HasColumnName("Id");
                 entity.Property(e => e.LeadershipType).HasColumnName("leadership_type");
                 entity.Property(e => e.StartDate).HasColumnName("start_date");
                 entity.Property(e => e.EndDate).HasColumnName("end_date");

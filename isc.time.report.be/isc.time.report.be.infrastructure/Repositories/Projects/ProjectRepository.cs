@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using isc.time.report.be.application.Interfaces.Repository.Projects;
 using isc.time.report.be.domain.Entity.Projects;
+using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.infrastructure.Database;
+using isc.time.report.be.infrastructure.Utils.Pagination;
 using Microsoft.EntityFrameworkCore;
 
 namespace isc.time.report.be.infrastructure.Repositories.Projects
@@ -19,9 +21,10 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
             _dbContext = dbContext;
         }
 
-        public async Task<List<Project>> GetAllProjectsAsync()
+        public async Task<PagedResult<Project>> GetAllProjectsPaginatedAsync(PaginationParams paginationParams)
         {
-            return await _dbContext.Projects.ToListAsync();
+            var query = _dbContext.Projects.AsQueryable();
+            return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
         }
 
         public async Task<Project> GetProjectByIDAsync(int projectId)

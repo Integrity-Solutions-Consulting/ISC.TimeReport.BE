@@ -15,11 +15,13 @@ using Microsoft.Extensions.DependencyInjection;
 using isc.time.report.be.application.Interfaces.Service.Menus;
 using isc.time.report.be.application.Services.Menus;
 using isc.time.report.be.application.Interfaces.Service.Persons;
-using isc.time.report.be.application.Services.Person;
+using isc.time.report.be.application.Services.Persons;
 using isc.time.report.be.application.Interfaces.Service.Employees;
 using isc.time.report.be.application.Services.Employees;
 using isc.time.report.be.application.Interfaces.Service.Projects;
 using isc.time.report.be.application.Services.Projects;
+using isc.time.report.be.application.Interfaces.Service.Clients;
+using isc.time.report.be.application.Services.Clients;
 
 namespace isc.time.report.be.application.IOC
 {
@@ -38,6 +40,7 @@ namespace isc.time.report.be.application.IOC
             services.AddScoped<IUserServices, UserServices>();
             services.AddScoped<IMenuService, MenuService>();
             services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<IClientService, ClientService>();
 
             return services;
         }

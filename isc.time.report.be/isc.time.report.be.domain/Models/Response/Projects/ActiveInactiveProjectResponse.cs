@@ -8,7 +8,7 @@ namespace isc.time.report.be.domain.Models.Response.Projects
 {
     public class ActiveInactiveProjectResponse
     {
-        public int ProjectID { get; set; }
+        public int Id { get; set; }
         public int ClientID { get; set; }
         public int ProjectStatusID { get; set; }
         public string Code { get; set; }

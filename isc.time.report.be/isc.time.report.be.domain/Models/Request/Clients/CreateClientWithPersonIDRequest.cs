@@ -1,17 +1,15 @@
-﻿using System;
+﻿using isc.time.report.be.domain.Entity.Persons;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using isc.time.report.be.domain.Entity.Persons;
-using isc.time.report.be.domain.Entity.Shared;
 
-namespace isc.time.report.be.domain.Entity.Clients
+namespace isc.time.report.be.domain.Models.Request.Clients
 {
-    public class Client : BaseEntity
+    public class CreateClientWithPersonIDRequest
     {
         public int? PersonID { get; set; }
-        public Person? Person { get; set; }
         public string? TradeName { get; set; }
         public string? LegalName { get; set; }
     }

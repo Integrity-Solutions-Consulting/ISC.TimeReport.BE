@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace isc.time.report.be.domain.Models.Response.Clients
 {
-    public class GetClientDetail
+    public class UpdateClientResponse
     {
+        public int Id { get; set; }
         public string? TradeName { get; set; }
         public string? LegalName { get; set; }
-        public GetPersonResponse GetPersonResponse { get; set; }
+        public UpdatePersonResponse person { get; set; }
         public bool Status { get; set; }
     }
 }

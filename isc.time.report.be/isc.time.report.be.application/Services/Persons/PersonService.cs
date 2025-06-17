@@ -9,7 +9,7 @@ using isc.time.report.be.domain.Models.Response.Persons;
 using isc.time.report.be.domain.Models.Response.Persons;
 using isc.time.report.be.application.Interfaces.Service.Persons;
 
-namespace isc.time.report.be.application.Services.Person
+namespace isc.time.report.be.application.Services.Persons
 {
     public class PersonService : IPersonService
     {
@@ -20,7 +20,7 @@ namespace isc.time.report.be.application.Services.Person
             PersonRepository = personRepository;
         }
         
-        public async Task<CreatePersonResponseXXX> Create(CreatePersonRequest createRequest)
+        public async Task<CreatePersonResponseXXX> Create(CreatePersonRequestXXX createRequest)
         {
             var newPerson = new entityPerson.Person
             {
@@ -61,7 +61,7 @@ namespace isc.time.report.be.application.Services.Person
             }).ToList();
         }
 
-        public async Task<UpdatePersonResponseXXX> Update(UpdatePersonRequest request)
+        public async Task<UpdatePersonResponseXXX> Update(UpdatePersonRequestXXX request)
         {
             var person = await PersonRepository.GetPersonById(request.Id);
 

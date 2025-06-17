@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using isc.time.report.be.domain.Entity.Genders;
+using isc.time.report.be.domain.Entity.IdentificationTypes;
+using isc.time.report.be.domain.Entity.Nationalities;
 
-namespace isc.time.report.be.domain.Models.Response.Clients
+namespace isc.time.report.be.domain.Models.Response.Persons
 {
-    public class CreateClientWithPersonRequest
+    public class CreatePersonRequestXXX
     {
-        public string TradeName { get; set; }
-        public string LegalName { get; set; }
         public int GenderId { get; set; }
         public int NationalityId { get; set; }
         public int IdentificationTypeId { get; set; }

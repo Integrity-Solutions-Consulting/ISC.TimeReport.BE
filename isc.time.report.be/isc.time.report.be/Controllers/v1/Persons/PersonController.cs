@@ -28,7 +28,7 @@ namespace isc.time.report.be.api.Controllers.v1.Persons
         }
 
         [HttpPost("create")]
-        public async Task<ActionResult<SuccessResponse<CreatePersonResponseXXX>>> CreatePerson(CreatePersonRequest request)
+        public async Task<ActionResult<SuccessResponse<CreatePersonResponseXXX>>> CreatePerson(CreatePersonRequestXXX request)
         {
             var person = await _personService.Create(request);
 
@@ -36,7 +36,7 @@ namespace isc.time.report.be.api.Controllers.v1.Persons
         }
 
         [HttpPut("update/{id}")]
-        public async Task<ActionResult<SuccessResponse<UpdatePersonResponseXXX>>> UpdateLeader(int id, UpdatePersonRequest updatePersonRequest)
+        public async Task<ActionResult<SuccessResponse<UpdatePersonResponseXXX>>> UpdateLeader(int id, UpdatePersonRequestXXX updatePersonRequest)
         {
             if (id != updatePersonRequest.Id)
             {

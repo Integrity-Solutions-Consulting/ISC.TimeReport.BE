@@ -11,9 +11,9 @@ namespace isc.time.report.be.application.Interfaces.Service.Persons
 {
     public interface IPersonService
     {
-        public Task<CreatePersonResponseXXX> Create(CreatePersonRequest personRequest);
+        public Task<CreatePersonResponseXXX> Create(CreatePersonRequestXXX personRequest);
         
         public Task<List<GetPersonListResponseXXX>> GetAll();
-        public Task<UpdatePersonResponseXXX> Update(UpdatePersonRequest updateRequest);
+        public Task<UpdatePersonResponseXXX> Update(UpdatePersonRequestXXX updateRequest);
     }
 }
