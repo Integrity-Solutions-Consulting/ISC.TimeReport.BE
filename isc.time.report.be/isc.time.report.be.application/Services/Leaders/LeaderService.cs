@@ -25,7 +25,7 @@ namespace isc.time.report.be.application.Services.Leaders
 
         /* public async Task<CreateLeaderWithPersonResponse> Create(CreateLeaderWithPersonRequest createRequest)
         {
-            var newPerson = new entityPerson.Person
+            var newPerson = new entityPerson.Persons
             {
                 IdentificationTypeId = createRequest.IdentificationType,
                 IdentificationNumber = createRequest.IdentificationNumber,
@@ -44,7 +44,7 @@ namespace isc.time.report.be.application.Services.Leaders
                 LeaderType = createRequest.LeaderType,
                 ProjectCode = createRequest.ProjectCode,
                 CustomerCode = createRequest.CustomerCode,
-                Person = newPerson
+                Persons = newPerson
             };
             await leaderRepository.CreateLeader(newLeader);
             return new CreateLeaderWithPersonResponse();
@@ -62,16 +62,16 @@ namespace isc.time.report.be.application.Services.Leaders
                     LeaderType = l.LeaderType,
                     ProjectCode = l.ProjectCode,
                     CustomerCode = l.CustomerCode,
-                    IdentificationType = l.Person.IdentificationTypeId,
-                    IdentificationNumber = l.Person.IdentificationNumber,
-                    Names = l.Person.FirstName,
-                    Surnames = l.Person.LastName,
-                    Gender = l.Person.Gender,
-                    CellPhoneNumber = l.Person.CellPhoneNumber,
-                    Position = l.Person.Position,
-                    PersonalEmail = l.Person.PersonalEmail,
-                    CorporateEmail = l.Person.CorporateEmail,
-                    HomeAddress = l.Person.Address,
+                    IdentificationType = l.Persons.IdentificationTypeId,
+                    IdentificationNumber = l.Persons.IdentificationNumber,
+                    Names = l.Persons.FirstName,
+                    Surnames = l.Persons.LastName,
+                    Gender = l.Persons.Gender,
+                    CellPhoneNumber = l.Persons.CellPhoneNumber,
+                    Position = l.Persons.Position,
+                    PersonalEmail = l.Persons.PersonalEmail,
+                    CorporateEmail = l.Persons.CorporateEmail,
+                    HomeAddress = l.Persons.Address,
 
                 }).ToList();
             
@@ -93,18 +93,18 @@ namespace isc.time.report.be.application.Services.Leaders
             leader.ProjectCode = request.ProjectCode;
             leader.CustomerCode = request.CustomerCode;
 
-            if(leader.Person != null)
+            if(leader.Persons != null)
             {
-                leader.Person.IdentificationTypeId = request.IdentificationType;
-                leader.Person.IdentificationNumber = request.IdentificationNumber;
-                leader.Person.FirstName = request.Names;
-                leader.Person.LastName = request.Surnames;
-                leader.Person.Gender = request.Gender;
-                leader.Person.CellPhoneNumber = request.CellPhoneNumber;
-                leader.Person.Position = request.Position;
-                leader.Person.PersonalEmail = request.PersonalEmail;
-                leader.Person.CorporateEmail = request.CorporateEmail;
-                leader.Person.Address = request.HomeAddress;
+                leader.Persons.IdentificationTypeId = request.IdentificationType;
+                leader.Persons.IdentificationNumber = request.IdentificationNumber;
+                leader.Persons.FirstName = request.Names;
+                leader.Persons.LastName = request.Surnames;
+                leader.Persons.Gender = request.Gender;
+                leader.Persons.CellPhoneNumber = request.CellPhoneNumber;
+                leader.Persons.Position = request.Position;
+                leader.Persons.PersonalEmail = request.PersonalEmail;
+                leader.Persons.CorporateEmail = request.CorporateEmail;
+                leader.Persons.Address = request.HomeAddress;
             }
 
             await leaderRepository.UpdateLeader(leader);

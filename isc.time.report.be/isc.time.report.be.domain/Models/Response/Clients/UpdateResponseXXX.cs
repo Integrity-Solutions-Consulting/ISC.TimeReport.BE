@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace isc.time.report.be.domain.Models.Response.Clients
 {
-    public class UpdateResponse
+    public class UpdateResponseXXX
     {
         public bool Success { get; set; }
         public string Message { get; set; }

@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace isc.time.report.be.domain.Models.Request.Persons
+namespace isc.time.report.be.domain.Models.Response.Persons
 {
-    public class UpdatePersonRequest
+    public class UpdatePersonResponse
     {
-        public int? GenderID { get; set; }
-        public int? NationalityId { get; set; }
-        public int? IdentificationTypeId { get; set; }
+        public int Id { get; set; }
+        public int GenderId { get; set; }
+        public int NationalityId { get; set; }
+        public int IdentificationTypeId { get; set; }
         public string IdentificationNumber { get; set; }
         public string PersonType { get; set; }
         public string FirstName { get; set; }
@@ -19,5 +20,6 @@ namespace isc.time.report.be.domain.Models.Request.Persons
         public string? Email { get; set; }
         public string? Phone { get; set; }
         public string? Address { get; set; }
+        public bool Status { get; set; }
     }
 }

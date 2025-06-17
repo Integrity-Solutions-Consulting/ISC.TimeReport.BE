@@ -7,9 +7,9 @@ using isc.time.report.be.domain.Models.Response.Clients;
 
 namespace isc.time.report.be.domain.Models.Response.Clients
 {
-    public class GetResponse
+    public class GetResponseXXX
     {
-        public List<CustomerListResponse> Customers { get; set; }
+        public List<CustomerListResponseXXX> Customers { get; set; }
         public bool Success { get; set; }
         public string Message { get; set; }
     }

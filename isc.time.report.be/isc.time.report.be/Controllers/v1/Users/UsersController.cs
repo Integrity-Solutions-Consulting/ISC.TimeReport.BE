@@ -3,7 +3,6 @@ using isc.time.report.be.application.Interfaces.Service.Users;
 using isc.time.report.be.domain.Entity.Auth;
 using isc.time.report.be.domain.Models.Dto;
 using isc.time.report.be.domain.Models.Response.Users;
-using isc.time.report.be.domain.Models.Response.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

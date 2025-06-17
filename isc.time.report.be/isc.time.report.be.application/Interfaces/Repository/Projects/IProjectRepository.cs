@@ -1,4 +1,5 @@
 ﻿using isc.time.report.be.domain.Entity.Projects;
+using isc.time.report.be.domain.Entity.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace isc.time.report.be.application.Interfaces.Repository.Projects
     public interface IProjectRepository
     {
         Task<Project> CreateProject(Project project);
-        Task<List<Project>> GetAllProjectsAsync();
+        Task<PagedResult<Project>> GetAllProjectsPaginatedAsync(PaginationParams paginationParams);
         Task<Project> GetProjectByIDAsync(int projectId);
         Task<Project> UpdateProjectAsync(Project project);
         Task<Project> InactivateProjectAsync(int projectId);
