@@ -178,7 +178,7 @@ namespace isc.time.report.be.infrastructure.Database
             {
                 entity.ToTable("Projects");
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Id).HasColumnName("Id");
+                entity.Property(e => e.Id).HasColumnName("ProjectID");
 
                 entity.Property(e => e.ClientID).HasColumnName("ClientID");
                 entity.Property(e => e.ProjectStatusID).HasColumnName("ProjectStatusID");
