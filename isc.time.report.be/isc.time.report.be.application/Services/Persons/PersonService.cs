@@ -1,98 +1,79 @@
-﻿using System;
+﻿using AutoMapper;
+using isc.time.report.be.application.Interfaces.Repository.Persons;
+using isc.time.report.be.application.Interfaces.Service.Persons;
+using isc.time.report.be.domain.Entity.Persons;
+using isc.time.report.be.domain.Entity.Shared;
+using isc.time.report.be.domain.Exceptions;
+using isc.time.report.be.domain.Models.Request.Persons;
+using isc.time.report.be.domain.Models.Response.Persons;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using isc.time.report.be.application.Interfaces.Repository.Persons;
 using entityPerson = isc.time.report.be.domain.Entity.Persons;
-using isc.time.report.be.domain.Models.Response.Persons;
-using isc.time.report.be.domain.Models.Response.Persons;
-using isc.time.report.be.application.Interfaces.Service.Persons;
 
 namespace isc.time.report.be.application.Services.Persons
 {
     public class PersonService : IPersonService
     {
-        public readonly IPersonRepository PersonRepository;
+        private readonly IPersonRepository _personRepository;
+        private readonly IMapper _mapper;
 
-        public PersonService(IPersonRepository personRepository)
+        public PersonService(IPersonRepository personRepository, IMapper mapper)
         {
-            PersonRepository = personRepository;
+            _personRepository = personRepository;
+            _mapper = mapper;
         }
-        
-        public async Task<CreatePersonResponseXXX> Create(CreatePersonRequestXXX createRequest)
+
+        public async Task<PagedResult<GetPersonResponse>> GetAllPersonsPaginated(PaginationParams paginationParams)
         {
-            var newPerson = new entityPerson.Person
+            var result = await _personRepository.GetAllPersonsPaginatedAsync(paginationParams);
+            var mapped = _mapper.Map<List<GetPersonResponse>>(result.Items);
+
+            return new PagedResult<GetPersonResponse>
             {
-                //GenderId = createRequest.GenderId,
-                //NationalityId = createRequest.NationalityId,
-                //IdentificationTypeId = createRequest.IdentificationTypeId,
-                //IdentificationNumber = createRequest.IdentificationNumber,
-                //PersonType = createRequest.PersonType,
-                //FirstName = createRequest.FirstName,
-                //LastName = createRequest.LastName,
-                //BirthDate = createRequest.BirthDate,
-                //Email = createRequest.Email,
-                //Phone = createRequest.Phone,
-                //Address = createRequest.Address,
+                Items = mapped,
+                TotalItems = result.TotalItems,
+                PageNumber = result.PageNumber,
+                PageSize = result.PageSize
             };
-            await PersonRepository.CreatePerson(newPerson);
-            return new CreatePersonResponseXXX();
         }
 
-        public async Task<List<GetPersonListResponseXXX>> GetAll()
+        public async Task<GetPersonResponse> GetPersonByID(int personId)
         {
-            var person = await PersonRepository.GetPersons();
-
-            return person.Select(p => new GetPersonListResponseXXX
-            {
-                //Id = p.Id,
-                //GenderId = p.GenderId,
-                //NationalityId = p.NationalityId,
-                //IdentificationTypeId = p.IdentificationTypeId,
-                //IdentificationNumber = p.IdentificationNumber,
-                //PersonType = p.PersonType,
-                //FirstName = p.FirstName,
-                //LastName = p.LastName,
-                //BirthDate= p.BirthDate,
-                //Phone = p.Phone,
-                //Email = p.Email,
-                //Address = p.Address,
-            }).ToList();
+            var person = await _personRepository.GetPersonByIDAsync(personId);
+            return _mapper.Map<GetPersonResponse>(person);
         }
 
-        public async Task<UpdatePersonResponseXXX> Update(UpdatePersonRequestXXX request)
+        public async Task<CreatePersonResponse> CreatePerson(CreatePersonRequest request)
         {
-            var person = await PersonRepository.GetPersonById(request.Id);
+            var person = _mapper.Map<Person>(request);
+            var created = await _personRepository.CreatePersonAsync(person);
+            return _mapper.Map<CreatePersonResponse>(created);
+        }
 
+        public async Task<UpdatePersonResponse> UpdatePerson(int personId, UpdatePersonRequest request)
+        {
+            var person = await _personRepository.GetPersonByIDAsync(personId);
             if (person == null)
-            {
-                return new UpdatePersonResponseXXX
-                {
-                    Success = false,
-                    Message = "Persona no Encontrada"
-                };
-            }
-            //person.Id = request.Id;
-            //person.GenderId = request.GenderId; 
-            //person.NationalityId = request.NationalityId;
-            //person.IdentificationTypeId = request.IdentificationTypeId;
-            //person.IdentificationNumber = request.IdentificationNumber;
-            //person.PersonType = request.PersonType;
-            //person.FirstName = request.FirstName;
-            //person.LastName = request.LastName;
-            //person.BirthDate = request.BirthDate;
-            //person.Phone = request.Phone;
-            //person.Email = request.Email;
-            //person.Address = request.Address;
+                throw new ClientFaultException("No existe la persona", 401);
 
-            await PersonRepository.UpdatePerson(person);
+            _mapper.Map(request, person);
+            var updated = await _personRepository.UpdatePersonAsync(person);
+            return _mapper.Map<UpdatePersonResponse>(updated);
+        }
 
-            return new UpdatePersonResponseXXX
-            {
-                Success = true,
-                Message = "Persona actualizada"
-            };
+        public async Task<ActiveInactivePersonResponse> InactivatePerson(int personId)
+        {
+            var inactivated = await _personRepository.InactivatePersonAsync(personId);
+            return _mapper.Map<ActiveInactivePersonResponse>(inactivated);
+        }
+
+        public async Task<ActiveInactivePersonResponse> ActivatePerson(int personId)
+        {
+            var activated = await _personRepository.ActivatePersonAsync(personId);
+            return _mapper.Map<ActiveInactivePersonResponse>(activated);
         }
     }
 }
