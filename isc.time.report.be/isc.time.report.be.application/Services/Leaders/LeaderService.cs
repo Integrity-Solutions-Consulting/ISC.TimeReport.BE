@@ -1,119 +1,101 @@
-﻿using System;
+﻿using AutoMapper;
+using isc.time.report.be.application.Interfaces.Repository.Leaders;
+using isc.time.report.be.application.Interfaces.Service.Leaders;
+using isc.time.report.be.domain.Entity.Leaders;
+using isc.time.report.be.domain.Entity.Shared;
+using isc.time.report.be.domain.Exceptions;
+using isc.time.report.be.domain.Models.Request.Leaders;
+using isc.time.report.be.domain.Models.Response.Leaders;
+using isc.time.report.be.domain.Models.Response.Persons;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
-using isc.time.report.be.application.Interfaces.Repository.Leaders;
-using isc.time.report.be.application.Interfaces.Service.Leaders;
-using isc.time.report.be.domain.Entity.Leaders;
 using entityPerson = isc.time.report.be.domain.Entity.Persons;
-using isc.time.report.be.domain.Models.Response.Leaders;
-using isc.time.report.be.domain.Models.Response.Leaders;
-using isc.time.report.be.domain.Models.Response.Persons;
 
 namespace isc.time.report.be.application.Services.Leaders
 {
     public class LeaderService : ILeaderService
     {
-        public readonly ILeaderRepository leaderRepository;
+        private readonly ILeaderRepository _leaderRepository;
+        private readonly IMapper _mapper;
 
-        public LeaderService(ILeaderRepository leaderRepository)
+        public LeaderService(ILeaderRepository leaderRepository, IMapper mapper)
         {
-            this.leaderRepository = leaderRepository;
+            _leaderRepository = leaderRepository;
+            _mapper = mapper;
         }
 
-        /* public async Task<CreateLeaderWithPersonResponse> Create(CreateLeaderWithPersonRequest createRequest)
+        public async Task<PagedResult<GetLeaderDetailsResponse>> GetAllLeadersPaginated(PaginationParams paginationParams)
         {
-            var newPerson = new entityPerson.Persons
+            var result = await _leaderRepository.GetAllLeadersPaginatedAsync(paginationParams);
+            var mapped = _mapper.Map<List<GetLeaderDetailsResponse>>(result.Items);
+
+            return new PagedResult<GetLeaderDetailsResponse>
             {
-                IdentificationTypeId = createRequest.IdentificationType,
-                IdentificationNumber = createRequest.IdentificationNumber,
-                FirstName = createRequest.Names,
-                LastName = createRequest.Surnames,
-                Gender = createRequest.Gender,
-                CellPhoneNumber = createRequest.CellPhoneNumber,
-                Position = createRequest.Position,
-                PersonalEmail = createRequest.PersonalEmail,
-                CorporateEmail = createRequest.CorporateEmail,
-                Address = createRequest.HomeAddress,
+                Items = mapped,
+                TotalItems = result.TotalItems,
+                PageNumber = result.PageNumber,
+                PageSize = result.PageSize
             };
+        }
 
-            var newLeader = new Leader
-            {
-                LeaderType = createRequest.LeaderType,
-                ProjectCode = createRequest.ProjectCode,
-                CustomerCode = createRequest.CustomerCode,
-                Persons = newPerson
-            };
-            await leaderRepository.CreateLeader(newLeader);
-            return new CreateLeaderWithPersonResponse();
-        } */
-
-        /*public async Task<List<GetLeaderListResponse>> GetAll()
+        public async Task<GetLeaderDetailsResponse> GetLeaderByID(int leaderId)
         {
-            var leader = await leaderRepository.GetLeaders();
+            var leader = await _leaderRepository.GetLeaderByIDAsync(leaderId);
+            return _mapper.Map<GetLeaderDetailsResponse>(leader);
+        }
 
-            return leader
-                .Select(l => new GetLeaderListResponse
-                {
-
-                    Id = l.Id.ToString(),
-                    LeaderType = l.LeaderType,
-                    ProjectCode = l.ProjectCode,
-                    CustomerCode = l.CustomerCode,
-                    IdentificationType = l.Persons.IdentificationTypeId,
-                    IdentificationNumber = l.Persons.IdentificationNumber,
-                    Names = l.Persons.FirstName,
-                    Surnames = l.Persons.LastName,
-                    Gender = l.Persons.Gender,
-                    CellPhoneNumber = l.Persons.CellPhoneNumber,
-                    Position = l.Persons.Position,
-                    PersonalEmail = l.Persons.PersonalEmail,
-                    CorporateEmail = l.Persons.CorporateEmail,
-                    HomeAddress = l.Persons.Address,
-
-                }).ToList();
-            
-        }*/
-
-        /*public async Task<UpdateLeaderResponse> Update(UpdateLeaderRequest request)
+        public async Task<CreateLeaderResponse> CreateLeaderWithPersonID(CreateLeaderWithPersonIDRequest request)
         {
-            var leader = await leaderRepository.GetLeaderById(request.Id);
+            var leader = _mapper.Map<Leader>(request);
+            var created = await _leaderRepository.CreateLeaderAsync(leader);
+            created = await _leaderRepository.GetLeaderByIDAsync(leader.Id);
+            return _mapper.Map<CreateLeaderResponse>(created);
+        }
 
+        public async Task<CreateLeaderResponse> CreateLeaderWithPerson(CreateLeaderWithPersonOBJRequest request)
+        {
+            var leader = _mapper.Map<Leader>(request);
+            var created = await _leaderRepository.CreateLeaderWithPersonAsync(leader);
+            return _mapper.Map<CreateLeaderResponse>(created);
+        }
+
+        public async Task<UpdateLeaderResponse> UpdateLeader(int leaderId, UpdateLeaderWithPersonIDRequest request)
+        {
+            var leader = await _leaderRepository.GetLeaderByIDAsync(leaderId);
             if (leader == null)
-            {
-                return new UpdateLeaderResponse
-                {
-                    Success = false,
-                    Message = "Líder no Encontrado"
-                };
-            }
-            leader.LeaderType = request.LeaderType;
-            leader.ProjectCode = request.ProjectCode;
-            leader.CustomerCode = request.CustomerCode;
+                throw new ClientFaultException("No existe el líder", 401);
 
-            if(leader.Persons != null)
-            {
-                leader.Persons.IdentificationTypeId = request.IdentificationType;
-                leader.Persons.IdentificationNumber = request.IdentificationNumber;
-                leader.Persons.FirstName = request.Names;
-                leader.Persons.LastName = request.Surnames;
-                leader.Persons.Gender = request.Gender;
-                leader.Persons.CellPhoneNumber = request.CellPhoneNumber;
-                leader.Persons.Position = request.Position;
-                leader.Persons.PersonalEmail = request.PersonalEmail;
-                leader.Persons.CorporateEmail = request.CorporateEmail;
-                leader.Persons.Address = request.HomeAddress;
-            }
+            _mapper.Map(request, leader);
+            var updated = await _leaderRepository.UpdateLeaderAsync(leader);
+            updated = await _leaderRepository.GetLeaderByIDAsync(leader.Id);
+            return _mapper.Map<UpdateLeaderResponse>(updated);
+        }
 
-            await leaderRepository.UpdateLeader(leader);
+        public async Task<UpdateLeaderResponse> UpdateLeaderWithPerson(int leaderId, UpdateLeaderWithPersonOBJRequest request)
+        {
+            var leader = await _leaderRepository.GetLeaderByIDAsync(leaderId);
+            if (leader == null)
+                throw new ClientFaultException("No existe el líder", 401);
 
-            return new UpdateLeaderResponse
-            {
-                Success = true,
-                Message = "Líder actualizado"
-            };
-        }*/
+            _mapper.Map(request, leader);
+            var updated = await _leaderRepository.UpdateLeaderWithPersonAsync(leader);
+            updated = await _leaderRepository.GetLeaderByIDAsync(updated.Id);
+            return _mapper.Map<UpdateLeaderResponse>(updated);
+        }
+
+        public async Task<ActivateInactivateLeaderResponse> InactivateLeader(int leaderId)
+        {
+            var inactivated = await _leaderRepository.InactivateLeaderAsync(leaderId);
+            return _mapper.Map<ActivateInactivateLeaderResponse>(inactivated);
+        }
+
+        public async Task<ActivateInactivateLeaderResponse> ActivateLeader(int leaderId)
+        {
+            var activated = await _leaderRepository.ActivateLeaderAsync(leaderId);
+            return _mapper.Map<ActivateInactivateLeaderResponse>(activated);
+        }
     }
 }

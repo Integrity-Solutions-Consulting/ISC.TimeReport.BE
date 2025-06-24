@@ -1,55 +1,80 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.Leaders;
+using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Models.Dto;
+using isc.time.report.be.domain.Models.Request.Leaders;
 using isc.time.report.be.domain.Models.Response.Leaders;
 using isc.time.report.be.domain.Models.Response.Persons;
-using isc.time.report.be.domain.Models.Response.Leaders;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isc.time.report.be.api.Controllers.v1.Leader
 {
     [ApiExplorerSettings(GroupName = "v1")]
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("api/leader")]
     public class LeaderController : ControllerBase
     {
         private readonly ILeaderService _leaderService;
 
-        public LeaderController(ILeaderService personService)
+        public LeaderController(ILeaderService leaderService)
         {
-            _leaderService = personService;
+            _leaderService = leaderService;
         }
 
-        /*[HttpGet("get")]
-        public async Task<ActionResult<SuccessResponse<GetLeaderResponse>>> GetAll()
+        [HttpGet("GetAllLeaders")]
+        public async Task<ActionResult<SuccessResponse<PagedResult<GetLeaderDetailsResponse>>>> GetAllLeaders([FromQuery] PaginationParams paginationParams)
         {
-            var leader = await _leaderService.GetAll();
-            return Ok(leader);
-        }*/
+            var result = await _leaderService.GetAllLeadersPaginated(paginationParams);
+            return Ok(result);
+        }
 
-        /*[HttpPost("create")]
-        public async Task<ActionResult<SuccessResponse<CreateLeaderWithPersonResponse>>> CreateLeader(CreateLeaderWithPersonRequest createRequest)
+        [HttpGet("GetLeaderByID/{id}")]
+        public async Task<ActionResult<SuccessResponse<GetLeaderDetailsResponse>>> GetLeaderById(int id)
         {
-            var leader = await _leaderService.Create(createRequest);
+            var result = await _leaderService.GetLeaderByID(id);
+            return Ok(result);
+        }
 
-            return Ok(new SuccessResponse<CreateLeaderResponse>());
-        }*/
-
-        /*[HttpPut("update/{id}")]
-        public async Task<ActionResult<SuccessResponse<UpdateLeaderResponse>>> UpdateLeader(int id, UpdateLeaderRequest updateLeaderRequest)
+        [HttpPost("CreateLeaderWithPersonID")]
+        public async Task<ActionResult<SuccessResponse<CreateLeaderResponse>>> CreateLeaderWithPersonID([FromBody] CreateLeaderWithPersonIDRequest request)
         {
-            if (id != updateLeaderRequest.Id)
-            {
-                return BadRequest("ID no coincide");
-            }
+            var result = await _leaderService.CreateLeaderWithPersonID(request);
+            return Ok(result);
+        }
 
-            var response = await _leaderService.Update(updateLeaderRequest);
+        [HttpPost("CreateLeaderWithPerson")]
+        public async Task<ActionResult<SuccessResponse<CreateLeaderResponse>>> CreateLeaderWithPerson([FromBody] CreateLeaderWithPersonOBJRequest request)
+        {
+            var result = await _leaderService.CreateLeaderWithPerson(request);
+            return Ok(result);
+        }
 
-            if (!response.Success)
-            {
-                return NotFound(response.Message);
-            }
-            return Ok(response);
-        }*/
+        [HttpPut("UpdateLeaderWithPersonID/{id}")]
+        public async Task<ActionResult<SuccessResponse<UpdateLeaderResponse>>> UpdateLeaderWithPersonID(int id, [FromBody] UpdateLeaderWithPersonIDRequest request)
+        {
+            var result = await _leaderService.UpdateLeader(id, request);
+            return Ok(result);
+        }
+
+        [HttpPut("UpdateLeaderWithPerson/{id}")]
+        public async Task<ActionResult<SuccessResponse<UpdateLeaderResponse>>> UpdateLeaderWithPerson(int id, [FromBody] UpdateLeaderWithPersonOBJRequest request)
+        {
+            var result = await _leaderService.UpdateLeaderWithPerson(id, request);
+            return Ok(result);
+        }
+
+        [HttpDelete("InactivateLeaderByID/{id}")]
+        public async Task<ActionResult<SuccessResponse<ActivateInactivateLeaderResponse>>> InactivateLeader(int id)
+        {
+            var result = await _leaderService.InactivateLeader(id);
+            return Ok(result);
+        }
+
+        [HttpDelete("ActivateLeaderByID/{id}")]
+        public async Task<ActionResult<SuccessResponse<ActivateInactivateLeaderResponse>>> ActivateLeader(int id)
+        {
+            var result = await _leaderService.ActivateLeader(id);
+            return Ok(result);
+        }
     }
 }
