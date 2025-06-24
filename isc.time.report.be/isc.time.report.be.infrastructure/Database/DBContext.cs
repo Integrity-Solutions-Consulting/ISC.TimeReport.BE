@@ -38,7 +38,7 @@ namespace isc.time.report.be.infrastructure.Database
             {
                 entity.ToTable("Nationality");
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.Id).HasColumnName("NationalityID");
                 entity.Property(e => e.Description).HasColumnName("description");
 
                 entity.Property(e => e.Status).HasColumnName("status");
@@ -71,7 +71,7 @@ namespace isc.time.report.be.infrastructure.Database
             {
                 entity.ToTable("IdentificationTypes");
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.Id).HasColumnName("IdentificationTypeID");
                 entity.Property(e => e.Description).HasColumnName("description");
 
                 entity.Property(e => e.Status).HasColumnName("status");

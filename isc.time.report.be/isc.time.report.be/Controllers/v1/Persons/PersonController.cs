@@ -1,7 +1,7 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.Persons;
+using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Models.Dto;
-using isc.time.report.be.domain.Models.Response.Leaders;
-using isc.time.report.be.domain.Models.Response.Persons;
+using isc.time.report.be.domain.Models.Request.Persons;
 using isc.time.report.be.domain.Models.Response.Leaders;
 using isc.time.report.be.domain.Models.Response.Persons;
 using Microsoft.AspNetCore.Mvc;
@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace isc.time.report.be.api.Controllers.v1.Persons
 {
     [ApiExplorerSettings(GroupName = "v1")]
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class PersonController : ControllerBase
     {
         private readonly IPersonService _personService;
@@ -20,36 +20,46 @@ namespace isc.time.report.be.api.Controllers.v1.Persons
             _personService = personService;
         }
 
-        [HttpGet("get")]
-        public async Task<ActionResult<SuccessResponse<GetPersonListResponseXXX>>> GetAll()
+        [HttpGet("GetAllPersons")]
+        public async Task<ActionResult<SuccessResponse<PagedResult<GetPersonResponse>>>> GetAllPersons([FromQuery] PaginationParams paginationParams)
         {
-            var person = await _personService.GetAll();
-            return Ok(person);
+            var result = await _personService.GetAllPersonsPaginated(paginationParams);
+            return Ok(result);
         }
 
-        [HttpPost("create")]
-        public async Task<ActionResult<SuccessResponse<CreatePersonResponseXXX>>> CreatePerson(CreatePersonRequestXXX request)
+        [HttpGet("GetPersonByID/{id}")]
+        public async Task<ActionResult<SuccessResponse<GetPersonResponse>>> GetPersonById(int id)
         {
-            var person = await _personService.Create(request);
-
-            return Ok(new SuccessResponse<CreatePersonResponseXXX>());
+            var result = await _personService.GetPersonByID(id);
+            return Ok(result);
         }
 
-        [HttpPut("update/{id}")]
-        public async Task<ActionResult<SuccessResponse<UpdatePersonResponseXXX>>> UpdateLeader(int id, UpdatePersonRequestXXX updatePersonRequest)
+        [HttpPost("CreatePerson")]
+        public async Task<ActionResult<SuccessResponse<CreatePersonResponse>>> CreatePerson([FromBody] CreatePersonRequest request)
         {
-            if (id != updatePersonRequest.Id)
-            {
-                return BadRequest("ID no coincide");
-            }
+            var result = await _personService.CreatePerson(request);
+            return Ok(result);
+        }
 
-            var response = await _personService.Update(updatePersonRequest);
+        [HttpPut("UpdatePerson/{id}")]
+        public async Task<ActionResult<SuccessResponse<UpdatePersonResponse>>> UpdatePerson(int id, [FromBody] UpdatePersonRequest request)
+        {
+            var result = await _personService.UpdatePerson(id, request);
+            return Ok(result);
+        }
 
-            if (!response.Success)
-            {
-                return NotFound(response.Message);
-            }
-            return Ok(response);
+        [HttpDelete("InactivatePersonByID/{id}")]
+        public async Task<ActionResult<SuccessResponse<ActiveInactivePersonResponse>>> InactivatePerson(int id)
+        {
+            var result = await _personService.InactivatePerson(id);
+            return Ok(result);
+        }
+
+        [HttpDelete("ActivatePersonByID/{id}")]
+        public async Task<ActionResult<SuccessResponse<ActiveInactivePersonResponse>>> ActivatePerson(int id)
+        {
+            var result = await _personService.ActivatePerson(id);
+            return Ok(result);
         }
     }
 }
