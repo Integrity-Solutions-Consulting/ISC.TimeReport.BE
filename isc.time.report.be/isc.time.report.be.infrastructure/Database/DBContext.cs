@@ -350,7 +350,7 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id).HasColumnName("LeaderID");
                 entity.Property(e => e.PersonID).HasColumnName("PersonID");
-                entity.Property(e => e.ProjectID).HasColumnName("Id");
+                entity.Property(e => e.ProjectID).HasColumnName("ProjectID");
                 entity.Property(e => e.LeadershipType).HasColumnName("leadership_type");
                 entity.Property(e => e.StartDate).HasColumnName("start_date");
                 entity.Property(e => e.EndDate).HasColumnName("end_date");

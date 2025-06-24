@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace isc.time.report.be.domain.Models.Response.Leaders
 {
-    public class CreateLeaderWithPersonResponse
+    public class CreateLeaderWithPersonResponseXXX
     {
         public string IdentificationType { get; set; }
         public string IdentificationNumber { get; set; }

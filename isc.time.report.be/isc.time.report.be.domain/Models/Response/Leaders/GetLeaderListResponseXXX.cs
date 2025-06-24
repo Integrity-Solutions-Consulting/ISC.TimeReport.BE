@@ -7,7 +7,7 @@ using isc.time.report.be.domain.Entity.Persons;
 
 namespace isc.time.report.be.domain.Models.Response.Leaders
 {
-    public class GetLeaderListResponse
+    public class GetLeaderListResponseXXX
     {
         public string Id { get; set; }
         public string LeaderType { get; set; }
