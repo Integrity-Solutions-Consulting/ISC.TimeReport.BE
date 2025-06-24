@@ -63,14 +63,14 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
         }
 
         [HttpDelete("InactiveClientByID/{id}")]
-        public async Task<ActionResult<SuccessResponse<ActiveInactiveResponse>>> InactivateClient(int id)
+        public async Task<ActionResult<SuccessResponse<ActiveInactiveClientResponse>>> InactivateClient(int id)
         {
             var result = await _clientService.InactivateClient(id);
             return Ok(result);
         }
 
         [HttpDelete("ActiveClientByID/{id}")]
-        public async Task<ActionResult<SuccessResponse<ActiveInactiveResponse>>> ActivateClient(int id)
+        public async Task<ActionResult<SuccessResponse<ActiveInactiveClientResponse>>> ActivateClient(int id)
         {
             var result = await _clientService.ActivateClient(id);
             return Ok(result);

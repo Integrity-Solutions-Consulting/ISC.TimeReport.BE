@@ -89,16 +89,16 @@ namespace isc.time.report.be.application.Services.Clients
             return _mapper.Map<UpdateClientResponse>(updated);
         }
 
-        public async Task<ActiveInactiveResponse> InactivateClient(int clientId)
+        public async Task<ActiveInactiveClientResponse> InactivateClient(int clientId)
         {
             var inactivated = await _clientRepository.InactivateClientAsync(clientId);
-            return _mapper.Map<ActiveInactiveResponse>(inactivated);
+            return _mapper.Map<ActiveInactiveClientResponse>(inactivated);
         }
 
-        public async Task<ActiveInactiveResponse> ActivateClient(int clientId)
+        public async Task<ActiveInactiveClientResponse> ActivateClient(int clientId)
         {
             var activated = await _clientRepository.ActivateClientAsync(clientId);
-            return _mapper.Map<ActiveInactiveResponse>(activated);
+            return _mapper.Map<ActiveInactiveClientResponse>(activated);
         }
     }
 }

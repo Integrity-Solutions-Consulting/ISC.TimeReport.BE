@@ -17,7 +17,7 @@ namespace isc.time.report.be.application.Interfaces.Service.Clients
         Task<CreateClientResponse> CreateClientWithPerson(CreateClientWithPersonOBJRequest request);
         Task<UpdateClientResponse> UpdateClient(int clientId, UpdateClientWithPersonIDRequest request);
         Task<UpdateClientResponse> UpdateClientWithPerson(int clientId, UpdateClientWithPersonOBJRequest request);
-        Task<ActiveInactiveResponse> InactivateClient(int clientId);
-        Task<ActiveInactiveResponse> ActivateClient(int clientId);
+        Task<ActiveInactiveClientResponse> InactivateClient(int clientId);
+        Task<ActiveInactiveClientResponse> ActivateClient(int clientId);
     }
 }
