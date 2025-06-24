@@ -13,9 +13,10 @@ namespace isc.time.report.be.application.Interfaces.Repository.Clients
     {
         Task<PagedResult<Client>> GetAllClientsPaginatedAsync(PaginationParams paginationParams);
         Task<Client> GetClientByIDAsync(int clientId);
+        Task<Client> CreateClientAsync(Client client);
         Task<Client> CreateClientWithPersonAsync(Client client);
         Task<Client> UpdateClientAsync(Client client);
-        Task<Client> UpdateClientWithPersonAsync(Client client, Person person);
+        Task<Client> UpdateClientWithPersonAsync(Client client);
         Task<Client> InactivateClientAsync(int clientId);
         Task<Client> ActivateClientAsync(int clientId);
 

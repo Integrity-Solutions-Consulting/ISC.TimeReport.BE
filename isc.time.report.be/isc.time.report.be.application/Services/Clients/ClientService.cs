@@ -49,7 +49,10 @@ namespace isc.time.report.be.application.Services.Clients
         public async Task<CreateClientResponse> CreateClientWithPersonID(CreateClientWithPersonIDRequest request)
         {
             var client = _mapper.Map<Client>(request);
-            var created = await _clientRepository.CreateClientWithPersonAsync(client);
+            var created = await _clientRepository.CreateClientAsync(client);
+
+            //revisar que el creado sea el mismo que el encontrado
+
             created = await _clientRepository.GetClientByIDAsync(client.Id);
             return _mapper.Map<CreateClientResponse>(created);
         }
@@ -79,11 +82,10 @@ namespace isc.time.report.be.application.Services.Clients
             if (client == null)
                 throw new ClientFaultException("No existe el cliente", 401);
 
-            var person = _mapper.Map<Person>(request.Person);
             _mapper.Map(request, client);
 
-            var updated = await _clientRepository.UpdateClientWithPersonAsync(client, person);
-            updated = await _clientRepository.GetClientByIDAsync(client.Id);
+            var updated = await _clientRepository.UpdateClientWithPersonAsync(client);
+            updated = await _clientRepository.GetClientByIDAsync(updated.Id);
             return _mapper.Map<UpdateClientResponse>(updated);
         }
 

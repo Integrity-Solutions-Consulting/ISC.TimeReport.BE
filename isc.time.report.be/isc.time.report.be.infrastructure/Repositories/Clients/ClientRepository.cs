@@ -37,7 +37,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
                 .FirstOrDefaultAsync(c => c.Id == clientId);
         }
 
-        public async Task<Client> CreateClientWithPersonAsync(Client client)
+        public async Task<Client> CreateClientAsync(Client client)
         {
             client.CreationDate = DateTime.Now;
             client.ModificationDate = null;
@@ -49,19 +49,21 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
             return client;
         }
 
-        public async Task<Client> CreateClientWithPersonAsync(Client client, Person person)
+        public async Task<Client> CreateClientWithPersonAsync(Client client)
         {
-            person.CreationDate = DateTime.Now;
-            person.Status = true;
-            person.CreationUser = "SYSTEM";
-            await _dbContext.Persons.AddAsync(person);
+            // Asume que client.Person viene poblado
+            if (client.Person == null)
+                throw new InvalidOperationException("La entidad Person no puede ser nula.");
 
-            client.PersonID = person.Id;
+            client.Person.CreationDate = DateTime.Now;
+            client.Person.Status = true;
+            client.Person.CreationUser = "SYSTEM";
+
             client.CreationDate = DateTime.Now;
             client.Status = true;
             client.CreationUser = "SYSTEM";
 
-            await _dbContext.Clients.AddAsync(client);
+            await _dbContext.Clients.AddAsync(client); // EF también agregará la Person asociada
             await _dbContext.SaveChangesAsync();
 
             return client;
@@ -75,21 +77,37 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
             return client;
         }
 
-        public async Task<Client> UpdateClientWithPersonAsync(Client client, Person person)
+        public async Task<Client> UpdateClientWithPersonAsync(Client client)
         {
-            var existingPerson = await _dbContext.Persons.FirstOrDefaultAsync(p => p.Id == person.Id);
-            if (existingPerson == null)
-                throw new InvalidOperationException("No se encontró la persona asociada al cliente.");
+            if (client == null || client.Person == null)
+                throw new InvalidOperationException("El cliente o su persona asociada no pueden ser nulos.");
 
-            _dbContext.Entry(existingPerson).CurrentValues.SetValues(person);
-            _dbContext.Entry(existingPerson).State = EntityState.Modified;
+            var existingClient = await _dbContext.Clients
+                .Include(c => c.Person)
+                .FirstOrDefaultAsync(c => c.Id == client.Id);
+
+            if (existingClient == null)
+                throw new InvalidOperationException($"No existe el cliente con ID {client.Id}");
+
+
+            if (client.Person.Id != existingClient.Person.Id)
+                throw new InvalidOperationException("La persona ingresada, no corrsponde al ciente");
+
+            client.Person.ModificationDate = DateTime.Now;
+            client.Person.ModificationUser = "SYSTEM";
+
+            _dbContext.Entry(existingClient.Person).CurrentValues.SetValues(client.Person);
+            _dbContext.Entry(existingClient.Person).State = EntityState.Modified;
 
             client.ModificationDate = DateTime.Now;
-            _dbContext.Entry(client).State = EntityState.Modified;
+            client.ModificationUser = "SYSTEM";
+
+            _dbContext.Entry(existingClient).CurrentValues.SetValues(client);
+            _dbContext.Entry(existingClient).State = EntityState.Modified;
 
             await _dbContext.SaveChangesAsync();
 
-            return client;
+            return existingClient;
         }
 
         public async Task<Client> InactivateClientAsync(int clientId)
