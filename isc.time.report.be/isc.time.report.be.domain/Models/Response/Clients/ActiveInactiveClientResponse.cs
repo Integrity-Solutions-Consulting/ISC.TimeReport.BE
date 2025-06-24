@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace isc.time.report.be.domain.Models.Response.Clients
 {
-    public class ActiveInactiveResponse
+    public class ActiveInactiveClientResponse
     {
         public int Id { get; set; }
         public int PersonID { get; set; }

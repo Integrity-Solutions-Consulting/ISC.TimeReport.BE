@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 
 namespace isc.time.report.be.domain.Models.Response.Employees
 {
-    public class CreateEmployeeResponse
+    public class UpdateEmployeeResponse
     {
         public int Id { get; set; }
-        public CreatePersonResponse Person { get; set; }
+        public UpdatePersonResponse Person { get; set; }
         public int? PositionID { get; set; }
         public string EmployeeCode { get; set; } = null!;
         public DateTime HireDate { get; set; }
@@ -23,5 +23,6 @@ namespace isc.time.report.be.domain.Models.Response.Employees
         public string? Department { get; set; }
         public string? CorporateEmail { get; set; }
         public decimal? Salary { get; set; }
+        public bool Status { get; set; }
     }
 }

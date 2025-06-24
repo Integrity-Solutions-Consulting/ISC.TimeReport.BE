@@ -1,93 +1,102 @@
-﻿using System;
+﻿using AutoMapper;
+using isc.time.report.be.application.Interfaces.Repository.Employees;
+using isc.time.report.be.application.Interfaces.Repository.Persons;
+using isc.time.report.be.application.Interfaces.Service.Employees;
+using isc.time.report.be.domain.Entity.Employees;
+using isc.time.report.be.domain.Entity.Shared;
+using isc.time.report.be.domain.Exceptions;
+using isc.time.report.be.domain.Models.Request.Employees;
+using isc.time.report.be.domain.Models.Response.Employees;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using isc.time.report.be.application.Interfaces.Repository.Employees;
-using isc.time.report.be.application.Interfaces.Repository.Persons;
-using isc.time.report.be.domain.Models.Response.Employees;
-using entityPerson = isc.time.report.be.domain.Entity.Persons;
 using entityEmployee = isc.time.report.be.domain.Entity.Employees;
-using isc.time.report.be.application.Interfaces.Service.Employees;
+using entityPerson = isc.time.report.be.domain.Entity.Persons;
 
 namespace isc.time.report.be.application.Services.Employees
 {
     public class EmployeeService : IEmployeeService
     {
-        public readonly IEmployeeRepository EmployeeRepository;
-        public readonly IPersonRepository PersonRepository;
+        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IMapper _mapper;
 
-        public EmployeeService(IEmployeeRepository EmployeeRepository, IPersonRepository personRepository)
+        public EmployeeService(IEmployeeRepository employeeRepository, IMapper mapper)
         {
-            this.EmployeeRepository = EmployeeRepository;
-            this.PersonRepository = personRepository;
+            _employeeRepository = employeeRepository;
+            _mapper = mapper;
         }
 
-        public async Task<CreateEmployeeResponse> CreateEmployee(CreateEmployeeRequest request)
+        public async Task<PagedResult<GetEmployeeDetailsResponse>> GetAllEmployeesPaginated(PaginationParams paginationParams)
         {
-            var newPerson = new entityPerson.Person
+            var result = await _employeeRepository.GetAllEmployeesPaginatedAsync(paginationParams);
+            var mapped = _mapper.Map<List<GetEmployeeDetailsResponse>>(result.Items);
+
+            return new PagedResult<GetEmployeeDetailsResponse>
             {
-                GenderID = request.GenderId,
-                NationalityId = request.NationalityId,
-                IdentificationTypeId = request.IdentificationTypeId,
-                IdentificationNumber = request.IdentificationNumber,
-                PersonType = request.PersonType,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                BirthDate = request.BirthDate,
-                Email = request.Email,
-                Phone = request.Phone,
-                Address = request.Address,
+                Items = mapped,
+                TotalItems = result.TotalItems,
+                PageNumber = result.PageNumber,
+                PageSize = result.PageSize
             };
-
-            await PersonRepository.CreatePerson(newPerson);
-
-            var newEmployee = new entityEmployee.Employee
-            {
-                PersonID = newPerson.Id,
-                PositionID = request.PositionID,
-                EmployeeCode = request.EmployeeCode,
-                HireDate = request.HireDate,
-                TerminationDate = request.TerminationDate,
-                ContractType = request.ContractType,
-                Department = request.Department,
-                CorporateEmail = request.CorporateEmail,
-                Salary = request.Salary,
-            };
-
-            await EmployeeRepository.CreateEmployee(newEmployee);
-
-            return new CreateEmployeeResponse();
         }
-        public async Task<List<GetEmployeeResponse>> GetAll()
-        {
-            var employees = await EmployeeRepository.GetAllEmployees();
-            
-            return employees
-                .Select(x => new GetEmployeeResponse 
-                {
-                    Id = x.Id,
-                    GenderId = x.Person.GenderID,
-                    NationalityId = x.Person.NationalityId,
-                    IdentificationTypeId = x.Person.IdentificationTypeId,
-                    IdentificationNumber = x.Person.IdentificationNumber,
-                    PersonType = x.Person.PersonType,
-                    FirstName = x.Person.FirstName,
-                    LastName = x.Person.LastName,
-                    BirthDate = x.Person.BirthDate,
-                    Email = x.Person.Email,
-                    Phone = x.Person.Phone,
-                    Address = x.Person.Address,
-                    PositionID = x.PositionID,
-                    EmployeeCode = x.EmployeeCode,
-                    HireDate = x.HireDate,
-                    TerminationDate = x.TerminationDate,
-                    ContractType = x.ContractType,
-                    Department = x.Department,
-                    CorporateEmail = x.CorporateEmail,
-                    Salary = x.Salary,
 
-                }).ToList();
+        public async Task<GetEmployeeDetailsResponse> GetEmployeeByID(int employeeId)
+        {
+            var employee = await _employeeRepository.GetEmployeeByIDAsync(employeeId);
+            return _mapper.Map<GetEmployeeDetailsResponse>(employee);
+        }
+
+        public async Task<CreateEmployeeResponse> CreateEmployeeWithPersonID(CreateEmployeeWithPersonIDRequest request)
+        {
+            var employee = _mapper.Map<Employee>(request);
+            var created = await _employeeRepository.CreateEmployeeAsync(employee);
+            created = await _employeeRepository.GetEmployeeByIDAsync(employee.Id);
+            return _mapper.Map<CreateEmployeeResponse>(created);
+        }
+
+        public async Task<CreateEmployeeResponse> CreateEmployeeWithPerson(CreateEmployeeWithPersonOBJRequest request)
+        {
+            var employee = _mapper.Map<Employee>(request);
+            var created = await _employeeRepository.CreateEmployeeWithPersonAsync(employee);
+            return _mapper.Map<CreateEmployeeResponse>(created);
+        }
+
+        public async Task<UpdateEmployeeResponse> UpdateEmployee(int employeeId, UpdateEmployeeWithPersonIDRequest request)
+        {
+            var employee = await _employeeRepository.GetEmployeeByIDAsync(employeeId);
+            if (employee == null)
+                throw new ClientFaultException("No existe el empleado", 401);
+
+            _mapper.Map(request, employee);
+            var updated = await _employeeRepository.UpdateEmployeeAsync(employee);
+            updated = await _employeeRepository.GetEmployeeByIDAsync(employee.Id);
+            return _mapper.Map<UpdateEmployeeResponse>(updated);
+        }
+
+        public async Task<UpdateEmployeeResponse> UpdateEmployeeWithPerson(int employeeId, UpdateEmployeeWithPersonOBJRequest request)
+        {
+            var employee = await _employeeRepository.GetEmployeeByIDAsync(employeeId);
+            if (employee == null)
+                throw new ClientFaultException("No existe el empleado", 401);
+
+            _mapper.Map(request, employee);
+            var updated = await _employeeRepository.UpdateEmployeeWithPersonAsync(employee);
+            updated = await _employeeRepository.GetEmployeeByIDAsync(employee.Id);
+            return _mapper.Map<UpdateEmployeeResponse>(updated);
+        }
+
+        public async Task<ActiveInactiveEmployeeResponse> InactivateEmployee(int employeeId)
+        {
+            var inactivated = await _employeeRepository.InactivateEmployeeAsync(employeeId);
+            return _mapper.Map<ActiveInactiveEmployeeResponse>(inactivated);
+        }
+
+        public async Task<ActiveInactiveEmployeeResponse> ActivateEmployee(int employeeId)
+        {
+            var activated = await _employeeRepository.ActivateEmployeeAsync(employeeId);
+            return _mapper.Map<ActiveInactiveEmployeeResponse>(activated);
         }
     }
 }

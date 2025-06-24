@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 
 namespace isc.time.report.be.domain.Models.Response.Employees
 {
-    public class CreateEmployeeResponse
+    public class GetEmployeeDetailsResponse
     {
         public int Id { get; set; }
-        public CreatePersonResponse Person { get; set; }
+        public GetPersonResponse Person { get; set; }
         public int? PositionID { get; set; }
         public string EmployeeCode { get; set; } = null!;
         public DateTime HireDate { get; set; }

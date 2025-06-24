@@ -8,7 +8,7 @@ using isc.time.report.be.domain.Entity.Positions;
 
 namespace isc.time.report.be.domain.Models.Response.Employees
 {
-    public class CreateEmployeeRequest
+    public class CreateEmployeeRequestXXX
     {
         public int GenderId { get; set; }
         public int NationalityId { get; set; }

@@ -36,8 +36,8 @@ namespace isc.time.report.be.application.Utils.Mapping
             CreateMap<Client, GetClientsDetailsResponse>();
             CreateMap<GetClientsDetailsResponse, Client>();
 
-            CreateMap<Client, ActiveInactiveResponse>();
-            CreateMap<ActiveInactiveResponse, Client>();
+            CreateMap<Client, ActiveInactiveClientResponse>();
+            CreateMap<ActiveInactiveClientResponse, Client>();
         }
     }
 }

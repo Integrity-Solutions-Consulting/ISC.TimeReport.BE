@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace isc.time.report.be.domain.Models.Response.Employees
 {
-    public class GetEmployeeResponse
+    public class GetEmployeeResponseXXX
     {
         public int Id { get; set; }
         public int? GenderId { get; set; }

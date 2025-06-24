@@ -1,20 +1,15 @@
-﻿using isc.time.report.be.domain.Entity.Auth;
-using isc.time.report.be.domain.Entity.Employees;
-using isc.time.report.be.domain.Entity.Persons;
-using isc.time.report.be.domain.Entity.Positions;
-using isc.time.report.be.domain.Models.Response.Persons;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using isc.time.report.be.domain.Entity.Persons;
 
 namespace isc.time.report.be.domain.Models.Response.Employees
 {
-    public class CreateEmployeeResponse
+    public class CreateEmployeeResponseXXX
     {
-        public int Id { get; set; }
-        public CreatePersonResponse Person { get; set; }
+        public Person Person { get; set; }
         public int? PositionID { get; set; }
         public string EmployeeCode { get; set; } = null!;
         public DateTime HireDate { get; set; }

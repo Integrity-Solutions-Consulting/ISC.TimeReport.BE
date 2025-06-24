@@ -67,7 +67,7 @@ namespace isc.time.report.be.application.Services.Projects
 
             var projectNew = await projectRepository.CreateProject( _mapper.Map<Project>(projectRequest));               
 
-            if (projectNew.StartDate < projectNew.EndDate)
+            if (projectNew.StartDate > projectNew.EndDate)
             {
                 throw new ClientFaultException("No puede ingresar una fecha de Inicio anterior a la fecha de fin.", 401);
             }

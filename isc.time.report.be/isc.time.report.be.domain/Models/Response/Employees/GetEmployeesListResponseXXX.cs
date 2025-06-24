@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace isc.time.report.be.domain.Models.Response.Employees
 {
-    public class GetEmployeesListResponse
+    public class GetEmployeesListResponseXXX
     {
-        public List<GetEmployeeResponse> Employees { get; set; }
+        public List<GetEmployeeResponseXXX> Employees { get; set; }
         public bool Success { get; set; }
         public string Message { get; set; }
     }
