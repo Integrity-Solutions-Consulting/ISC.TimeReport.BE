@@ -1,0 +1,64 @@
+﻿using isc.time.report.be.application.Interfaces.Repository.Permissions;
+using isc.time.report.be.domain.Entity.Permisions;
+using isc.time.report.be.infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace isc.time.report.be.infrastructure.Repositories.Permissions
+{
+    public class PermissionRepository : IPermissionRepository
+    {
+        private readonly DBContext _dbContext;
+
+        public PermissionRepository(DBContext context)
+        {
+            _dbContext = context;
+        }
+
+        public async Task<Permission> CreateAsync(Permission permission)
+        {
+            await _dbContext.Permissions.AddAsync(permission);
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new Exception("Error al guardar cambios: " + ex.InnerException?.Message, ex);
+            }
+            return permission;
+        }
+
+        public async Task<Permission> ApproveAsync(Permission permission)
+        {
+            _dbContext.Permissions.Update(permission);
+            await _dbContext.SaveChangesAsync();
+            return permission;
+        }
+
+        public async Task<List<Permission>> GetAllAsync(int? employeeId, bool isAdmin)
+        {
+            var query = _dbContext.Permissions.AsQueryable();
+            if (!isAdmin && employeeId.HasValue)
+            {
+                query = query.Where(p => p.EmployeeID == employeeId);
+            }
+            return await query.ToListAsync();
+        }
+
+        public async Task<Permission> GetPermissionByIdAsync(int id)
+        {
+            var permission = await _dbContext.Permissions
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (permission == null)
+                throw new KeyNotFoundException($"No se encontró el permiso con ID {id}");
+
+            return permission;
+        }
+    }
+}

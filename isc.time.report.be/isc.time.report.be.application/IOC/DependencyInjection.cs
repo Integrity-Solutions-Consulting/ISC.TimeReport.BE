@@ -22,6 +22,8 @@ using isc.time.report.be.application.Interfaces.Service.Projects;
 using isc.time.report.be.application.Services.Projects;
 using isc.time.report.be.application.Interfaces.Service.Clients;
 using isc.time.report.be.application.Services.Clients;
+using isc.time.report.be.application.Interfaces.Service.Permissions;
+using isc.time.report.be.application.Services.Permissions;
 
 namespace isc.time.report.be.application.IOC
 {
@@ -41,6 +43,7 @@ namespace isc.time.report.be.application.IOC
             services.AddScoped<IMenuService, MenuService>();
             services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<IClientService, ClientService>();
+            services.AddScoped<IPermissionService, PermissionService>();
 
             return services;
         }
