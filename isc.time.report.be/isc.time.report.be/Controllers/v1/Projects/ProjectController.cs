@@ -70,5 +70,12 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
 
             return Ok(ActiveProject);
         }
+
+        [HttpPost("AssignEmployeesToProject")]
+        public async Task<IActionResult> AssignEmployeesToProject([FromBody] AssignEmployeesToProjectRequest request)
+        {
+            await _projectService.AssignEmployeesToProject(request);
+            return Ok(new { message = "Asignaciones actualizadas correctamente." });
+        }
     }
 }

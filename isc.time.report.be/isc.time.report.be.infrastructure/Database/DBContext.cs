@@ -260,10 +260,11 @@ namespace isc.time.report.be.infrastructure.Database
             modelBuilder.Entity<EmployeeProject>(entity =>
             {
                 entity.ToTable("EmployeeProjects");
-                entity.HasKey(e => new { e.EmployeeID, e.ProjectID });
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnName("EmployeeProjectID");
 
                 entity.Property(e => e.EmployeeID).HasColumnName("EmployeeID");
-                entity.Property(e => e.ProjectID).HasColumnName("Id");
+                entity.Property(e => e.ProjectID).HasColumnName("ProjectID");
                 entity.Property(e => e.AssignmentDate).HasColumnName("assignment_date");
                 entity.Property(e => e.AssignmentEndDate).HasColumnName("assignment_end_date");
 

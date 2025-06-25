@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\v1\Menus\**" />
+    <Content Remove="Controllers\v1\Menus\**" />
+    <EmbeddedResource Remove="Controllers\v1\Menus\**" />
+    <None Remove="Controllers\v1\Menus\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.16" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
@@ -18,10 +25,6 @@
     <ProjectReference Include="..\isc.time.report.be.application\isc.time.report.be.application.csproj" />
     <ProjectReference Include="..\isc.time.report.be.domain\isc.time.report.be.domain.csproj" />
     <ProjectReference Include="..\isc.time.report.be.infrastructure\isc.time.report.be.infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\v1\Menus\" />
   </ItemGroup>
 
 </Project>
