@@ -26,10 +26,14 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
         /// <returns></returns>
         public async Task<User> GetUserAndRoleByUsername(string username)
         {
-            var user = await _dbContext.Users
+            var user = _dbContext.Users
+                .Include(u => u.Employee)
+                    .ThenInclude(e => e.Person)
                 .Include(u => u.UserRole)
                     .ThenInclude(ur => ur.Role)
-                .FirstOrDefaultAsync(u => u.Username == username);
+                        .ThenInclude(r => r.RoleModule)
+                            .ThenInclude(rm => rm.Module)
+                .FirstOrDefault(u => u.Username == username);
 
             return user;
         }

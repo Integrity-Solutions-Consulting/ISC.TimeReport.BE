@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using isc.time.report.be.domain.Entity.Auth;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json;
 
 namespace isc.time.report.be.application.Utils.Auth
 {
@@ -28,12 +29,14 @@ namespace isc.time.report.be.application.Utils.Auth
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim>
-    {
-                        new Claim(ClaimTypes.Name, user.Username),
-                        new Claim("id", user.Id.ToString())
-    };
+            {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim("UserID", user.Id.ToString()),
+                new Claim("EmployeeID", user.EmployeeID.ToString()),
+                new Claim("PersonID", user.Employee?.PersonID.ToString() ?? "0")
+            };
 
-            // Añadir roles directamente
+            // Roles
             if (user.UserRole != null)
             {
                 foreach (var ur in user.UserRole)
@@ -44,13 +47,11 @@ namespace isc.time.report.be.application.Utils.Auth
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = credentials
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
-
             return tokenHandler.WriteToken(token);
         }
     }
