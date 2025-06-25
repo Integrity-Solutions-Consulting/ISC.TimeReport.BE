@@ -5,6 +5,7 @@ using isc.time.report.be.application.Interfaces.Repository.Projects;
 using isc.time.report.be.application.Interfaces.Service.Projects;
 using isc.time.report.be.application.Utils.Auth;
 using isc.time.report.be.domain.Entity.Auth;
+using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
@@ -119,6 +120,60 @@ namespace isc.time.report.be.application.Services.Projects
             var projectActive = await projectRepository.ActivateProjectAsync(ProjectId);
 
             return _mapper.Map<ActiveInactiveProjectResponse>( projectActive);
+        }
+
+        public async Task AssignEmployeesToProject(AssignEmployeesToProjectRequest request)
+        {
+            var existing = await projectRepository.GetByProjectIdAsync(request.ProjectID);
+
+            var finalList = new List<EmployeeProject>();
+
+            var now = DateTime.Now;
+
+            foreach (var empId in request.EmployeeIDs)
+            {
+                var match = existing.FirstOrDefault(e => e.EmployeeID == empId);
+
+                if (match == null)
+                {
+                    finalList.Add(new EmployeeProject
+                    {
+                        EmployeeID = empId,
+                        ProjectID = request.ProjectID,
+                        Status = true,
+                        AssignmentDate = now,
+                        CreationDate = now,
+                        CreationUser = "SYSTEM"
+                    });
+                }
+                else if (!match.Status)
+                {
+                    match.Status = true;
+                    match.ModificationDate = now;
+                    match.ModificationUser = "SYSTEM";
+                    finalList.Add(match);
+                }
+                else
+                {
+                    finalList.Add(match);
+                }
+            }
+
+            foreach (var ep in existing)
+            {
+                if (!request.EmployeeIDs.Contains(ep.EmployeeID))
+                {
+                    if (ep.Status)
+                    {
+                        ep.Status = false;
+                        ep.ModificationDate = now;
+                        ep.ModificationUser = "SYSTEM";
+                    }
+                    finalList.Add(ep);
+                }
+            }
+
+            await projectRepository.SaveAssignmentsAsync(finalList);
         }
     }
 }
