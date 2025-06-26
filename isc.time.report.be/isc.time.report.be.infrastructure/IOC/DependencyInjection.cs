@@ -4,6 +4,7 @@ using isc.time.report.be.application.Interfaces.Repository.Employees;
 using isc.time.report.be.application.Interfaces.Repository.Leaders;
 using isc.time.report.be.application.Interfaces.Repository.Menus;
 using isc.time.report.be.application.Interfaces.Repository.Permissions;
+using isc.time.report.be.application.Interfaces.Repository.PermissionTypes;
 using isc.time.report.be.application.Interfaces.Repository.Persons;
 using isc.time.report.be.application.Interfaces.Repository.Projects;
 using isc.time.report.be.application.Interfaces.Repository.Users;
@@ -14,6 +15,7 @@ using isc.time.report.be.infrastructure.Repositories.Employees;
 using isc.time.report.be.infrastructure.Repositories.Leaders;
 using isc.time.report.be.infrastructure.Repositories.Menus;
 using isc.time.report.be.infrastructure.Repositories.Permissions;
+using isc.time.report.be.infrastructure.Repositories.PermissionTypes;
 using isc.time.report.be.infrastructure.Repositories.Persons;
 using isc.time.report.be.infrastructure.Repositories.Projects;
 using isc.time.report.be.infrastructure.Repositories.Users;
@@ -43,6 +45,7 @@ namespace isc.time.report.be.infrastructure.IOC
             services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<IPermissionRepository, PermissionRepository>();
+            services.AddScoped<IPermissionTypeRepository, PermissionTypeRepository>();
 
             return services;
         }
