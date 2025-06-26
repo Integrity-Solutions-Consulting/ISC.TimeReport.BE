@@ -322,7 +322,7 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id).HasColumnName("DailyActivityID");
                 entity.Property(e => e.EmployeeID).HasColumnName("EmployeeID");
-                entity.Property(e => e.ProjectID).HasColumnName("Id");
+                entity.Property(e => e.ProjectID).HasColumnName("ProjectID");
                 entity.Property(e => e.ActivityTypeID).HasColumnName("ActivityTypeID");
                 entity.Property(e => e.HoursQuantity).HasColumnName("HoursQuantity");
                 entity.Property(e => e.ActivityDate).HasColumnName("activity_date");
