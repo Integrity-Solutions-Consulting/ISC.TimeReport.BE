@@ -23,5 +23,6 @@ namespace isc.time.report.be.domain.Models.Response.Employees
         public string? Department { get; set; }
         public string? CorporateEmail { get; set; }
         public decimal? Salary { get; set; }
+        public bool Status { get; set; }
     }
 }
