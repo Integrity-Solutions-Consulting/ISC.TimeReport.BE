@@ -27,4 +27,4 @@ COPY --from=build /app/publish .
 
 EXPOSE 80
 
-ENTRYPOINT ["dotnet", "isc.time.report.be.dll"]
+ENTRYPOINT ["dotnet", "isc.time.report.be.api.dll"]
