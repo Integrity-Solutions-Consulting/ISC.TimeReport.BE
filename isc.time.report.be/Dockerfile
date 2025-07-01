@@ -2,30 +2,28 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copiar archivos de solución y proyectos
-COPY isc.time.report.be.sln ./
-COPY isc.time.report.be.api/isc.time.report.be.api.csproj isc.time.report.be.api/
-COPY isc.time.report.be.application/isc.time.report.be.application.csproj isc.time.report.be.application/
-COPY isc.time.report.be.domain/isc.time.report.be.domain.csproj isc.time.report.be.domain/
-COPY isc.time.report.be.infrastructure/isc.time.report.be.infrastructure.csproj isc.time.report.be.infrastructure/
+# Copiar solución y proyectos para restore
+COPY isc.time.report.be/isc.time.report.be.sln isc.time.report.be/
+COPY isc.time.report.be/isc.time.report.be.api/isc.time.report.be.api.csproj isc.time.report.be/isc.time.report.be.api/
+COPY isc.time.report.be/isc.time.report.be.application/isc.time.report.be.application.csproj isc.time.report.be/isc.time.report.be.application/
+COPY isc.time.report.be/isc.time.report.be.domain/isc.time.report.be.domain.csproj isc.time.report.be/isc.time.report.be.domain/
+COPY isc.time.report.be/isc.time.report.be.infrastructure/isc.time.report.be.infrastructure.csproj isc.time.report.be/isc.time.report.be.infrastructure/
 
-# Restaurar dependencias
-RUN dotnet restore
+RUN dotnet restore isc.time.report.be/isc.time.report.be.sln
 
-# Copiar todo el código restante
-COPY . .
+# Copiar todo el código fuente
+COPY isc.time.report.be/ isc.time.report.be/
 
-# Publicar en modo Release
-WORKDIR /src/isc.time.report.be.api
-RUN dotnet publish -c Release -o /app/publish
+RUN dotnet build isc.time.report.be/isc.time.report.be.sln -c Release -o /app/build
+
+RUN dotnet publish isc.time.report.be/isc.time.report.be.api/isc.time.report.be.api.csproj -c Release -o /app/publish /p:UseAppHost=false
 
 # Etapa 2: Runtime
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
+
 COPY --from=build /app/publish .
 
-# Configurar entorno
-ENV ASPNETCORE_URLS=http://+:8080
-EXPOSE 8080
+EXPOSE 80
 
 ENTRYPOINT ["dotnet", "isc.time.report.be.api.dll"]
