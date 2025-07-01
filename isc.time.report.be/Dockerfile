@@ -1,30 +1,31 @@
-# Etapa 1 Build
-FROM mcr.microsoft.comdotnetsdk8.0 AS build
-WORKDIR src
+# Etapa 1: Build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
 
-# Copiar solución y proyectos
-COPY ISC.TimeReport.sln .
-COPY ISC.TimeReport.DomainISC.TimeReport.Domain.csproj ISC.TimeReport.Domain
-COPY ISC.TimeReport.ApplicationISC.TimeReport.Application.csproj ISC.TimeReport.Application
-COPY ISC.TimeReport.InfrastructureISC.TimeReport.Infrastructure.csproj ISC.TimeReport.Infrastructure
-COPY ISC.TimeReport.APIISC.TimeReport.API.csproj ISC.TimeReport.API
+# Copiar archivos de solución y proyectos
+COPY ISC.TimeReport.sln ./
+COPY ISC.TimeReport.Domain/ISC.TimeReport.Domain.csproj ISC.TimeReport.Domain/
+COPY ISC.TimeReport.Application/ISC.TimeReport.Application.csproj ISC.TimeReport.Application/
+COPY ISC.TimeReport.Infrastructure/ISC.TimeReport.Infrastructure.csproj ISC.TimeReport.Infrastructure/
+COPY ISC.TimeReport.API/ISC.TimeReport.API.csproj ISC.TimeReport.API/
 
 # Restaurar dependencias
-RUN dotnet restore
+RUN dotnet restore ISC.TimeReport.sln
 
-# Copiar el resto de los archivos
+# Copiar el resto del código fuente
 COPY . .
 
 # Publicar en modo Release
-WORKDIR srcISC.TimeReport.API
-RUN dotnet publish -c Release -o apppublish
+WORKDIR /src/ISC.TimeReport.API
+RUN dotnet publish -c Release -o /app/publish
 
-# Etapa 2 Runtime
-FROM mcr.microsoft.comdotnetaspnet8.0 AS final
-WORKDIR app
-COPY --from=build apppublish .
+# Etapa 2: Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+WORKDIR /app
+COPY --from=build /app/publish .
 
-ENV ASPNETCORE_URLS=http+8080
+# Variables y puertos
+ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
-ENTRYPOINT [dotnet, ISC.TimeReport.API.dll]
+ENTRYPOINT ["dotnet", "ISC.TimeReport.API.dll"]
