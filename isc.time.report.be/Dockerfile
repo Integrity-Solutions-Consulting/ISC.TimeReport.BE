@@ -5,7 +5,7 @@ WORKDIR /src
 # Copiar solución y proyectos
 COPY isc.time.report.be.sln .
 
-COPY isc.time.report.be/isc.time.report.be.csproj isc.time.report.be/
+COPY isc.time.report.be/isc.time.report.be.api.csproj isc.time.report.be/
 COPY isc.time.report.be.application/isc.time.report.be.application.csproj isc.time.report.be.application/
 COPY isc.time.report.be.domain/isc.time.report.be.domain.csproj isc.time.report.be.domain/
 COPY isc.time.report.be.infrastructure/isc.time.report.be.infrastructure.csproj isc.time.report.be.infrastructure/
