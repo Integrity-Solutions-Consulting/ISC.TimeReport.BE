@@ -4,15 +4,15 @@ WORKDIR /src
 
 # Copiar archivos de solución y proyectos
 COPY ISC.TimeReport.sln ./
-COPY ISC.TimeReport.Domain/ISC.TimeReport.Domain.csproj ISC.TimeReport.Domain/
+COPY ISC.TimeReport.API/ISC.TimeReport.API.csproj ISC.TimeReport.API/
 COPY ISC.TimeReport.Application/ISC.TimeReport.Application.csproj ISC.TimeReport.Application/
 COPY ISC.TimeReport.Infrastructure/ISC.TimeReport.Infrastructure.csproj ISC.TimeReport.Infrastructure/
-COPY ISC.TimeReport.API/ISC.TimeReport.API.csproj ISC.TimeReport.API/
+COPY ISC.TimeReport.Domain/ISC.TimeReport.Domain.csproj ISC.TimeReport.Domain/
 
 # Restaurar dependencias
-RUN dotnet restore ISC.TimeReport.sln
+RUN dotnet restore
 
-# Copiar el resto del código fuente
+# Copiar todo el código restante
 COPY . .
 
 # Publicar en modo Release
@@ -24,7 +24,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 
-# Variables y puertos
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
