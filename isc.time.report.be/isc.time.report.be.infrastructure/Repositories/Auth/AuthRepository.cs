@@ -66,7 +66,16 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
 
             await _dbContext.Users.AddAsync(user);
 
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine(ex.InnerException?.Message); // o loguéalo
+                throw;
+            }
+
 
             var userRegistrado = await _dbContext.Users.FindAsync(user.Id);
 
