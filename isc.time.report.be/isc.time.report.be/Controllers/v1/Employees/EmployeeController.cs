@@ -4,6 +4,7 @@ using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Models.Dto;
 using isc.time.report.be.domain.Models.Request.Employees;
 using isc.time.report.be.domain.Models.Response.Employees;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isc.time.report.be.api.Controllers.v1.Employees
@@ -34,6 +35,7 @@ namespace isc.time.report.be.api.Controllers.v1.Employees
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPost("CreateEmployeeWithPersonID")]
         public async Task<ActionResult<SuccessResponse<CreateEmployeeResponse>>> CreateEmployeeWithPersonID([FromBody] CreateEmployeeWithPersonIDRequest request)
         {
@@ -41,6 +43,7 @@ namespace isc.time.report.be.api.Controllers.v1.Employees
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPost("CreateEmployeeWithPerson")]
         public async Task<ActionResult<SuccessResponse<CreateEmployeeResponse>>> CreateEmployeeWithPerson([FromBody] CreateEmployeeWithPersonOBJRequest request)
         {
@@ -48,6 +51,7 @@ namespace isc.time.report.be.api.Controllers.v1.Employees
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPut("UpdateEmployeeWithPersonID/{id}")]
         public async Task<ActionResult<SuccessResponse<UpdateEmployeeResponse>>> UpdateEmployeeWithPersonID(int id, [FromBody] UpdateEmployeeWithPersonIDRequest request)
         {
@@ -55,6 +59,7 @@ namespace isc.time.report.be.api.Controllers.v1.Employees
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPut("UpdateEmployeeWithPerson/{id}")]
         public async Task<ActionResult<SuccessResponse<UpdateEmployeeResponse>>> UpdateEmployeeWithPerson(int id, [FromBody] UpdateEmployeeWithPersonOBJRequest request)
         {
@@ -62,6 +67,7 @@ namespace isc.time.report.be.api.Controllers.v1.Employees
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpDelete("InactiveEmployeeByID/{id}")]
         public async Task<ActionResult<SuccessResponse<ActiveInactiveEmployeeResponse>>> InactivateEmployee(int id)
         {
@@ -69,6 +75,7 @@ namespace isc.time.report.be.api.Controllers.v1.Employees
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpDelete("ActiveEmployeeByID/{id}")]
         public async Task<ActionResult<SuccessResponse<ActiveInactiveEmployeeResponse>>> ActivateEmployee(int id)
         {

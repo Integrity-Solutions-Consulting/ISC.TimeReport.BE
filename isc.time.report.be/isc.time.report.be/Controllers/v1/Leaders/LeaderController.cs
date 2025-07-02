@@ -4,6 +4,7 @@ using isc.time.report.be.domain.Models.Dto;
 using isc.time.report.be.domain.Models.Request.Leaders;
 using isc.time.report.be.domain.Models.Response.Leaders;
 using isc.time.report.be.domain.Models.Response.Persons;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,7 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             _leaderService = leaderService;
         }
 
+        [Authorize(Roles = "Administrador,Gerente")]
         [HttpGet("GetAllLeaders")]
         public async Task<ActionResult<SuccessResponse<PagedResult<GetLeaderDetailsResponse>>>> GetAllLeaders([FromQuery] PaginationParams paginationParams)
         {
@@ -28,6 +30,7 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador,Gerente")]
         [HttpGet("GetLeaderByID/{id}")]
         public async Task<ActionResult<SuccessResponse<GetLeaderDetailsResponse>>> GetLeaderById(int id)
         {
@@ -35,6 +38,7 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador,Gerente")]
         [HttpPost("CreateLeaderWithPersonID")]
         public async Task<ActionResult<SuccessResponse<CreateLeaderResponse>>> CreateLeaderWithPersonID([FromBody] CreateLeaderWithPersonIDRequest request)
         {
@@ -42,6 +46,7 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador,Gerente")]
         [HttpPost("CreateLeaderWithPerson")]
         public async Task<ActionResult<SuccessResponse<CreateLeaderResponse>>> CreateLeaderWithPerson([FromBody] CreateLeaderWithPersonOBJRequest request)
         {
@@ -49,6 +54,7 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador,Gerente")]
         [HttpPut("UpdateLeaderWithPersonID/{id}")]
         public async Task<ActionResult<SuccessResponse<UpdateLeaderResponse>>> UpdateLeaderWithPersonID(int id, [FromBody] UpdateLeaderWithPersonIDRequest request)
         {
@@ -56,6 +62,7 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador,Gerente")]
         [HttpPut("UpdateLeaderWithPerson/{id}")]
         public async Task<ActionResult<SuccessResponse<UpdateLeaderResponse>>> UpdateLeaderWithPerson(int id, [FromBody] UpdateLeaderWithPersonOBJRequest request)
         {
@@ -63,6 +70,7 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador,Gerente")]
         [HttpDelete("InactivateLeaderByID/{id}")]
         public async Task<ActionResult<SuccessResponse<ActivateInactivateLeaderResponse>>> InactivateLeader(int id)
         {
@@ -70,6 +78,7 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador,Gerente")]
         [HttpDelete("ActivateLeaderByID/{id}")]
         public async Task<ActionResult<SuccessResponse<ActivateInactivateLeaderResponse>>> ActivateLeader(int id)
         {

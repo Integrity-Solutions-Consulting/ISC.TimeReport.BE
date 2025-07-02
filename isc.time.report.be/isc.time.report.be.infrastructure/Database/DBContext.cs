@@ -513,7 +513,7 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.CreationIp).HasColumnName("creation_ip");
                 entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
 
-                entity.HasMany(e => e.RoleModules)
+                entity.HasMany(e => e.RoleModule)
                       .WithOne(e => e.Module)
                       .HasForeignKey(e => e.ModuleID);
             });
@@ -543,7 +543,7 @@ namespace isc.time.report.be.infrastructure.Database
                       .HasForeignKey(e => e.RoleID);
 
                 entity.HasOne(e => e.Module)
-                      .WithMany(e => e.RoleModules)
+                      .WithMany(e => e.RoleModule)
                       .HasForeignKey(e => e.ModuleID);
 
                 entity.HasIndex(e => new { e.RoleID, e.ModuleID })
@@ -551,6 +551,38 @@ namespace isc.time.report.be.infrastructure.Database
                       .HasDatabaseName("UQ_RoleModules_RoleModule");
             });
 
+            modelBuilder.Entity<UserModule>(entity =>
+            {
+                entity.ToTable("UserModules");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnName("UserModuleID");
+                entity.Property(e => e.UserID).HasColumnName("UserID");
+                entity.Property(e => e.ModuleID).HasColumnName("ModuleID");
+                entity.Property(e => e.CanView).HasColumnName("can_view");
+                entity.Property(e => e.CanCreate).HasColumnName("can_create");
+                entity.Property(e => e.CanEdit).HasColumnName("can_edit");
+                entity.Property(e => e.CanDelete).HasColumnName("can_delete");
+
+                entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.CreationUser).HasColumnName("creation_user");
+                entity.Property(e => e.ModificationUser).HasColumnName("modification_user");
+                entity.Property(e => e.CreationDate).HasColumnName("creation_date");
+                entity.Property(e => e.ModificationDate).HasColumnName("modification_date");
+                entity.Property(e => e.CreationIp).HasColumnName("creation_ip");
+                entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
+
+                entity.HasOne(e => e.User)
+                      .WithMany(e => e.UserModule)
+                      .HasForeignKey(e => e.UserID);
+
+                entity.HasOne(e => e.Module)
+                      .WithMany(e => e.UserModule)
+                      .HasForeignKey(e => e.ModuleID);
+
+                entity.HasIndex(e => new { e.UserID, e.ModuleID })
+                      .IsUnique()
+                      .HasDatabaseName("UQ_UserModules_UserModule");
+            });
             base.OnModelCreating(modelBuilder);
         }
 
@@ -576,5 +608,6 @@ namespace isc.time.report.be.infrastructure.Database
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Module> Modules { get; set; }
         public DbSet<RoleModule> RoleModules { get; set; }
+        public DbSet<UserModule> UserModules { get; set; }
     }
 }

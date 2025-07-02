@@ -13,6 +13,8 @@ namespace isc.time.report.be.domain.Entity.Modules
         public string? ModulePath { get; set; }
         public string? Icon { get; set; }
         public int? DisplayOrder { get; set; }
-        public ICollection<RoleModule> RoleModules { get; set; }
+        public List<RoleModule> RoleModule { get; set; }
+        public List<UserModule> UserModule { get; set; }
+        public int submodule {  get; set; }
     }
 }

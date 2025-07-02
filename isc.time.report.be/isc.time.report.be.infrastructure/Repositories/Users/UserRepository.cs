@@ -1,6 +1,7 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.Auth;
 using isc.time.report.be.application.Interfaces.Repository.Users;
 using isc.time.report.be.domain.Entity.Auth;
+using isc.time.report.be.domain.Entity.Modules;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,11 @@ namespace isc.time.report.be.infrastructure.Repositories.Users
         {
             _dbContext = databaseContext;
         }
-
+        /// <summary>
+        /// SE USAAA
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<User> GetUserById(int userId)
         {
             return await _dbContext.Users
@@ -38,14 +43,27 @@ namespace isc.time.report.be.infrastructure.Repositories.Users
                 .FirstOrDefaultAsync(u => u.Username == username);
         }
 
+        /// <summary>
+        /// SE USAAA
+        /// </summary>
+        /// <returns></returns>
         public async Task<List<User>> GetAllUsers()
         {
-            return await _dbContext.Users
+            var oee = await _dbContext.Users
                 .Include(u => u.UserRole)
                     .ThenInclude(ur => ur.Role)
+                .Include(u => u.UserModule)
+                    .ThenInclude(um => um.Module)
                 .ToListAsync();
+
+            return oee;
         }
 
+        /// <summary>
+        /// SE USAAAAA
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         public async Task<User> UpdateUser(User user)
         {
             _dbContext.Users.Update(user);
@@ -88,5 +106,48 @@ namespace isc.time.report.be.infrastructure.Repositories.Users
             return true;
         }
 
+
+
+
+
+
+
+        public async Task<List<UserRole>> GetUserRolesAsync(int userId)
+        {
+            return await _dbContext.UserRoles
+                .Where(ur => ur.UserID == userId)
+                .ToListAsync();
+        }
+
+        public async Task SaveUserRolesAsync(List<UserRole> userRoles)
+        {
+            foreach (var ur in userRoles)
+            {
+                if (ur.Id == 0)
+                    await _dbContext.UserRoles.AddAsync(ur);
+                else
+                    _dbContext.UserRoles.Update(ur);
+            }
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<List<UserModule>> GetUserModulesAsync(int userId)
+        {
+            return await _dbContext.UserModules
+                .Where(um => um.UserID == userId)
+                .ToListAsync();
+        }
+
+        public async Task SaveUserModulesAsync(List<UserModule> userModules)
+        {
+            foreach (var um in userModules)
+            {
+                if (um.Id == 0)
+                    await _dbContext.UserModules.AddAsync(um);
+                else
+                    _dbContext.UserModules.Update(um);
+            }
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }

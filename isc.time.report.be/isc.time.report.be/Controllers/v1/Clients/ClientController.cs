@@ -3,6 +3,7 @@ using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Models.Dto;
 using isc.time.report.be.domain.Models.Request.Clients;
 using isc.time.report.be.domain.Models.Response.Clients;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +21,7 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
             _clientService = clientService;
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpGet("GetAllClients")]
         public async Task<ActionResult<SuccessResponse<PagedResult<GetClientsDetailsResponse>>>> GetAllClients([FromQuery] PaginationParams paginationParams)
         {
@@ -27,6 +29,7 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpGet("GetClientByID/{id}")]
         public async Task<ActionResult<SuccessResponse<GetClientsDetailsResponse>>> GetClientById(int id)
         {
@@ -34,6 +37,7 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPost("CreateClientWithPersonID")]
         public async Task<ActionResult<SuccessResponse<CreateClientResponse>>> CreateClientWithPersonID([FromBody] CreateClientWithPersonIDRequest request)
         {
@@ -41,6 +45,7 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPost("CreateClientWithPerson")]
         public async Task<ActionResult<SuccessResponse<CreateClientResponse>>> CreateClientWithPerson([FromBody] CreateClientWithPersonOBJRequest request)
         {
@@ -48,6 +53,7 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPut("UpdateClientWithPersonID/{id}")]
         public async Task<ActionResult<SuccessResponse<UpdateClientResponse>>> UpdateClientWithPersonID(int id, [FromBody] UpdateClientWithPersonIDRequest request)
         {
@@ -55,6 +61,7 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPut("UpdateClientWithPerson/{id}")]
         public async Task<ActionResult<SuccessResponse<UpdateClientResponse>>> UpdateClientWithPerson(int id, [FromBody] UpdateClientWithPersonOBJRequest request)
         {
@@ -62,6 +69,7 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpDelete("InactiveClientByID/{id}")]
         public async Task<ActionResult<SuccessResponse<ActiveInactiveClientResponse>>> InactivateClient(int id)
         {
@@ -69,6 +77,7 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpDelete("ActiveClientByID/{id}")]
         public async Task<ActionResult<SuccessResponse<ActiveInactiveClientResponse>>> ActivateClient(int id)
         {

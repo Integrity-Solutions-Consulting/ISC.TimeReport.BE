@@ -23,6 +23,7 @@ namespace isc.time.report.be.api.Controllers.v1.DailyActivities
         private int GetEmployeeIdFromToken() => int.Parse(User.Claims.First(c => c.Type == "EmployeeID").Value);
         private int GetUserIdFromToken() => int.Parse(User.Claims.First(c => c.Type == "UserID").Value);
 
+        [Authorize(Roles = "Administrador,Gerente,Lider,Colaborador")]
         [HttpGet("GetAllActivities")]
         public async Task<ActionResult<SuccessResponse<List<GetDailyActivityResponse>>>> GetAll()
         {
@@ -30,6 +31,7 @@ namespace isc.time.report.be.api.Controllers.v1.DailyActivities
             return Ok(new SuccessResponse<List<GetDailyActivityResponse>>(200, "Actividades obtenidas correctamente", result));
         }
 
+        [Authorize(Roles = "Administrador,Gerente,Lider,Colaborador")]
         [HttpGet("GetActivityByID/{id}")]
         public async Task<ActionResult<SuccessResponse<GetDailyActivityResponse>>> GetById(int id)
         {
@@ -37,6 +39,7 @@ namespace isc.time.report.be.api.Controllers.v1.DailyActivities
             return Ok(new SuccessResponse<GetDailyActivityResponse>(200, "Actividad obtenida correctamente", result));
         }
 
+        [Authorize(Roles = "Administrador,Gerente,Lider,Colaborador")]
         [HttpPost("CreateActivity")]
         public async Task<ActionResult<SuccessResponse<CreateDailyActivityResponse>>> Create([FromBody] CreateDailyActivityRequest request)
         {
@@ -44,6 +47,7 @@ namespace isc.time.report.be.api.Controllers.v1.DailyActivities
             return Ok(new SuccessResponse<CreateDailyActivityResponse>(201, "Actividad creada exitosamente", result));
         }
 
+        [Authorize(Roles = "Administrador,Gerente,Lider,Colaborador")]
         [HttpPut("UpdateActivity/{id}")]
         public async Task<ActionResult<SuccessResponse<UpdateDailyActivityResponse>>> Update(int id, [FromBody] UpdateDailyActivityRequest request)
         {
@@ -51,6 +55,7 @@ namespace isc.time.report.be.api.Controllers.v1.DailyActivities
             return Ok(new SuccessResponse<UpdateDailyActivityResponse>(200, "Actividad actualizada correctamente", result));
         }
 
+        [Authorize(Roles = "Administrador,Gerente,Lider,Colaborador")]
         [HttpDelete("InactivateActivity/{id}")]
         public async Task<ActionResult<SuccessResponse<ActiveInactiveDailyActivityResponse>>> Inactivate(int id)
         {
@@ -58,6 +63,7 @@ namespace isc.time.report.be.api.Controllers.v1.DailyActivities
             return Ok(new SuccessResponse<ActiveInactiveDailyActivityResponse>(200, "Actividad inactivada", result));
         }
 
+        [Authorize(Roles = "Administrador,Gerente,Lider,Colaborador")]
         [HttpDelete("ActivateActivity/{id}")]
         public async Task<ActionResult<SuccessResponse<ActiveInactiveDailyActivityResponse>>> Activate(int id)
         {
@@ -65,6 +71,7 @@ namespace isc.time.report.be.api.Controllers.v1.DailyActivities
             return Ok(new SuccessResponse<ActiveInactiveDailyActivityResponse>(200, "Actividad activada", result));
         }
 
+        [Authorize(Roles = "Administrador,Gerente")]
         [HttpPost("ApproveActivities")]
         public async Task<ActionResult<SuccessResponse<List<GetDailyActivityResponse>>>> ApproveActivities([FromBody] AproveDailyActivityRequest request)
         {

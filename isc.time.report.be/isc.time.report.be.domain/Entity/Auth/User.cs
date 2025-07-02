@@ -20,5 +20,6 @@ namespace isc.time.report.be.domain.Entity.Auth
         public bool? IsActive { get; set; } = true;
         public bool? MustChangePassword { get; set; } = true;
         public List<UserRole> UserRole { get; set; }
+        public List<UserModule> UserModule { get; set; }
     }
 }

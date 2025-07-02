@@ -1,4 +1,7 @@
-﻿using System;
+﻿using isc.time.report.be.domain.Entity.Auth;
+using isc.time.report.be.domain.Entity.Employees;
+using isc.time.report.be.domain.Entity.Modules;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,8 +12,11 @@ namespace isc.time.report.be.domain.Models.Response.Users
     public class GetAllUsersResponse
     {
         public int Id { get; set; }
-        public string email { get; set; }
-        public bool Status { get; set; }
-        public List<string> Roles { get; set; }
+        public int EmployeeID { get; set; }
+        public string Username { get; set; }
+        public DateTime? LastLogin { get; set; }
+        public bool? IsActive { get; set; }
+        public List<RoleResponse> Role { get; set; }
+        public List<ModuleResponse> Modules { get; set; }
     }
 }

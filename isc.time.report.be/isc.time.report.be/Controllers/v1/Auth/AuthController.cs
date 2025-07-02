@@ -19,22 +19,21 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
             {
                 this.authService = authService;
             }
-
             [HttpPost("login")]
             public async Task<ActionResult<SuccessResponse<LoginResponse>>> Login(LoginRequest loginRequest)
             {
                 var login = await authService.Login(loginRequest);
 
-                return Ok(new SuccessResponse<LoginResponse>(200, "Login èxitoso.", login));
+                return Ok(new SuccessResponse<LoginResponse>(200, "Operacion Exitosa.", login));
             }
 
         [HttpPost("register")]
-        //[Authorize(Roles = "admin")]
+        //[Authorize(Roles = "Administrador")]
             public async Task<ActionResult<SuccessResponse<RegisterResponse>>> Register(RegisterRequest registerRequest)
             {
                 var register = await authService.Register(registerRequest);
 
-                return Ok(new SuccessResponse<RegisterResponse>(200, "Registro èxitoso.", register));
+                return Ok(new SuccessResponse<RegisterResponse>(200, "Operacion Exitosa.", register));
             }
     }
 }

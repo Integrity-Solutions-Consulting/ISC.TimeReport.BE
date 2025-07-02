@@ -6,6 +6,7 @@ using isc.time.report.be.domain.Models.Dto;
 using isc.time.report.be.domain.Models.Request.Projects;
 using isc.time.report.be.domain.Models.Response.Persons;
 using isc.time.report.be.domain.Models.Response.Projects;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +24,7 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
             _projectService = projectService;
         }
 
+        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpGet("GetAllProjects")]
         public async Task<ActionResult<SuccessResponse<PagedResult<GetAllProjectsResponse>>>> GetAllProjects([FromQuery] PaginationParams paginationParams)
         {
@@ -30,6 +32,7 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
             return Ok((projects));
         }
 
+        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpGet("GetProjectByID/{id}")]
         public async Task<ActionResult<SuccessResponse<GetProjectByIDResponse>>> GetProjectBYID(int id)
         {
@@ -37,6 +40,7 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
             return Ok(project);
         }
 
+        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpPost("CreateProject")]
         public async Task<ActionResult<SuccessResponse<CreateProjectResponse>>> CreateProject(CreateProjectRequest request)
         {
@@ -45,6 +49,7 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
             return Ok(project);
         }
 
+        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpPut("UpdateProjectByID/{id}")]
         public async Task<ActionResult<SuccessResponse<UpdateProjectResponse>>> UpdateProjectById(
             int id,
@@ -55,6 +60,7 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
             return Ok(projectUpdate);
         }
 
+        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpDelete("InactiveProjectByID/{id}")]
         public async Task<ActionResult<SuccessResponse<ActiveInactiveProjectResponse>>> InactiveProjectById(int id)
         {
@@ -63,6 +69,7 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
             return Ok(inactiveProject);
         }
 
+        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpDelete("ActiveProjectByID/{id}")]
         public async Task<ActionResult<SuccessResponse<ActiveInactiveProjectResponse>>> ActiveProjectById(int id)
         {
@@ -71,6 +78,7 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
             return Ok(ActiveProject);
         }
 
+        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpPost("AssignEmployeesToProject")]
         public async Task<IActionResult> AssignEmployeesToProject([FromBody] AssignEmployeesToProjectRequest request)
         {

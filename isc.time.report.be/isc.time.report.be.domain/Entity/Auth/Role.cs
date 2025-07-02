@@ -12,7 +12,7 @@ namespace isc.time.report.be.domain.Entity.Auth
     {
         public string RoleName { get; set; } = null!;
         public string? Description { get; set; }
-        public ICollection<UserRole> UserRole { get; set; }
-        public ICollection<RoleModule> RoleModule { get; set; }
+        public List<UserRole> UserRole { get; set; }
+        public List<RoleModule> RoleModule { get; set; }
     }
 }
