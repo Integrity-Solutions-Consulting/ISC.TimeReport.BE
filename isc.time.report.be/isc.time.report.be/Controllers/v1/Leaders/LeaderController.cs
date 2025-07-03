@@ -24,9 +24,11 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
 
         [Authorize(Roles = "Administrador,Gerente")]
         [HttpGet("GetAllLeaders")]
-        public async Task<ActionResult<SuccessResponse<PagedResult<GetLeaderDetailsResponse>>>> GetAllLeaders([FromQuery] PaginationParams paginationParams)
+        public async Task<ActionResult<SuccessResponse<PagedResult<GetLeaderDetailsResponse>>>> GetAllLeaders(
+            [FromQuery] PaginationParams paginationParams,
+            [FromQuery] string? search)
         {
-            var result = await _leaderService.GetAllLeadersPaginated(paginationParams);
+            var result = await _leaderService.GetAllLeadersPaginated(paginationParams, search);
             return Ok(result);
         }
 

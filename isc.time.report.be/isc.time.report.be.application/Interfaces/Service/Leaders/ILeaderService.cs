@@ -12,7 +12,7 @@ namespace isc.time.report.be.application.Interfaces.Service.Leaders
 {
     public interface ILeaderService
     {
-        Task<PagedResult<GetLeaderDetailsResponse>> GetAllLeadersPaginated(PaginationParams paginationParams);
+        Task<PagedResult<GetLeaderDetailsResponse>> GetAllLeadersPaginated(PaginationParams paginationParams, string? search);
         Task<GetLeaderDetailsResponse> GetLeaderByID(int leaderId);
         Task<CreateLeaderResponse> CreateLeaderWithPersonID(CreateLeaderWithPersonIDRequest request);
         Task<CreateLeaderResponse> CreateLeaderWithPerson(CreateLeaderWithPersonOBJRequest request);

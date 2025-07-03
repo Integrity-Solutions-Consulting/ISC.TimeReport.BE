@@ -10,7 +10,7 @@ namespace isc.time.report.be.application.Interfaces.Repository.Employees
 {
     public interface IEmployeeRepository
     {
-        Task<PagedResult<Employee>> GetAllEmployeesPaginatedAsync(PaginationParams paginationParams);
+        Task<PagedResult<Employee>> GetAllEmployeesPaginatedAsync(PaginationParams paginationParams, string? search);
         Task<Employee> GetEmployeeByIDAsync(int employeeId);
         Task<Employee> CreateEmployeeAsync(Employee employee);
         Task<Employee> CreateEmployeeWithPersonAsync(Employee employee);

@@ -22,11 +22,27 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
             _dbContext = dbContext;
         }
 
-        public async Task<PagedResult<Client>> GetAllClientsPaginatedAsync(PaginationParams paginationParams)
+        public async Task<PagedResult<Client>> GetAllClientsPaginatedAsync(PaginationParams paginationParams, string? search)
         {
             var query = _dbContext.Clients
                 .Include(c => c.Person)
                 .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                string normalizedSearch = search.Trim().ToLower();
+
+                query = query.Where(c =>
+                    (c.TradeName != null && c.TradeName.ToLower().Contains(normalizedSearch)) ||
+                    (c.LegalName != null && c.LegalName.ToLower().Contains(normalizedSearch)) ||
+                    (c.Person != null && (
+                        (c.Person.FirstName != null && c.Person.FirstName.ToLower().Contains(normalizedSearch)) ||
+                        (c.Person.IdentificationNumber != null && c.Person.IdentificationNumber.ToLower().Contains(normalizedSearch)) ||
+                        (c.Person.Email != null && c.Person.Email.ToLower().Contains(normalizedSearch)) ||
+                        (c.Person.LastName != null && c.Person.LastName.ToLower().Contains(normalizedSearch))
+                    )));
+            }
+
             return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
         }
 

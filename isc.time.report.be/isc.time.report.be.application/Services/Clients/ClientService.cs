@@ -26,9 +26,9 @@ namespace isc.time.report.be.application.Services.Clients
             _mapper = mapper;
         }
 
-        public async Task<PagedResult<GetClientsDetailsResponse>> GetAllClientsPaginated(PaginationParams paginationParams)
+        public async Task<PagedResult<GetClientsDetailsResponse>> GetAllClientsPaginated(PaginationParams paginationParams, string? search)
         {
-            var result = await _clientRepository.GetAllClientsPaginatedAsync(paginationParams);
+            var result = await _clientRepository.GetAllClientsPaginatedAsync(paginationParams, search);
             var mapped = _mapper.Map<List<GetClientsDetailsResponse>>(result.Items);
 
             return new PagedResult<GetClientsDetailsResponse>
