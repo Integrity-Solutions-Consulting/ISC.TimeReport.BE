@@ -13,7 +13,7 @@ namespace isc.time.report.be.application.Interfaces.Service.Projects
     public interface IProjectService
     {
         Task<CreateProjectResponse> CreateProject(CreateProjectRequest projectRequest);
-        Task<PagedResult<GetAllProjectsResponse>> GetAllProjectsPaginated(PaginationParams paginationParams);
+        Task<PagedResult<GetAllProjectsResponse>> GetAllProjectsPaginated(PaginationParams paginationParams, string? search);
         Task<GetProjectByIDResponse> GetProjectByID(int projectID);
         Task<UpdateProjectResponse> UpdateProject(int projectId, UpdateProjectRequest projectParaUpdate);
         Task<ActiveInactiveProjectResponse> InactiveProject(int projectId);

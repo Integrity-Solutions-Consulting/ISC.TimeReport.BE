@@ -26,10 +26,10 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
 
         [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpGet("GetAllProjects")]
-        public async Task<ActionResult<SuccessResponse<PagedResult<GetAllProjectsResponse>>>> GetAllProjects([FromQuery] PaginationParams paginationParams)
+        public async Task<ActionResult<SuccessResponse<PagedResult<GetAllProjectsResponse>>>> GetAllProjects([FromQuery] PaginationParams paginationParams, [FromQuery] string? search)
         {
-            var projects = await _projectService.GetAllProjectsPaginated(paginationParams);
-            return Ok((projects));
+            var projects = await _projectService.GetAllProjectsPaginated(paginationParams, search);
+            return Ok(projects);
         }
 
         [Authorize(Roles = "Administrador,Gerente,Lider")]

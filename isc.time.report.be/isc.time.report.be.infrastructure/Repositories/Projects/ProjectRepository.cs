@@ -22,9 +22,21 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
             _dbContext = dbContext;
         }
 
-        public async Task<PagedResult<Project>> GetAllProjectsPaginatedAsync(PaginationParams paginationParams)
+        public async Task<PagedResult<Project>> GetAllProjectsPaginatedAsync(
+            PaginationParams paginationParams,
+            string? search)
         {
             var query = _dbContext.Projects.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                string normalizedSearch = search.Trim().ToLower();
+
+                query = query.Where(p =>
+                    p.Name.ToLower().Contains(normalizedSearch) ||
+                    p.Code.ToLower().Contains(normalizedSearch));
+            }
+
             return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
         }
 
