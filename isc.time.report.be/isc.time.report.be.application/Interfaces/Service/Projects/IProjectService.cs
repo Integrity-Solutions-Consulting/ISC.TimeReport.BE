@@ -19,5 +19,6 @@ namespace isc.time.report.be.application.Interfaces.Service.Projects
         Task<ActiveInactiveProjectResponse> InactiveProject(int projectId);
         Task<ActiveInactiveProjectResponse> ActiveProject(int projectId);
         Task AssignEmployeesToProject(AssignEmployeesToProjectRequest request);
+        Task<GetProjectDetailByIDResponse?> GetProjectDetailByID(int projectID);
     }
 }

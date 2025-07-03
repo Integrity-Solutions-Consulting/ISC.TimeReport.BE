@@ -11,6 +11,7 @@ using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.Projects;
 using isc.time.report.be.domain.Models.Response.Auth;
+using isc.time.report.be.domain.Models.Response.Employees;
 using isc.time.report.be.domain.Models.Response.Projects;
 using isc.time.report.be.domain.Models.Response.Users;
 using System;
@@ -70,7 +71,7 @@ namespace isc.time.report.be.application.Services.Projects
 
             if (projectNew.StartDate > projectNew.EndDate)
             {
-                throw new ClientFaultException("No puede ingresar una fecha de Inicio anterior a la fecha de fin.", 401);
+                throw new ClientFaultException("No puede ingresar una fecha de Fin anterior a la fecha de Inicio.", 401);
             }
 
             return _mapper.Map<CreateProjectResponse>(projectNew);
@@ -96,9 +97,9 @@ namespace isc.time.report.be.application.Services.Projects
             projectGet.ActualEndDate = projectParaUpdate.ActualEndDate;
             projectGet.Budget = projectParaUpdate.Budget;
 
-            if (projectGet.StartDate < projectGet.EndDate)
+            if (projectGet.StartDate > projectGet.EndDate)
             {
-                throw new ClientFaultException("No puede ingresar una fecha de Inicio anterior a la fecha de fin.", 401);
+                throw new ClientFaultException("No puede ingresar una fecha de Fin anterior a la fecha de Anterior.", 401);
             }
 
             var projectUpdated = await projectRepository.UpdateProjectAsync(projectGet);
@@ -175,5 +176,49 @@ namespace isc.time.report.be.application.Services.Projects
 
             await projectRepository.SaveAssignmentsAsync(finalList);
         }
+
+        public async Task<GetProjectDetailByIDResponse?> GetProjectDetailByID(int projectID)
+        {
+            var project = await projectRepository.GetProjectDetailByIDAsync(projectID);
+
+            if (project == null)
+                return null;
+
+            var response = new GetProjectDetailByIDResponse
+            {
+                Id = project.Id,
+                ClientID = project.ClientID,
+                ProjectStatusID = project.ProjectStatusID,
+                Code = project.Code,
+                Name = project.Name,
+                Description = project.Description,
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                ActualStartDate = project.ActualStartDate,
+                ActualEndDate = project.ActualEndDate,
+                Budget = project.Budget,
+                EmployeeProjects = project.EmployeeProject.Select(ep => new GetEmployeeProjectResponse
+                {
+                    Id = ep.Id,
+                    EmployeeID = ep.EmployeeID,
+                    ProjectID = ep.ProjectID,
+                    Status = ep.Status
+                }).ToList(),
+                EmployeesPersonInfo = project.EmployeeProject.Select(ep => ep.Employee).Distinct().Select(e => new GetEmployeesPersonInfoResponse
+                {
+                    Id = e.Id,
+                    PersonID = e.PersonID,
+                    EmployeeCode = e.EmployeeCode,
+                    IdentificationNumber = e.Person.IdentificationNumber,
+                    FirstName = e.Person.FirstName,
+                    LastName = e.Person.LastName,
+                    Status = e.Status
+                }).ToList()
+            };
+
+            return response;
+        }
+
+
     }
 }

@@ -85,5 +85,14 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
             await _projectService.AssignEmployeesToProject(request);
             return Ok(new { message = "Asignaciones actualizadas correctamente." });
         }
+
+        [Authorize(Roles = "Administrador,Gerente,Lider")]
+        [HttpGet("GetProjectDetailByID/{id}")]
+        public async Task<ActionResult<SuccessResponse<GetProjectDetailByIDResponse>>> GetProjectDetailByID(int id)
+        {
+            var result = await _projectService.GetProjectDetailByID(id);
+
+            return Ok(result);
+        }
     }
 }
