@@ -10,7 +10,7 @@ namespace isc.time.report.be.application.Interfaces.Repository.Leaders
 {
     public interface ILeaderRepository
     {
-        Task<PagedResult<Leader>> GetAllLeadersPaginatedAsync(PaginationParams paginationParams);
+        Task<PagedResult<Leader>> GetAllLeadersPaginatedAsync(PaginationParams paginationParams, string? search);
         Task<Leader> GetLeaderByIDAsync(int leaderId);
         Task<Leader> CreateLeaderAsync(Leader leader);
         Task<Leader> CreateLeaderWithPersonAsync(Leader leader);

@@ -12,7 +12,7 @@ namespace isc.time.report.be.application.Interfaces.Service.Employees
 {
     public interface IEmployeeService
     {
-        Task<PagedResult<GetEmployeeDetailsResponse>> GetAllEmployeesPaginated(PaginationParams paginationParams);
+        Task<PagedResult<GetEmployeeDetailsResponse>> GetAllEmployeesPaginated(PaginationParams paginationParams, string? search);
         Task<GetEmployeeDetailsResponse> GetEmployeeByID(int employeeId);
         Task<CreateEmployeeResponse> CreateEmployeeWithPersonID(CreateEmployeeWithPersonIDRequest request);
         Task<CreateEmployeeResponse> CreateEmployeeWithPerson(CreateEmployeeWithPersonOBJRequest request);

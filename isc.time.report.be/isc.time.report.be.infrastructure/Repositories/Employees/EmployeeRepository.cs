@@ -23,11 +23,26 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
             _dbContext = dbContext;
         }
 
-        public async Task<PagedResult<Employee>> GetAllEmployeesPaginatedAsync(PaginationParams paginationParams)
+        public async Task<PagedResult<Employee>> GetAllEmployeesPaginatedAsync(PaginationParams paginationParams, string? search)
         {
             var query = _dbContext.Employees
                 .Include(e => e.Person)
                 .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                string normalizedSearch = search.Trim().ToLower();
+
+                query = query.Where(e =>
+                    (e.EmployeeCode != null && e.EmployeeCode.ToLower().Contains(normalizedSearch)) ||
+                    (e.Department != null && e.Department.ToLower().Contains(normalizedSearch)) ||
+                    (e.CorporateEmail != null && e.CorporateEmail.ToLower().Contains(normalizedSearch)) ||
+                    (e.Person != null && (
+                        (e.Person.FirstName != null && e.Person.FirstName.ToLower().Contains(normalizedSearch)) ||
+                        (e.Person.IdentificationNumber != null && e.Person.IdentificationNumber.Contains(normalizedSearch)) ||
+                        (e.Person.LastName != null && e.Person.LastName.ToLower().Contains(normalizedSearch))
+                    )));
+            }
 
             return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
         }

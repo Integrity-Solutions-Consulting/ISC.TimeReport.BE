@@ -27,9 +27,9 @@ namespace isc.time.report.be.application.Services.Leaders
             _mapper = mapper;
         }
 
-        public async Task<PagedResult<GetLeaderDetailsResponse>> GetAllLeadersPaginated(PaginationParams paginationParams)
+        public async Task<PagedResult<GetLeaderDetailsResponse>> GetAllLeadersPaginated(PaginationParams paginationParams, string? search)
         {
-            var result = await _leaderRepository.GetAllLeadersPaginatedAsync(paginationParams);
+            var result = await _leaderRepository.GetAllLeadersPaginatedAsync(paginationParams, search);
             var mapped = _mapper.Map<List<GetLeaderDetailsResponse>>(result.Items);
 
             return new PagedResult<GetLeaderDetailsResponse>

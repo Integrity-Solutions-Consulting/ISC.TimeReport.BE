@@ -22,12 +22,28 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
             _dbContext = dbContext;
         }
 
-        public async Task<PagedResult<Leader>> GetAllLeadersPaginatedAsync(PaginationParams paginationParams)
+        public async Task<PagedResult<Leader>> GetAllLeadersPaginatedAsync(PaginationParams paginationParams, string? search)
         {
             var query = _dbContext.Leaders
                 .Include(e => e.Person)
                 .Include(e => e.Project)
                 .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                string normalizedSearch = search.Trim();
+
+                query = query.Where(l =>
+                    (l.Person != null && (
+                        (l.Person.FirstName != null && l.Person.FirstName.Contains(normalizedSearch)) ||
+                        (l.Person.LastName != null && l.Person.LastName.Contains(normalizedSearch)) ||
+                        (l.Person.IdentificationNumber != null && l.Person.IdentificationNumber.Contains(normalizedSearch))
+                    )) ||
+                    (l.Responsibilities != null && l.Responsibilities.Contains(normalizedSearch)) ||
+                    (l.Project != null && l.Project.Name != null && l.Project.Name.Contains(normalizedSearch))
+                );
+            }
+
             return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
         }
 

@@ -28,9 +28,9 @@ namespace isc.time.report.be.application.Services.Employees
             _mapper = mapper;
         }
 
-        public async Task<PagedResult<GetEmployeeDetailsResponse>> GetAllEmployeesPaginated(PaginationParams paginationParams)
+        public async Task<PagedResult<GetEmployeeDetailsResponse>> GetAllEmployeesPaginated(PaginationParams paginationParams, string? search)
         {
-            var result = await _employeeRepository.GetAllEmployeesPaginatedAsync(paginationParams);
+            var result = await _employeeRepository.GetAllEmployeesPaginatedAsync(paginationParams, search);
             var mapped = _mapper.Map<List<GetEmployeeDetailsResponse>>(result.Items);
 
             return new PagedResult<GetEmployeeDetailsResponse>

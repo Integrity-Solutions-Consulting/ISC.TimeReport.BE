@@ -22,9 +22,11 @@ namespace isc.time.report.be.api.Controllers.v1.Employees
         }
 
         [HttpGet("GetAllEmployees")]
-        public async Task<ActionResult<SuccessResponse<PagedResult<GetEmployeeDetailsResponse>>>> GetAllEmployees([FromQuery] PaginationParams paginationParams)
+        public async Task<ActionResult<SuccessResponse<PagedResult<GetEmployeeDetailsResponse>>>> GetAllEmployees(
+            [FromQuery] PaginationParams paginationParams,
+            [FromQuery] string? search)
         {
-            var result = await _employeeService.GetAllEmployeesPaginated(paginationParams);
+            var result = await _employeeService.GetAllEmployeesPaginated(paginationParams, search);
             return Ok(result);
         }
 

@@ -22,9 +22,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
             _dbContext = dbContext;
         }
 
-        public async Task<PagedResult<Project>> GetAllProjectsPaginatedAsync(
-            PaginationParams paginationParams,
-            string? search)
+        public async Task<PagedResult<Project>> GetAllProjectsPaginatedAsync(PaginationParams paginationParams, string? search)
         {
             var query = _dbContext.Projects.AsQueryable();
 
