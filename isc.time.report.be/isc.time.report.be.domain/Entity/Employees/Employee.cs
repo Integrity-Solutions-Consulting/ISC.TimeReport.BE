@@ -23,7 +23,7 @@ namespace isc.time.report.be.domain.Entity.Employees
         public string? Department { get; set; }
         public string? CorporateEmail { get; set; }
         public decimal? Salary { get; set; }
-        public ICollection<EmployeeProject> EmployeeProject { get; set; }
-        public ICollection<User> User { get; set; }
+        public List<EmployeeProject> EmployeeProject { get; set; }
+        public List<User> User { get; set; }
     }
 }

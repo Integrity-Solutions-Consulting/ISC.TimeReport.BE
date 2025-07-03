@@ -113,5 +113,14 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task<Project?> GetProjectDetailByIDAsync(int projectId)
+        {
+            return await _dbContext.Projects
+                .Include(p => p.EmployeeProject)
+                    .ThenInclude(ep => ep.Employee)
+                        .ThenInclude(e => e.Person)
+                .FirstOrDefaultAsync(p => p.Id == projectId);
+        }
+
     }
 }
