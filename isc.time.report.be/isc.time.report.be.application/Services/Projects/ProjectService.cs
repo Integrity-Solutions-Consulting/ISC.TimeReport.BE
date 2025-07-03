@@ -33,12 +33,13 @@ namespace isc.time.report.be.application.Services.Projects
             _mapper = mapper;
         }
 
-        public async Task<PagedResult<GetAllProjectsResponse>> GetAllProjectsPaginated(PaginationParams paginationParams)
+        public async Task<PagedResult<GetAllProjectsResponse>> GetAllProjectsPaginated(
+            PaginationParams paginationParams,
+            string? search)
         {
-            var result = await projectRepository.GetAllProjectsPaginatedAsync(paginationParams);
+            var result = await projectRepository.GetAllProjectsPaginatedAsync(paginationParams, search);
 
             var responseItems = _mapper.Map<List<GetAllProjectsResponse>>(result.Items);
-
 
             return new PagedResult<GetAllProjectsResponse>
             {
