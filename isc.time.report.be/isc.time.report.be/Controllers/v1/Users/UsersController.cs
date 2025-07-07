@@ -59,12 +59,20 @@ namespace isc.time.report.be.api.Controllers.v1.Users
             });
         }
 
-        [Authorize(Roles = "Administrador")]
-        [HttpPut("ChangePassword/{id}")]
-        public async Task<ActionResult<SuccessResponse<UserResponse>>> ChangePasswordById(int id, [FromBody] UpdatePasswordRequest request)
+        [Authorize]
+        [HttpPut("ChangePassword")]
+        public async Task<ActionResult<SuccessResponse<string>>> ChangePassword([FromBody] UpdatePasswordRequest request)
         {
-            var updatedPassword = await userService.UpdatePassword(id, request);
-            return Ok(new SuccessResponse<UserResponse>
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "UserID")?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new { Message = "Usuario no autorizado." });
+            }
+
+            var updatedPassword = await userService.UpdatePassword(userId, request);
+
+            return Ok(new SuccessResponse<string>
             {
                 TraceId = HttpContext.TraceIdentifier,
                 Data = updatedPassword

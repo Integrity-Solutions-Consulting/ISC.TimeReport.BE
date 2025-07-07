@@ -5,6 +5,7 @@ using isc.time.report.be.application.Interfaces.Service.Users;
 using isc.time.report.be.application.Utils.Auth;
 using isc.time.report.be.domain.Entity.Auth;
 using isc.time.report.be.domain.Entity.Modules;
+using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.Users;
 using isc.time.report.be.domain.Models.Response.Users;
 using isc.time.report.be.domain.Models.Response.Users;
@@ -95,28 +96,26 @@ namespace isc.time.report.be.application.Services.Users
                 email = updatedUser.Username,
             };
         }
-        /// <summary>
-        /// SE USA PA UPDATE
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public async Task<UserResponse> UpdatePassword(int id, UpdatePasswordRequest request)
+
+        public async Task<string> UpdatePassword(int userId, UpdatePasswordRequest request)
         {
-            var user = await userRepository.GetUserById(id);
+            var user = await userRepository.GetUserById(userId);
             if (user == null)
                 throw new Exception("Usuario no encontrado");
 
-            user.PasswordHash = passwordUtils.HashPassword(request.Password);
+            var isValidPassword = passwordUtils.VerifyPassword(request.OldPassword, user.PasswordHash);
+            if (!isValidPassword)
+                throw new ClientFaultException("La contraseña actual es incorrecta.", 400);
+
+            if (request.NewPassword != request.ConfirmPassword)
+                throw new ClientFaultException("La nueva contraseña y su confirmación no coinciden.", 400);
+
+            user.PasswordHash = passwordUtils.HashPassword(request.NewPassword);
+            user.MustChangePassword = false;
 
             var updatedUser = await userRepository.UpdateUser(user);
 
-            return new UserResponse
-            {
-                email = updatedUser.Username,
-                Password = updatedUser.PasswordHash
-            };
+            return "Contraseña cambiada correctamente";
         }
         /// <summary>
         /// SEUSAAA

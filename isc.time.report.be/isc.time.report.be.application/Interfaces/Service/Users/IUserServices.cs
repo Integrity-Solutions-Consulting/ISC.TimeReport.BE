@@ -16,7 +16,7 @@ namespace isc.time.report.be.application.Interfaces.Service.Users
 
         Task<UserResponse> SuspendUser(int id);
         Task<UserResponse> UnSuspendUser(int id);
-        Task<UserResponse> UpdatePassword(int id, UpdatePasswordRequest request);
+        Task<string> UpdatePassword(int id, UpdatePasswordRequest request);
         Task<List<GetAllUsersResponse>> GetAllUsersAsync();
         Task AssignRolesToUser(AssignRolesToUserRequest request);
         Task AssignModulesToUser(AssignModuleToUserRequest request);
