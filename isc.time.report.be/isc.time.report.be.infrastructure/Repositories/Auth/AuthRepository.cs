@@ -140,6 +140,83 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
 
             return menus;
         }
+
+        public async Task<Role?> GetRoleByNameAsync(string name)
+        {
+            return await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleName == name);
+        }
+
+        public async Task CreateRoleAsync(Role role)
+        {
+            await _dbContext.Roles.AddAsync(role);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<List<Role>> GetAllRolesWithModulesAsync()
+        {
+            return await _dbContext.Roles
+                .Include(r => r.RoleModule)
+                    .ThenInclude(rm => rm.Module)
+                .ToListAsync();
+        }
+
+        public async Task<Role?> GetRoleByIdAsync(int id)
+        {
+            return await _dbContext.Roles
+                .Include(r => r.RoleModule)
+                .FirstOrDefaultAsync(r => r.Id == id);
+        }
+
+        public async Task UpdateRoleModulesAsync(Role role, List<int> newModuleIds)
+        {
+            var now = DateTime.Now;
+            var existing = role.RoleModule;
+
+            var finalList = new List<RoleModule>();
+
+            foreach (var moduleId in newModuleIds)
+            {
+                var existingMod = existing.FirstOrDefault(rm => rm.ModuleID == moduleId);
+                if (existingMod == null)
+                {
+                    finalList.Add(new RoleModule
+                    {
+                        RoleID = role.Id,
+                        ModuleID = moduleId,
+                        Status = true,
+                        CanView = true,
+                        CreationDate = now,
+                        CreationUser = "SYSTEM"
+                    });
+                }
+                else if (!existingMod.Status)
+                {
+                    existingMod.Status = true;
+                    existingMod.ModificationDate = now;
+                    existingMod.ModificationUser = "SYSTEM";
+                    finalList.Add(existingMod);
+                }
+                else
+                {
+                    finalList.Add(existingMod);
+                }
+            }
+
+            foreach (var rm in existing)
+            {
+                if (!newModuleIds.Contains(rm.ModuleID) && rm.Status)
+                {
+                    rm.Status = false;
+                    rm.ModificationDate = now;
+                    rm.ModificationUser = "SYSTEM";
+                    finalList.Add(rm);
+                }
+            }
+
+            _dbContext.RoleModules.UpdateRange(finalList);
+            await _dbContext.SaveChangesAsync();
+        }
+
     }
 }
 

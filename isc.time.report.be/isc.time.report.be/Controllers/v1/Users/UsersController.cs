@@ -107,5 +107,29 @@ namespace isc.time.report.be.api.Controllers.v1.Users
             return Ok(new { message = "Módulos actualizados correctamente." });
         }
 
+        [HttpGet("GetRolesOfUser/{id}")]
+        [Authorize(Roles = "Administrador")]
+        public async Task<ActionResult<SuccessResponse<GetRolesOfUserResponse>>> GetRolesOfUser(int id)
+        {
+            var userRoles = await userService.GetRolesOfUser(id);
+            return Ok(new SuccessResponse<GetRolesOfUserResponse>
+            {
+                TraceId = HttpContext.TraceIdentifier,
+                Data = userRoles
+            });
+        }
+
+        [HttpGet("GetAccessibleModules/{id}")]
+        [Authorize]
+        public async Task<ActionResult<SuccessResponse<GetModulesOfUserResponse>>> GetAccessibleModules(int id)
+        {
+            var modules = await userService.GetModulesOfUser(id);
+            return Ok(new SuccessResponse<GetModulesOfUserResponse>
+            {
+                TraceId = HttpContext.TraceIdentifier,
+                Data = modules
+            });
+        }
+
     }
 }

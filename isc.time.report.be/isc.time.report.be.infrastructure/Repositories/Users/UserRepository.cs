@@ -27,11 +27,15 @@ namespace isc.time.report.be.infrastructure.Repositories.Users
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<User> GetUserById(int userId)
+        public async Task<User?> GetUserById(int userId)
         {
             return await _dbContext.Users
                 .Include(u => u.UserRole)
                     .ThenInclude(ur => ur.Role)
+                        .ThenInclude(r => r.RoleModule)
+                            .ThenInclude(rm => rm.Module)
+                .Include(u => u.UserModule)
+                    .ThenInclude(um => um.Module)
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
@@ -49,15 +53,16 @@ namespace isc.time.report.be.infrastructure.Repositories.Users
         /// <returns></returns>
         public async Task<List<User>> GetAllUsers()
         {
-            var oee = await _dbContext.Users
+            return await _dbContext.Users
                 .Include(u => u.UserRole)
                     .ThenInclude(ur => ur.Role)
+                        .ThenInclude(r => r.RoleModule)
+                            .ThenInclude(rm => rm.Module)
                 .Include(u => u.UserModule)
                     .ThenInclude(um => um.Module)
                 .ToListAsync();
-
-            return oee;
         }
+
 
         /// <summary>
         /// SE USAAAAA

@@ -3,7 +3,9 @@ using isc.time.report.be.application.Interfaces.Repository.Menus;
 using isc.time.report.be.application.Interfaces.Service.Auth;
 using isc.time.report.be.application.Utils.Auth;
 using isc.time.report.be.domain.Entity.Auth;
+using isc.time.report.be.domain.Entity.Modules;
 using isc.time.report.be.domain.Exceptions;
+using isc.time.report.be.domain.Models.Request.Auth;
 using isc.time.report.be.domain.Models.Response.Auth;
 using isc.time.report.be.domain.Models.Response.Menus;
 using isc.time.report.be.domain.Models.Response.Users;
@@ -148,5 +150,80 @@ namespace isc.time.report.be.application.Services.Auth
                 Roles = Roles
             };
         }
+
+        public async Task<RoleResponse> CreateRoleAsync(CreateRoleRequest request)
+        {
+            var existing = await authRepository.GetRoleByNameAsync(request.RoleName);
+            if (existing != null)
+                throw new ClientFaultException("Ya existe un rol con ese nombre", 400);
+
+            var newRole = new Role
+            {
+                RoleName = request.RoleName,
+                Description = request.Description,
+                Status = true,
+                CreationUser = "SYSTEM",
+                CreationIp = "0.0.0.0",
+                CreationDate = DateTime.Now,
+                RoleModule = request.ModuleIds.Select(moduleId => new RoleModule
+                {
+                    ModuleID = moduleId,
+                    CanView = true,
+                    Status = true,
+                    CreationUser = "SYSTEM",
+                    CreationIp = "0.0.0.0",
+                    CreationDate = DateTime.Now
+                }).ToList()
+            };
+
+            await authRepository.CreateRoleAsync(newRole);
+
+            return new RoleResponse
+            {
+                Id = newRole.Id,
+                RoleName = newRole.RoleName
+            };
+        }
+
+        public async Task<List<GetRolesResponse>> GetAllRolesAsync()
+        {
+            var roles = await authRepository.GetAllRolesWithModulesAsync();
+
+            return roles.Select(r => new GetRolesResponse
+            {
+                Id = r.Id,
+                RoleName = r.RoleName,
+                Description = r.Description,
+                Modules = r.RoleModule.Select(rm => new ModuleResponse
+                {
+                    Id = rm.Module.Id,
+                    ModuleName = rm.Module.ModuleName,
+                    ModulePath = rm.Module.ModulePath,
+                    Icon = rm.Module.Icon,
+                    DisplayOrder = rm.Module.DisplayOrder
+                }).ToList()
+            }).ToList();
+        }
+
+        public async Task<RoleResponse> UpdateRoleAsync(int id, UpdateRoleRequest request)
+        {
+            var role = await authRepository.GetRoleByIdAsync(id);
+            if (role == null)
+                throw new ClientFaultException("Rol no encontrado", 404);
+
+            role.RoleName = request.RoleName;
+            role.Description = request.Description;
+            role.ModificationUser = "SYSTEM";
+            role.ModificationDate = DateTime.Now;
+
+            await authRepository.UpdateRoleModulesAsync(role, request.ModuleIds);
+
+            return new RoleResponse
+            {
+                Id = role.Id,
+                RoleName = role.RoleName
+            };
+        }
+
     }
 }

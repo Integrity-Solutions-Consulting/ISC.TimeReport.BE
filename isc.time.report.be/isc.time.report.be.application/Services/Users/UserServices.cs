@@ -125,11 +125,59 @@ namespace isc.time.report.be.application.Services.Users
         {
             var users = await userRepository.GetAllUsers();
 
-            var result = _mapper.Map<List<GetAllUsersResponse>>(users);
+            var result = new List<GetAllUsersResponse>();
+
+            foreach (var user in users)
+            {
+                var roles = user.UserRole?
+                    .Where(ur => ur.Status && ur.Role != null)
+                    .Select(ur => new RoleResponse
+                    {
+                        Id = ur.Role.Id,
+                        RoleName = ur.Role.RoleName
+                    })
+                    .ToList() ?? new List<RoleResponse>();
+
+                var userModules = user.UserModule?
+                    .Where(um => um.Status && um.Module != null)
+                    .Select(um => um.Module)
+                    .ToList() ?? new List<Module>();
+
+                var roleModules = user.UserRole?
+                    .Where(ur => ur.Status && ur.Role != null)
+                    .SelectMany(ur => ur.Role.RoleModule
+                        .Where(rm => rm.Status && rm.Module != null)
+                        .Select(rm => rm.Module))
+                    .ToList() ?? new List<Module>();
+
+                var allModules = userModules
+                    .Concat(roleModules)
+                    .GroupBy(m => m.Id)
+                    .Select(g => g.First())
+                    .ToList();
+
+                var moduleResponses = allModules.Select(m => new ModuleResponse
+                {
+                    Id = m.Id,
+                    ModuleName = m.ModuleName,
+                    ModulePath = m.ModulePath,
+                    Icon = m.Icon,
+                    DisplayOrder = m.DisplayOrder
+                }).ToList();
+
+                result.Add(new GetAllUsersResponse
+                {
+                    Id = user.Id,
+                    EmployeeID = user.EmployeeID,
+                    Username = user.Username,
+                    IsActive = user.IsActive,
+                    Role = roles,
+                    Modules = moduleResponses
+                });
+            }
 
             return result;
         }
-
 
 
         public async Task AssignRolesToUser(AssignRolesToUserRequest request)
@@ -227,6 +275,80 @@ namespace isc.time.report.be.application.Services.Users
             }
 
             await userRepository.SaveUserModulesAsync(finalList);
+        }
+
+        public async Task<GetRolesOfUserResponse> GetRolesOfUser(int userId)
+        {
+            var user = await userRepository.GetUserById(userId);
+            if (user == null)
+                throw new ClientFaultException("Usuario no encontrado", 404);
+
+            if (user.UserRole == null || !user.UserRole.Any(r => r.Status))
+                throw new ClientFaultException("El usuario no tiene roles asignados", 404);
+
+            var roles = user.UserRole
+                .Where(r => r.Status && r.Role != null)
+                .Select(r => new RoleResponse
+                {
+                    Id = r.Role.Id,
+                    RoleName = r.Role.RoleName
+                })
+                .ToList();
+
+            return new GetRolesOfUserResponse
+            {
+                Id = user.Id,
+                EmployeeID = user.EmployeeID,
+                Username = user.Username,
+                IsActive = user.IsActive,
+                Role = roles
+            };
+        }
+
+        public async Task<GetModulesOfUserResponse> GetModulesOfUser(int userId)
+        {
+            var user = await userRepository.GetUserById(userId);
+            if (user == null)
+                throw new ClientFaultException("Usuario no encontrado", 404);
+
+            var directModules = user.UserModule?
+                .Where(m => m.Status && m.Module != null)
+                .Select(m => m.Module)
+                .ToList() ?? new List<Module>();
+
+            var roleModules = user.UserRole?
+                .Where(ur => ur.Status && ur.Role != null)
+                .SelectMany(ur => ur.Role.RoleModule
+                    .Where(rm => rm.Status && rm.Module != null)
+                    .Select(rm => rm.Module))
+                .ToList() ?? new List<Module>();
+
+            var allModules = directModules
+                .Concat(roleModules)
+                .GroupBy(m => m.Id)
+                .Select(g => g.First()) // Elimina duplicados por ID
+                .ToList();
+
+            if (!allModules.Any())
+                throw new ClientFaultException("El usuario no tiene módulos asignados", 404);
+
+            var responseModules = allModules.Select(m => new ModuleResponse
+            {
+                Id = m.Id,
+                ModuleName = m.ModuleName,
+                ModulePath = m.ModulePath,
+                Icon = m.Icon,
+                DisplayOrder = m.DisplayOrder
+            }).ToList();
+
+            return new GetModulesOfUserResponse
+            {
+                Id = user.Id,
+                EmployeeID = user.EmployeeID,
+                Username = user.Username,
+                IsActive = user.IsActive,
+                Modules = responseModules
+            };
         }
 
     }

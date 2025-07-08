@@ -20,5 +20,7 @@ namespace isc.time.report.be.application.Interfaces.Service.Users
         Task<List<GetAllUsersResponse>> GetAllUsersAsync();
         Task AssignRolesToUser(AssignRolesToUserRequest request);
         Task AssignModulesToUser(AssignModuleToUserRequest request);
+        Task<GetRolesOfUserResponse> GetRolesOfUser(int userId);
+        Task<GetModulesOfUserResponse> GetModulesOfUser(int userId);
     }
 }

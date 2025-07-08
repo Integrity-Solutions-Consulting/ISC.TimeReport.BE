@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using isc.time.report.be.domain.Entity.Auth;
 using isc.time.report.be.domain.Entity.Modules;
+using isc.time.report.be.domain.Models.Request.Auth;
+using isc.time.report.be.domain.Models.Response.Auth;
 using isc.time.report.be.domain.Models.Response.Users;
 using System;
 using System.Collections.Generic;
@@ -35,12 +37,23 @@ namespace isc.time.report.be.application.Utils.Mapping
             CreateMap<Module, ModuleResponse>();
             CreateMap<ModuleResponse, Module>();
 
-            CreateMap<Role, RoleResponse>();
-            CreateMap<RoleResponse, Role>();
-
             CreateMap<User, UserResponse>();
             CreateMap<UserResponse, User>();
 
+            CreateMap<Role, CreateRoleRequest>();
+            CreateMap<CreateRoleRequest, Role>();
+
+            CreateMap<Role, UpdateRoleRequest>();
+            CreateMap<UpdateRoleRequest, Role>();
+
+            CreateMap<Role, GetRolesResponse>();
+            CreateMap<GetRolesResponse, Role>();
+
+            CreateMap<User, GetModulesOfUserResponse>();
+            CreateMap<GetModulesOfUserResponse, User>();
+
+            CreateMap<User, GetRolesOfUserResponse>();
+            CreateMap<GetRolesOfUserResponse, User>();
         }
     }
 }
