@@ -22,7 +22,7 @@ namespace isc.time.report.be.application.Utils.Auth
             this.configuration = configuration;
         }
 
-        public string GenerateToken(User user, int expiryMinutes = 60)
+        public string GenerateToken(User user, int expiryMinutes = 60, bool isRecovery = false)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:JWTSecretKey"]));
@@ -31,17 +31,12 @@ namespace isc.time.report.be.application.Utils.Auth
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim("UserID", user.Id.ToString()),
-                new Claim("EmployeeID", user.EmployeeID.ToString()),
-                new Claim("PersonID", user.Employee?.PersonID.ToString() ?? "0")
+                new Claim("UserID", user.Id.ToString())
             };
 
-            if (user.UserRole != null)
+            if (isRecovery)
             {
-                foreach (var ur in user.UserRole)
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, ur.Role.RoleName));
-                }
+                claims.Add(new Claim("recover-password", "true"));
             }
 
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -53,5 +48,31 @@ namespace isc.time.report.be.application.Utils.Auth
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+
+        public ClaimsPrincipal ValidateTokenAndGetPrincipal(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(configuration["JWT:JWTSecretKey"]);
+
+            var validationParams = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ClockSkew = TimeSpan.Zero
+            };
+
+            try
+            {
+                var principal = tokenHandler.ValidateToken(token, validationParams, out SecurityToken validatedToken);
+                return principal;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
     }
 }
