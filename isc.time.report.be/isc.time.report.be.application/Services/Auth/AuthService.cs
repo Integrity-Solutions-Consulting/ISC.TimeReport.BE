@@ -26,13 +26,15 @@ namespace isc.time.report.be.application.Services.Auth
         private readonly PasswordUtils passwordUtils;
         private readonly JWTUtils jwtUtils;
         private readonly EmailService emailService;
-        public AuthService(IAuthRepository authRepository, PasswordUtils passwordUtils, JWTUtils jwtUtils, IMenuRepository menuRepository, EmailService emailService)
+        private readonly IUserRepository userRepository;
+        public AuthService(IAuthRepository authRepository, PasswordUtils passwordUtils, JWTUtils jwtUtils, IMenuRepository menuRepository, EmailService emailService, IUserRepository userRepository)
         {
             this.authRepository = authRepository;
             this.passwordUtils = passwordUtils;
             this.jwtUtils = jwtUtils;
             this.menuRepository = menuRepository;
             this.emailService = emailService;
+            this.userRepository = userRepository;
         }
         /// <summary>
         /// SI SE ESTA USANDO
@@ -272,6 +274,35 @@ namespace isc.time.report.be.application.Services.Auth
                     </html>";
 
             await emailService.SendEmailAsync(user.Employee.CorporateEmail, "Recuperación de contraseña", html);
+        }
+
+        public async Task ResetPasswordWithToken(string token, ResetPasswordRequest request)
+        {
+            var principal = jwtUtils.ValidateTokenAndGetPrincipal(token);
+            if (principal == null)
+                throw new ClientFaultException("Token inválido o expirado.", 401);
+
+            var isRecovery = principal.Claims.Any(c => c.Type == "recover-password" && c.Value == "true");
+            if (!isRecovery)
+                throw new ClientFaultException("El token no es válido para restablecer la contraseña.", 401);
+
+            var userIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "UserID")?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+                throw new ClientFaultException("Token no contiene información de usuario.", 400);
+
+            if (request.NewPassword != request.ConfirmPassword)
+                throw new ClientFaultException("La nueva contraseña y su confirmación no coinciden.", 400);
+
+            int userId = int.Parse(userIdClaim);
+            var user = await authRepository.GetUserById(userId);
+
+            if (user == null)
+                throw new ClientFaultException("Usuario no encontrado.", 404);
+
+            user.PasswordHash = passwordUtils.HashPassword(request.NewPassword);
+            user.MustChangePassword = false;
+
+            await userRepository.UpdateUser(user);
         }
     }
 }
