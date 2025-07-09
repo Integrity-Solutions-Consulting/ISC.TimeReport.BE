@@ -1,33 +1,35 @@
-﻿using System;
+﻿using isc.time.report.be.application.Interfaces.Service.Auth;
+using isc.time.report.be.application.Interfaces.Service.Clients;
+using isc.time.report.be.application.Interfaces.Service.DailyActivities;
+using isc.time.report.be.application.Interfaces.Service.Employees;
+using isc.time.report.be.application.Interfaces.Service.Leaders;
+using isc.time.report.be.application.Interfaces.Service.Menus;
+using isc.time.report.be.application.Interfaces.Service.Permissions;
+using isc.time.report.be.application.Interfaces.Service.PermissionTypes;
+using isc.time.report.be.application.Interfaces.Service.Persons;
+using isc.time.report.be.application.Interfaces.Service.Projects;
+using isc.time.report.be.application.Interfaces.Service.Users;
+using isc.time.report.be.application.Services;
+using isc.time.report.be.application.Services.Auth;
+using isc.time.report.be.application.Services.Clients;
+using isc.time.report.be.application.Services.DailyActivities;
+using isc.time.report.be.application.Services.Employees;
+using isc.time.report.be.application.Services.Leaders;
+using isc.time.report.be.application.Services.Menus;
+using isc.time.report.be.application.Services.Permissions;
+using isc.time.report.be.application.Services.PermissionTypes;
+using isc.time.report.be.application.Services.Persons;
+using isc.time.report.be.application.Services.Projects;
+using isc.time.report.be.application.Services.Users;
+using isc.time.report.be.application.Utils.Auth;
+using isc.time.report.be.domain.Entity.Emails;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using isc.time.report.be.application.Interfaces.Service.Auth;
-using isc.time.report.be.application.Interfaces.Service.Leaders;
-using isc.time.report.be.application.Services.Auth;
-using isc.time.report.be.application.Interfaces.Service.Users;
-using isc.time.report.be.application.Services.Users;
-using isc.time.report.be.application.Services.Leaders;
-using isc.time.report.be.application.Utils.Auth;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using isc.time.report.be.application.Interfaces.Service.Menus;
-using isc.time.report.be.application.Services.Menus;
-using isc.time.report.be.application.Interfaces.Service.Persons;
-using isc.time.report.be.application.Services.Persons;
-using isc.time.report.be.application.Interfaces.Service.Employees;
-using isc.time.report.be.application.Services.Employees;
-using isc.time.report.be.application.Interfaces.Service.Projects;
-using isc.time.report.be.application.Services.Projects;
-using isc.time.report.be.application.Interfaces.Service.Clients;
-using isc.time.report.be.application.Services.Clients;
-using isc.time.report.be.application.Interfaces.Service.Permissions;
-using isc.time.report.be.application.Services.Permissions;
-using isc.time.report.be.application.Services.PermissionTypes;
-using isc.time.report.be.application.Interfaces.Service.PermissionTypes;
-using isc.time.report.be.application.Interfaces.Service.DailyActivities;
-using isc.time.report.be.application.Services.DailyActivities;
 
 namespace isc.time.report.be.application.IOC
 {
@@ -50,6 +52,11 @@ namespace isc.time.report.be.application.IOC
             services.AddScoped<IPermissionService, PermissionService>();
             services.AddScoped<IPermissionTypeService, PermissionTypeService>();
             services.AddScoped<IDailyActivityService,DailyActivityService>();
+
+
+            services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+            services.AddTransient<EmailService>();
+
 
             return services;
         }

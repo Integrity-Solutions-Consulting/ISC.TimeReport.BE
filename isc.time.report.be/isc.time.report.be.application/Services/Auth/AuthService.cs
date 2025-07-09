@@ -1,5 +1,6 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.Auth;
 using isc.time.report.be.application.Interfaces.Repository.Menus;
+using isc.time.report.be.application.Interfaces.Repository.Users;
 using isc.time.report.be.application.Interfaces.Service.Auth;
 using isc.time.report.be.application.Utils.Auth;
 using isc.time.report.be.domain.Entity.Auth;
@@ -24,12 +25,14 @@ namespace isc.time.report.be.application.Services.Auth
         private readonly IMenuRepository menuRepository;
         private readonly PasswordUtils passwordUtils;
         private readonly JWTUtils jwtUtils;
-        public AuthService(IAuthRepository authRepository, PasswordUtils passwordUtils, JWTUtils jwtUtils, IMenuRepository menuRepository)
+        private readonly EmailService emailService;
+        public AuthService(IAuthRepository authRepository, PasswordUtils passwordUtils, JWTUtils jwtUtils, IMenuRepository menuRepository, EmailService emailService)
         {
             this.authRepository = authRepository;
             this.passwordUtils = passwordUtils;
             this.jwtUtils = jwtUtils;
             this.menuRepository = menuRepository;
+            this.emailService = emailService;
         }
         /// <summary>
         /// SI SE ESTA USANDO
@@ -225,5 +228,50 @@ namespace isc.time.report.be.application.Services.Auth
             };
         }
 
+        public async Task RecuperarPasswordAsync(string username)
+        {
+            var user = await authRepository.GetUserWithEmployeeAsync(username);
+
+            if (user == null || user.Employee == null || string.IsNullOrEmpty(user.Employee.CorporateEmail))
+                return;
+
+                    var token = jwtUtils.GenerateToken(user, 3);
+
+            var frontUrl = "https://chatgpt.com/";
+            var link = $"{frontUrl}{token}";
+
+            var html = $@"
+                    <!DOCTYPE html>
+                    <html lang='es'>
+                    <head>
+                        <meta charset='UTF-8'>
+                        <title>Recuperación de contraseña</title>
+                        <style>
+                            body {{ margin: 0; padding: 0; background-color: #f2f2f2; font-family: 'Raleway', sans-serif; color: #0d0d0d; }}
+                            .container {{ width: 100%; padding: 30px 0; display: flex; justify-content: center; align-items: center; }}
+                            .card {{ background-color: #ffffff; padding: 30px; max-width: 500px; width: 90%; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); border-radius: 12px; text-align: center; }}
+                            .logo {{ width: 150px; margin-bottom: 20px; }}
+                            .title {{ font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: bold; color: #1c4d8c; margin-bottom: 10px; }}
+                            .subtitle {{ font-family: 'League Spartan', sans-serif; font-size: 16px; color: #555; margin-bottom: 20px; }}
+                            .button {{ display: inline-block; margin-top: 20px; padding: 12px 20px; background-color: #1c4d8c; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold; }}
+                            .footer {{ font-size: 13px; color: #666; margin-top: 30px; }}
+                        </style>
+                    </head>
+                    <body>
+                        <div class='container'>
+                            <div class='card'>
+                                <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8ZCctTKfGFdHZHIYBnQqcSkHUvs9khINITA&s' alt='Logo de la compañía' class='logo'>
+                                <div class='title'>Recuperación de contraseña</div>
+                                <div class='subtitle'>Has solicitado restablecer tu contraseña.</div>
+                                <p>Haz clic en el siguiente botón para continuar con el proceso:</p>
+                                <a href='{link}' class='button'>Restablecer contraseña</a>
+                                <p class='footer'>Este enlace expirará en 3 minutos.<br>Si no solicitaste este cambio, puedes ignorar este mensaje.</p>
+                            </div>
+                        </div>
+                    </body>
+                    </html>";
+
+            await emailService.SendEmailAsync(user.Employee.CorporateEmail, "Recuperación de contraseña", html);
+        }
     }
 }

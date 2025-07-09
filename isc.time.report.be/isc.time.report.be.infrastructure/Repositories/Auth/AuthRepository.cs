@@ -217,6 +217,12 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task<User?> GetUserWithEmployeeAsync(string username)
+        {
+            return await _dbContext.Users
+                .Include(u => u.Employee)
+                .FirstOrDefaultAsync(u => u.Username == username && u.Status == true);
+        }
     }
 }
 

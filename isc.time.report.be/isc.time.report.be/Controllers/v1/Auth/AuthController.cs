@@ -62,5 +62,14 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
             return Ok(new SuccessResponse<RoleResponse>(200, "Rol actualizado correctamente.", role));
         }
 
+        [AllowAnonymous]
+        [HttpPost("recuperar-password")]
+        public async Task<IActionResult> RecuperarPassword([FromBody] RecuperarPasswordRequest request)
+        {
+            await authService.RecuperarPasswordAsync(request.Username);
+            return Ok(new { message = "Si el usuario existe, se ha enviado un enlace de recuperación al correo registrado." });
+        }
+
+
     }
 }

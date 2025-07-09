@@ -19,5 +19,6 @@ namespace isc.time.report.be.application.Interfaces.Repository.Auth
         Task<List<Role>> GetAllRolesWithModulesAsync();
         Task<Role?> GetRoleByIdAsync(int id);
         Task UpdateRoleModulesAsync(Role role, List<int> newModuleIds);
+        Task<User?> GetUserWithEmployeeAsync(string username);
     }
 }
