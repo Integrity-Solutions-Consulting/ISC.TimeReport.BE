@@ -31,8 +31,19 @@ namespace isc.time.report.be.application.Utils.Auth
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim("UserID", user.Id.ToString())
+                new Claim("UserID", user.Id.ToString()),
+                new Claim("EmployeeID", user.EmployeeID.ToString()),
+                new Claim("PersonID", user.Employee?.PersonID.ToString() ?? "0")
             };
+
+            // Roles
+            if (user.UserRole != null)
+            {
+                foreach (var ur in user.UserRole)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, ur.Role.RoleName));
+                }
+            }
 
             if (isRecovery)
             {
