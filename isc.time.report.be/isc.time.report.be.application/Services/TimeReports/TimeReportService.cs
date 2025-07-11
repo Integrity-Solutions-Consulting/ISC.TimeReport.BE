@@ -77,7 +77,7 @@ namespace isc.time.report.be.application.Services.TimeReports
                     new MergeCell { Reference = "C4:D4" },
                     new MergeCell { Reference = "A5:B5" },
                     new MergeCell { Reference = "C5:D5" },
-                    new MergeCell { Reference = "C4:D4" },
+
 
                     new MergeCell { Reference = "A6:A8" },
                     new MergeCell { Reference = "B6:B8" },
@@ -187,52 +187,6 @@ namespace isc.time.report.be.application.Services.TimeReports
                 }
                 sheetData.Append(row8);
 
-
-
-
-
-                // Fila 9 - Datos de ejemplo (azul fines de semana)
-                var row9 = new Row { RowIndex = 9, Height = 24.60, CustomHeight = true };
-
-                // Celdas A-F
-                row9.Append(
-                    CreateCell("1", 5),   // A
-                    CreateCell("", 6),    // B
-                    CreateCell("", 6),    // C
-                    CreateCell("", 6),    // D
-                    CreateCell("", 6),    // E
-                    CreateCell("0", 6)    // F
-                );
-
-                // Celdas G-AK (días del mes)
-                for (int d = 1; d <= DateTime.DaysInMonth(year, month); d++)
-                {
-                    var date = new DateTime(year, month, d);
-                    var isWeekend = date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday;
-                    row9.Append(CreateCell("0", isWeekend ? 8u : 6u));  // Estilo 2 (azul) si es fin de semana
-                }
-
-                // Celda AL (total del mes)
-                row9.Append(CreateCell("0", 0));
-
-                sheetData.Append(row9);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 // Obtener datos reales
                 var reportData = await GetTimeReportDataFillAsync(employeeId, clientId);
 
@@ -242,49 +196,172 @@ namespace isc.time.report.be.application.Services.TimeReports
                 // Reemplazar nombre completo en celda C5
                 row5.Elements<Cell>().ElementAt(2).CellValue = new CellValue($"{reportData.FirstName} {reportData.LastName}");
 
-                // Crear filas de actividades (fila 9 en adelante)
                 uint rowIndex = 9;
                 int actividadIndex = 1;
                 int diasEnMes = DateTime.DaysInMonth(year, month);
 
-                foreach (var actividad in reportData.Activities)
+                // Inicializar arreglo de suma por día
+                decimal[] totalPorDia = new decimal[diasEnMes];
+
+                // Crear filas de actividades
+                foreach (var actividadAgrupada in reportData.Activities.GroupBy(a => new
+                {
+                    a.LeaderId,
+                    a.ActivityTypeID,
+                    a.ActivityType,
+                    a.ActivityDescription,
+                    a.Notes
+                }))
                 {
                     var row = new Row { RowIndex = rowIndex, Height = 24.60, CustomHeight = true };
 
+                    // Inicializar arreglo para esta fila
+                    string[] horasPorDia = new string[diasEnMes];
+                    decimal sumaHoras = 0;
+
+                    foreach (var act in actividadAgrupada)
+                    {
+                        int dia = act.ActivityDate.Day;
+                        decimal horas = act.HoursQuantity;
+
+                        sumaHoras += horas;
+                        totalPorDia[dia - 1] += horas;
+                        horasPorDia[dia - 1] = horas.ToString("0.##");
+                    }
+
                     // Columnas A–F
                     row.Append(
-                        CreateCell(actividadIndex.ToString(), 5),                      // A: número
-                        CreateCell(actividad.ActivityTypeID.ToString(), 6),           // B: activityTypeId
-                        CreateCell("", 6),                                            // C: vacío
-                        CreateCell(actividad.Notes ?? "", 6),                         // D: notas
-                        CreateCell(actividad.ActivityDescription, 6),                 // E: descripción
-                        CreateCell("", 6)                                             // F: total por actividad (opcional)
+                        CreateCell(actividadIndex.ToString(), 5),                                      // A: número
+                        CreateCell(actividadAgrupada.Key.ActivityTypeID.ToString(), 6),                // B: tipo de actividad
+                        CreateCell("", 6),                                                              // C: vacío
+                        CreateCell(actividadAgrupada.Key.Notes ?? "", 6),                               // D: notas
+                        CreateCell(actividadAgrupada.Key.ActivityDescription, 6),                      // E: descripción
+                        CreateCell(sumaHoras.ToString("0.##"), 6)                                       // F: total horas por actividad
                     );
 
                     // Columnas G–AK (una por cada día)
                     for (int d = 1; d <= diasEnMes; d++)
                     {
-                        if (actividad.ActivityDate.Day == d)
-                        {
-                            var fecha = new DateTime(year, month, d);
-                            bool esFinDeSemana = fecha.DayOfWeek == DayOfWeek.Saturday || fecha.DayOfWeek == DayOfWeek.Sunday;
-                            uint estilo = esFinDeSemana ? 8u : 6u;
+                        var fecha = new DateTime(year, month, d);
+                        bool esFinDeSemana = fecha.DayOfWeek == DayOfWeek.Saturday || fecha.DayOfWeek == DayOfWeek.Sunday;
+                        uint estilo = esFinDeSemana ? 8u : 6u;
 
-                            row.Append(CreateCell(actividad.HoursQuantity.ToString("0.##"), estilo));
-                        }
-                        else
-                        {
-                            row.Append(CreateCell("", 6)); // celda vacía si no aplica
-                        }
+                        row.Append(CreateCell(horasPorDia[d - 1] ?? "", estilo));
                     }
 
-                    // Columna AL (total por actividad, opcional)
-                    row.Append(CreateCell("", 0));
+                    // Columna AL (total otra vez)
+                    row.Append(CreateCell(sumaHoras.ToString("0.##"), 6));
 
                     sheetData.Append(row);
                     rowIndex++;
                     actividadIndex++;
                 }
+
+                // === Fila TOTAL por día ===
+                var totalRow = new Row { RowIndex = rowIndex, Height = 20, CustomHeight = true };
+
+                // Celda A (texto TOTAL, combinada A–E)
+                totalRow.Append(CreateCell("TOTAL", 5));
+
+                // Celdas vacías para B–E (se ignoran porque A–E estarán combinadas)
+                for (int i = 0; i < 4; i++)
+                    totalRow.Append(CreateCell("", 5));
+
+                // Celda F: total general de horas
+                totalRow.Append(CreateCell(totalPorDia.Sum().ToString("0.0"), 6));
+
+                // Columnas G–AK: sumas por día
+                for (int d = 0; d < diasEnMes; d++)
+                {
+                    var fecha = new DateTime(year, month, d + 1);
+                    bool esFinDeSemana = fecha.DayOfWeek == DayOfWeek.Saturday || fecha.DayOfWeek == DayOfWeek.Sunday;
+                    uint estilo = esFinDeSemana ? 8u : 6u;
+
+                    var valor = totalPorDia[d];
+                    totalRow.Append(CreateCell(valor.ToString("0.0"), estilo));
+                }
+
+                // Celda AL: total otra vez
+                totalRow.Append(CreateCell(totalPorDia.Sum().ToString("0.0"), 6));
+
+                sheetData.Append(totalRow);
+
+                // Añadir celda combinada A{rowIndex}:E{rowIndex}
+                var mergeTotal = new MergeCell { Reference = $"A{rowIndex}:E{rowIndex}" };
+
+                mergeCells.Append(new MergeCell { Reference = $"A{rowIndex}:E{rowIndex}" });
+
+
+
+
+
+
+
+
+                // === BLOQUE DE FIRMAS ===
+                uint extraStartRow = rowIndex + 6;
+
+                // Fila vacía con celdas combinadas (para estilo)
+                var sigRow1 = new Row { RowIndex = extraStartRow };
+                sigRow1.Append(CreateCell(""));  // A
+                sigRow1.Append(CreateCell(""));  // B (inicio merge B:D)
+                sigRow1.Append(CreateCell(""));
+                sigRow1.Append(CreateCell(""));
+
+                for (int i = 5; i < 9; i++) // E a H
+                    sigRow1.Append(CreateCell(""));
+
+                sigRow1.Append(CreateCell("")); // I (inicio merge I:U)
+                for (int i = 10; i <= 21; i++)
+                    sigRow1.Append(CreateCell(""));
+
+                sheetData.Append(sigRow1);
+
+                // Merge para estilo personalizado
+                mergeCells.Append(new MergeCell { Reference = $"B{extraStartRow}:D{extraStartRow}" });
+                mergeCells.Append(new MergeCell { Reference = $"I{extraStartRow}:U{extraStartRow}" });
+
+                // === FILA 2: Elaborado por / Revisado por ===
+                var sigRow2 = new Row { RowIndex = extraStartRow + 1 };
+                sigRow2.Append(CreateCell(""));  // A
+                sigRow2.Append(CreateCell("Elaborado por:"));  // B
+                sigRow2.Append(CreateCell(""));
+                sigRow2.Append(CreateCell(""));
+
+                for (int i = 5; i < 9; i++) // E a H
+                    sigRow2.Append(CreateCell(""));
+
+                sigRow2.Append(CreateCell("Revisado y Aprobado por:")); // I
+                for (int i = 10; i <= 21; i++)
+                    sigRow2.Append(CreateCell(""));
+
+                sheetData.Append(sigRow2);
+
+                // Merge
+                mergeCells.Append(new MergeCell { Reference = $"B{extraStartRow + 1}:D{extraStartRow + 1}" });
+                mergeCells.Append(new MergeCell { Reference = $"I{extraStartRow + 1}:U{extraStartRow + 1}" });
+
+                // === FILA 3: RPS RISK PROCESS SOLUTIONS S.A. (solo B-D) ===
+                var sigRow3 = new Row { RowIndex = extraStartRow + 2 };
+                sigRow3.Append(CreateCell(""));     // A
+                sigRow3.Append(CreateCell("RPS RISK PROCESS SOLUTIONS S.A.")); // B
+                sigRow3.Append(CreateCell(""));     // C
+                sigRow3.Append(CreateCell(""));     // D
+
+                // Completamos hasta U con celdas vacías
+                for (int i = 5; i <= 21; i++)
+                    sigRow3.Append(CreateCell(""));
+
+                sheetData.Append(sigRow3);
+
+                // Merge corregido solo en columnas B-D
+                mergeCells.Append(new MergeCell { Reference = $"B{extraStartRow + 2}:D{extraStartRow + 2}" });
+
+
+
+
+
+
 
 
 
@@ -405,13 +482,13 @@ namespace isc.time.report.be.application.Services.TimeReports
                     new Fill(new PatternFill { PatternType = PatternValues.None }), // 0
                     new Fill(new PatternFill { PatternType = PatternValues.Gray125 }), // 1
                     new Fill(new PatternFill( // 2 - Gris oscuro 25%
-                        new ForegroundColor { Rgb = "FFD9D9D9" })
+                        new ForegroundColor { Rgb = "FF7F7F7F" })
                     { PatternType = PatternValues.Solid }),
                     new Fill(new PatternFill( // 3 - Amarillo claro
                         new ForegroundColor { Rgb = "FFFFFF99" })
                     { PatternType = PatternValues.Solid }),
                     new Fill(new PatternFill( // 4 - Azul claro énfasis 1
-                        new ForegroundColor { Rgb = "FFDAEEF3" })
+                        new ForegroundColor { Rgb = "FF00B0F0" })
                     { PatternType = PatternValues.Solid })
                 ),
 
