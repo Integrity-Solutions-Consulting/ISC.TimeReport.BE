@@ -1,7 +1,12 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using isc.time.report.be.application.Interfaces.Repository.Clients;
+using isc.time.report.be.application.Interfaces.Repository.Employees;
+using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.application.Interfaces.Service.TimeReports;
+using isc.time.report.be.domain.Entity.DailyActivities;
+using isc.time.report.be.domain.Models.Dto.TimeReports;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,38 +18,57 @@ namespace isc.time.report.be.application.Services.TimeReports
 {
     public class TimeReportService : ITimeReportService
     {
-        public async Task<byte[]> GenerateExcelReportAsync(int employeeId, int year, int month)
+        private readonly IClientRepository clientRepository;
+        private readonly IEmployeeRepository employeeRepository;
+        private readonly ITimeReportRepository timeReportRepository;
+        public TimeReportService(IClientRepository clientRepository, IEmployeeRepository employeeRepository, ITimeReportRepository timeReportRepository)
         {
+            this.clientRepository = clientRepository;
+            this.employeeRepository = employeeRepository;
+            this.timeReportRepository = timeReportRepository;
+        }
+
+        public async Task<byte[]> GenerateExcelReportAsync(int employeeId, int clientId, int year, int month)
+        {
+
+
+
+
             using var stream = new MemoryStream();
 
             using (var document = SpreadsheetDocument.Create(stream, SpreadsheetDocumentType.MacroEnabledWorkbook))
             {
+                // Crear partes básicas del libro
                 var workbookPart = document.AddWorkbookPart();
                 workbookPart.Workbook = new Workbook();
 
+                // Agregar estilos
                 var stylesPart = workbookPart.AddNewPart<WorkbookStylesPart>();
                 stylesPart.Stylesheet = CreateStylesheet();
                 stylesPart.Stylesheet.Save();
 
+                // Crear hoja de trabajo y contenido
                 var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-                var sheetData = new SheetData();
                 var worksheet = new Worksheet();
+                var sheetData = new SheetData();
 
-                // Columnas
+                // Definir anchos de columnas
                 var columns = new Columns();
-                columns.Append(CreateColumn(1, 1, 3.56));     // A
-                columns.Append(CreateColumn(2, 2, 18.44));    // B
-                columns.Append(CreateColumn(3, 3, 18.11));    // C
-                columns.Append(CreateColumn(4, 4, 21.22));    // D
-                columns.Append(CreateColumn(5, 5, 63.44));    // E
-                columns.Append(CreateColumn(6, 6, 9.22));     // F
-                for (uint i = 7; i <= 37; i++) columns.Append(CreateColumn(i, i, 3.56));
-                columns.Append(CreateColumn(38, 38, 10.11));  // AL
+                columns.Append(CreateColumn(1, 1, 3.56));      // A
+                columns.Append(CreateColumn(2, 2, 18.44));     // B
+                columns.Append(CreateColumn(3, 3, 18.11));     // C
+                columns.Append(CreateColumn(4, 4, 21.22));     // D
+                columns.Append(CreateColumn(5, 5, 63.44));     // E
+                columns.Append(CreateColumn(6, 6, 9.22));      // F
+                for (uint i = 7; i <= 37; i++)                 // G to AK
+                    columns.Append(CreateColumn(i, i, 3.56));
+
+                columns.Append(CreateColumn(38, 38, 10.11));   // AL
 
                 worksheet.Append(columns);
                 worksheet.Append(sheetData);
 
-                // Merge cells
+                // Celdas combinadas
                 var mergeCells = new MergeCells(
                     new MergeCell { Reference = "A1:AM1" },
                     new MergeCell { Reference = "F2:H2" },
@@ -53,110 +77,246 @@ namespace isc.time.report.be.application.Services.TimeReports
                     new MergeCell { Reference = "C4:D4" },
                     new MergeCell { Reference = "A5:B5" },
                     new MergeCell { Reference = "C5:D5" },
-                    new MergeCell { Reference = "G6:AK6" },
+                    new MergeCell { Reference = "C4:D4" },
+
                     new MergeCell { Reference = "A6:A8" },
                     new MergeCell { Reference = "B6:B8" },
                     new MergeCell { Reference = "C6:C8" },
                     new MergeCell { Reference = "D6:D8" },
                     new MergeCell { Reference = "E6:E8" },
-                    new MergeCell { Reference = "F6:F8" }
+                    new MergeCell { Reference = "F6:F8" },
+                    new MergeCell { Reference = "G6:AK6" },
+                    new MergeCell { Reference = "AL6:AL8" }
                 );
                 worksheet.Append(mergeCells);
 
                 worksheetPart.Worksheet = worksheet;
 
-                // Hoja
-                var sheets = workbookPart.Workbook.AppendChild(new Sheets());
-                sheets.Append(new Sheet
-                {
-                    Id = workbookPart.GetIdOfPart(worksheetPart),
-                    SheetId = 1,
-                    Name = "TimeReport"
-                });
+                // Crear hoja
+                    var sheets = workbookPart.Workbook.AppendChild(new Sheets());
+                    sheets.Append(new Sheet
+                    {
+                        Id = workbookPart.GetIdOfPart(worksheetPart),
+                        SheetId = 1,
+                        Name = "TimeReport"
+                    });
 
-                // Fila 1: tamaño 24 (estilo 4)
+                // === Crear filas ===
+
+                // Fila 1 - Título
                 var row1 = new Row { RowIndex = 1, Height = 21, CustomHeight = true };
-                row1.Append(CreateCell("TIME REPORT", 4));
+                row1.Append(CreateCell("TIME REPORT", 1));
                 sheetData.Append(row1);
 
-                // Fila 2: tamaño 24 (estilo 4)
+                // Fila 2 - Mes y Año
                 var row2 = new Row { RowIndex = 2, Height = 18, CustomHeight = true };
                 row2.Append(
-                    CreateCell("", 4), CreateCell("", 4), CreateCell("", 4), CreateCell("", 4), CreateCell("", 4),
-                    CreateCell("", 4), CreateCell("", 4), CreateCell(GetMonthName(month), 4), CreateCell("", 4),
-                    CreateCell(year.ToString(), 4)
+                    CreateCell("", 0), CreateCell("", 0), CreateCell("", 0),
+                    CreateCell("", 0), CreateCell("", 0),CreateCell(GetMonthName(month), 2),
+                    CreateCell(year.ToString(), 2)
                 );
                 sheetData.Append(row2);
 
-                // Fila 3 (vacía, tamaño 12, estilo 3)
+                // Fila 3 - Vacía
                 var row3 = new Row { RowIndex = 3, Height = 18, CustomHeight = true };
-                sheetData.Append(row3); // vacía sin celdas
+                sheetData.Append(row3);
 
-                // Fila 4: tamaño 12 (estilo 3)
+                // Fila 4 - Cliente
                 var row4 = new Row { RowIndex = 4, Height = 18, CustomHeight = true };
-                row4.Append(CreateCell("Cliente:", 3), CreateCell("", 3), CreateCell("Nombre del Cliente", 3));
+                row4.Append(
+                    CreateCell("Cliente:", 3),
+                    CreateCell("", 0),
+                    CreateCell("Nombre del Cliente", 3)
+                );
                 sheetData.Append(row4);
 
-                // Fila 5: tamaño 12 (estilo 3)
+                // Fila 5 - Consultor
                 var row5 = new Row { RowIndex = 5, Height = 16.8, CustomHeight = true };
-                row5.Append(CreateCell("Nombre del Consultor:", 3), CreateCell("", 3), CreateCell("Juan Pérez", 3));
+                row5.Append(
+                    CreateCell("Nombre del Consultor:", 3),
+                    CreateCell("", 0),
+                    CreateCell("Juan Pérez", 3)
+
+
+                    //aqui va lo de dias habiles
+
+                );
                 sheetData.Append(row5);
 
-                // Fila 6: tamaño 9 (estilo 1 para columnas 6-8, 0 para otras)
+                // Fila 6 - Encabezados principales
                 var row6 = new Row { RowIndex = 6, Height = 15, CustomHeight = true };
+
+                // Añadir celdas fijas A-G
                 row6.Append(
-                    CreateCell("N°", 1), CreateCell("Tipo de actividad", 1), CreateCell("Líder de proyecto", 1),
-                    CreateCell("Código requerimiento / incidente", 1),
-                    CreateCell("Descripción de trabajos realizados", 1),
-                    CreateCell("Total horas por actividad", 1),
-                    CreateCell("Distribución de tiempo en el día", 1)
+                    CreateCell("N°", 5),                                   // A
+                    CreateCell("Tipo de actividad", 4),                   // B
+                    CreateCell("Líder de proyecto", 4),                   // C
+                    CreateCell("Código requerimiento / incidente", 4),    // D
+                    CreateCell("Descripción de trabajos realizados", 4),  // E
+                    CreateCell("Total horas por actividad", 4),           // F
+                    CreateCell("Distribución de tiempo en el día", 4)     // G
                 );
+
+                // Añadir una celda por cada día del mes (G hasta AK)
+                for (int d = 2; d <= DateTime.DaysInMonth(year, month); d++)
+                {
+                    row6.Append(CreateCell("", 4)); // Puedes poner el número de día si quieres
+                }
+
+                // Añadir celda final AL (columna 38)
+                row6.Append(CreateCell("TOTAL HORAS POR ACT.", 4));
+
                 sheetData.Append(row6);
 
-                // Fila 7: tamaño 9
+
+                // Fila 7 - Números de día
                 var row7 = new Row { RowIndex = 7, Height = 15, CustomHeight = true };
-                for (int i = 0; i < 6; i++) row7.Append(CreateCell("", 0));
+                for (int i = 0; i < 6; i++) row7.Append(CreateCell("", 4));
                 for (int d = 1; d <= DateTime.DaysInMonth(year, month); d++)
-                    row7.Append(CreateCell(d.ToString("00"), 1));
+                    row7.Append(CreateCell(d.ToString("00"), 4));
                 sheetData.Append(row7);
 
-                // Fila 8: tamaño 9
+                // Fila 8 - Días de la semana
                 var row8 = new Row { RowIndex = 8, Height = 15, CustomHeight = true };
-                for (int i = 0; i < 6; i++) row8.Append(CreateCell("", 0));
                 var letras = new[] { "D", "L", "M", "M", "J", "V", "S" };
+                for (int i = 0; i < 6; i++) row8.Append(CreateCell("", 4));
                 for (int d = 1; d <= DateTime.DaysInMonth(year, month); d++)
                 {
                     var dia = new DateTime(year, month, d).DayOfWeek;
-                    row8.Append(CreateCell(letras[(int)dia], 1));
+                    row8.Append(CreateCell(letras[(int)dia], 4));
                 }
                 sheetData.Append(row8);
 
-                // Fila 9: tamaño 9, azul para fines de semana, gris para otros
+
+
+
+
+                // Fila 9 - Datos de ejemplo (azul fines de semana)
                 var row9 = new Row { RowIndex = 9, Height = 24.60, CustomHeight = true };
 
-                // Celdas A a F (sin fondo)
+                // Celdas A-F
                 row9.Append(
-                    CreateCell("1", 0),  // A
-                    CreateCell("", 0),   // B
-                    CreateCell("", 0),   // C
-                    CreateCell("", 0),   // D
-                    CreateCell("", 0),   // E
-                    CreateCell("0", 0)   // F
+                    CreateCell("1", 5),   // A
+                    CreateCell("", 6),    // B
+                    CreateCell("", 6),    // C
+                    CreateCell("", 6),    // D
+                    CreateCell("", 6),    // E
+                    CreateCell("0", 6)    // F
                 );
 
-                // Celdas G hasta AK (01 al 31)
-                for (int day = 1; day <= DateTime.DaysInMonth(year, month); day++)
+                // Celdas G-AK (días del mes)
+                for (int d = 1; d <= DateTime.DaysInMonth(year, month); d++)
                 {
-                    var date = new DateTime(year, month, day);
+                    var date = new DateTime(year, month, d);
                     var isWeekend = date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday;
-                    row9.Append(CreateCell("0", isWeekend ? 2u : 0u)); // estilo 2 azul si es fin de semana
+                    row9.Append(CreateCell("0", isWeekend ? 8u : 6u));  // Estilo 2 (azul) si es fin de semana
                 }
 
-                // Celda AL (Total mes)
+                // Celda AL (total del mes)
                 row9.Append(CreateCell("0", 0));
 
                 sheetData.Append(row9);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                // Obtener datos reales
+                var reportData = await GetTimeReportDataFillAsync(employeeId, clientId);
+
+                // Reemplazar cliente en celda C4
+                row4.Elements<Cell>().ElementAt(2).CellValue = new CellValue(reportData.TradeName);
+
+                // Reemplazar nombre completo en celda C5
+                row5.Elements<Cell>().ElementAt(2).CellValue = new CellValue($"{reportData.FirstName} {reportData.LastName}");
+
+                // Crear filas de actividades (fila 9 en adelante)
+                uint rowIndex = 9;
+                int actividadIndex = 1;
+                int diasEnMes = DateTime.DaysInMonth(year, month);
+
+                foreach (var actividad in reportData.Activities)
+                {
+                    var row = new Row { RowIndex = rowIndex, Height = 24.60, CustomHeight = true };
+
+                    // Columnas A–F
+                    row.Append(
+                        CreateCell(actividadIndex.ToString(), 5),                      // A: número
+                        CreateCell(actividad.ActivityTypeID.ToString(), 6),           // B: activityTypeId
+                        CreateCell("", 6),                                            // C: vacío
+                        CreateCell(actividad.Notes ?? "", 6),                         // D: notas
+                        CreateCell(actividad.ActivityDescription, 6),                 // E: descripción
+                        CreateCell("", 6)                                             // F: total por actividad (opcional)
+                    );
+
+                    // Columnas G–AK (una por cada día)
+                    for (int d = 1; d <= diasEnMes; d++)
+                    {
+                        if (actividad.ActivityDate.Day == d)
+                        {
+                            var fecha = new DateTime(year, month, d);
+                            bool esFinDeSemana = fecha.DayOfWeek == DayOfWeek.Saturday || fecha.DayOfWeek == DayOfWeek.Sunday;
+                            uint estilo = esFinDeSemana ? 8u : 6u;
+
+                            row.Append(CreateCell(actividad.HoursQuantity.ToString("0.##"), estilo));
+                        }
+                        else
+                        {
+                            row.Append(CreateCell("", 6)); // celda vacía si no aplica
+                        }
+                    }
+
+                    // Columna AL (total por actividad, opcional)
+                    row.Append(CreateCell("", 0));
+
+                    sheetData.Append(row);
+                    rowIndex++;
+                    actividadIndex++;
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                // Guardar hoja y libro
                 worksheetPart.Worksheet.Save();
                 workbookPart.Workbook.Save();
             }
@@ -165,28 +325,9 @@ namespace isc.time.report.be.application.Services.TimeReports
         }
 
 
-        // Helper: detectar si columna es fin de semana (para simplificar, columnas 7 y 8 cada semana son S y D)
-        private bool IsWeekendColumn(int columnIndex)
-        {
-            if (columnIndex < 7) return false; // antes de la columna 7 no es fin de semana
-
-            // Columnas 7 y 8 (G y H) cada semana son sábado y domingo
-            // El patrón se repite cada 7 columnas
-            int mod = (columnIndex - 7) % 7;
-            return mod == 0 || mod == 1; // sábado o domingo
-        }
-
-
-
-        private Row CreateRow(uint rowIndex, double height, params string[] values)
-        {
-            var row = new Row { RowIndex = rowIndex, Height = height, CustomHeight = true };
-            foreach (var val in values)
-            {
-                row.Append(CreateCell(val));
-            }
-            return row;
-        }
+        // ===================
+        // Celdas y Filas
+        // ===================
 
         private Cell CreateCell(string value, uint styleIndex = 0)
         {
@@ -198,6 +339,17 @@ namespace isc.time.report.be.application.Services.TimeReports
             };
         }
 
+        private Row CreateRow(uint rowIndex, double height, params string[] values)
+        {
+            var row = new Row { RowIndex = rowIndex, Height = height, CustomHeight = true };
+            foreach (var val in values)
+                row.Append(CreateCell(val));
+            return row;
+        }
+
+        // ===================
+        // Columnas
+        // ===================
 
         private Column CreateColumn(uint min, uint max, double width)
         {
@@ -210,89 +362,73 @@ namespace isc.time.report.be.application.Services.TimeReports
             };
         }
 
-        private string GetMonthName(int month)
-        {
-            return new CultureInfo("es-ES").DateTimeFormat.GetMonthName(month);
-        }
-
-
+        // ===================
+        // Estilos
+        // ===================
 
         private Stylesheet CreateStylesheet()
         {
             return new Stylesheet(
                 new Fonts(
-                    new Font( // 0 - Calibri 9pt negrita
-                        new FontSize { Val = 9 },
+                    new Font( // 0 - Default (Calibri 11, no negrita)
+                        new FontSize { Val = 11 },
+                        new FontName { Val = "Calibri" }
+                    ),
+                    new Font( // 1 - Calibri 24pt, bold
+                        new FontSize { Val = 24 },
                         new Bold(),
                         new FontName { Val = "Calibri" }
                     ),
-                    new Font( // 1 - Calibri 12pt negrita
+                    new Font( // 2 - Calibri 14pt, bold
+                        new FontSize { Val = 14 },
+                        new Bold(),
+                        new FontName { Val = "Calibri" }
+                    ),
+                    new Font( // 3 - Calibri 12pt, bold
                         new FontSize { Val = 12 },
                         new Bold(),
                         new FontName { Val = "Calibri" }
                     ),
-                    new Font( // 2 - Calibri 24pt negrita
-                        new FontSize { Val = 24 },
+                    new Font( // 4 - Calibri 9pt, bold
+                        new FontSize { Val = 9 },
+                        new Bold(),
+                        new FontName { Val = "Calibri" }
+                    ),
+                    new Font( // 5 - Calibri 11pt, bold
+                        new FontSize { Val = 11 },
                         new Bold(),
                         new FontName { Val = "Calibri" }
                     )
                 ),
+
                 new Fills(
                     new Fill(new PatternFill { PatternType = PatternValues.None }), // 0
                     new Fill(new PatternFill { PatternType = PatternValues.Gray125 }), // 1
-                    new Fill(new PatternFill(
+                    new Fill(new PatternFill( // 2 - Gris oscuro 25%
                         new ForegroundColor { Rgb = "FFD9D9D9" })
-                    { PatternType = PatternValues.Solid }), // 2 - Gris
-                    new Fill(new PatternFill(
-                        new ForegroundColor { Rgb = "FFDCE6F1" })
-                    { PatternType = PatternValues.Solid })  // 3 - Azul claro
+                    { PatternType = PatternValues.Solid }),
+                    new Fill(new PatternFill( // 3 - Amarillo claro
+                        new ForegroundColor { Rgb = "FFFFFF99" })
+                    { PatternType = PatternValues.Solid }),
+                    new Fill(new PatternFill( // 4 - Azul claro énfasis 1
+                        new ForegroundColor { Rgb = "FFDAEEF3" })
+                    { PatternType = PatternValues.Solid })
                 ),
 
                 new Borders(
-                    new Border() // 0 - Sin bordes
+                    new Border(), // 0 - Sin bordes
+                    new Border(   // 1 - Bordes completos
+                        new LeftBorder { Style = BorderStyleValues.Thin },
+                        new RightBorder { Style = BorderStyleValues.Thin },
+                        new TopBorder { Style = BorderStyleValues.Thin },
+                        new BottomBorder { Style = BorderStyleValues.Thin },
+                        new DiagonalBorder())
                 ),
 
                 new CellFormats(
-                    new CellFormat // 0 - Default
-                    {
-                        FontId = 0,
-                        FillId = 0,
-                        BorderId = 0,
-                        ApplyFont = true
-                    },
-                    new CellFormat // 1 - 9pt, negrita, gris claro, borde y centrado
-                    {
-                        FontId = 0,
-                        FillId = 2,
-                        BorderId = 0,
-                        Alignment = new Alignment
-                        {
-                            Horizontal = HorizontalAlignmentValues.Center,
-                            Vertical = VerticalAlignmentValues.Center,
-                            WrapText = true
-                        },
-                        ApplyFont = true,
-                        ApplyFill = true,
-                        ApplyBorder = true,
-                        ApplyAlignment = true
-                    },
-                    new CellFormat // 2 - 9pt, negrita, azul claro, borde y centrado
-                    {
-                        FontId = 0,
-                        FillId = 3,
-                        BorderId = 0,
-                        Alignment = new Alignment
-                        {
-                            Horizontal = HorizontalAlignmentValues.Center,
-                            Vertical = VerticalAlignmentValues.Center,
-                            WrapText = true
-                        },
-                        ApplyFont = true,
-                        ApplyFill = true,
-                        ApplyBorder = true,
-                        ApplyAlignment = true
-                    },
-                    new CellFormat // 3 - 12pt, negrita, borde y centrado
+                    new CellFormat { FontId = 0, FillId = 0, BorderId = 0 }, // 0 - Default
+
+                    new CellFormat // 1 - 24pt, centrado
                     {
                         FontId = 1,
                         FillId = 0,
@@ -304,10 +440,10 @@ namespace isc.time.report.be.application.Services.TimeReports
                             WrapText = true
                         },
                         ApplyFont = true,
-                        ApplyBorder = true,
                         ApplyAlignment = true
                     },
-                    new CellFormat // 4 - 24pt, negrita, borde y centrado
+
+                    new CellFormat // 2 - 14pt, centrado
                     {
                         FontId = 2,
                         FillId = 0,
@@ -319,6 +455,104 @@ namespace isc.time.report.be.application.Services.TimeReports
                             WrapText = true
                         },
                         ApplyFont = true,
+                        ApplyAlignment = true
+                    },
+
+                    new CellFormat // 3 - 12pt, alineado a la izquierda
+                    {
+                        FontId = 3,
+                        FillId = 0,
+                        BorderId = 0,
+                        Alignment = new Alignment
+                        {
+                            Horizontal = HorizontalAlignmentValues.Left,
+                            Vertical = VerticalAlignmentValues.Center,
+                            WrapText = true
+                        },
+                        ApplyFont = true,
+                        ApplyAlignment = true
+                    },
+
+                    new CellFormat // 4 - 9pt, gris oscuro 25%, bordes, centrado
+                    {
+                        FontId = 4,
+                        FillId = 2,
+                        BorderId = 1,
+                        Alignment = new Alignment
+                        {
+                            Horizontal = HorizontalAlignmentValues.Center,
+                            Vertical = VerticalAlignmentValues.Center,
+                            WrapText = true
+                        },
+                        ApplyFont = true,
+                        ApplyFill = true,
+                        ApplyBorder = true,
+                        ApplyAlignment = true
+                    },
+
+                    new CellFormat // 5 - 11pt, gris oscuro 25%, bordes, centrado
+                    {
+                        FontId = 5,
+                        FillId = 2,
+                        BorderId = 1,
+                        Alignment = new Alignment
+                        {
+                            Horizontal = HorizontalAlignmentValues.Center,
+                            Vertical = VerticalAlignmentValues.Center,
+                            WrapText = true
+                        },
+                        ApplyFont = true,
+                        ApplyFill = true,
+                        ApplyBorder = true,
+                        ApplyAlignment = true
+                    },
+
+                    new CellFormat // 6 - 11pt, sin fondo, bordes, centrado
+                    {
+                        FontId = 5,
+                        FillId = 0,
+                        BorderId = 1,
+                        Alignment = new Alignment
+                        {
+                            Horizontal = HorizontalAlignmentValues.Center,
+                            Vertical = VerticalAlignmentValues.Center,
+                            WrapText = true
+                        },
+                        ApplyFont = true,
+                        ApplyBorder = true,
+                        ApplyAlignment = true
+                    },
+
+                    new CellFormat // 7 - 11pt, amarillo claro, bordes, centrado
+                    {
+                        FontId = 5,
+                        FillId = 3,
+                        BorderId = 1,
+                        Alignment = new Alignment
+                        {
+                            Horizontal = HorizontalAlignmentValues.Center,
+                            Vertical = VerticalAlignmentValues.Center,
+                            WrapText = true
+                        },
+                        ApplyFont = true,
+                        ApplyFill = true,
+                        ApplyBorder = true,
+                        ApplyAlignment = true
+                    },
+
+                    new CellFormat // 8 - 11pt, azul claro, bordes, centrado
+                    {
+                        FontId = 5,
+                        FillId = 4,
+                        BorderId = 1,
+                        Alignment = new Alignment
+                        {
+                            Horizontal = HorizontalAlignmentValues.Center,
+                            Vertical = VerticalAlignmentValues.Center,
+                            WrapText = true
+                        },
+                        ApplyFont = true,
+                        ApplyFill = true,
                         ApplyBorder = true,
                         ApplyAlignment = true
                     }
@@ -327,7 +561,14 @@ namespace isc.time.report.be.application.Services.TimeReports
         }
 
 
+        // ===================
+        // Utilidades de fecha y columnas
+        // ===================
 
+        private string GetMonthName(int month)
+        {
+            return new CultureInfo("es-ES").DateTimeFormat.GetMonthName(month);
+        }
 
         private int GetColumnIndexFromCellReference(string cellRef)
         {
@@ -339,7 +580,6 @@ namespace isc.time.report.be.application.Services.TimeReports
             {
                 if (char.IsLetter(ch))
                 {
-                    // Convierte la letra mayúscula a índice: A=1, B=2, ...
                     colIdx = colIdx * 26 + (char.ToUpper(ch) - 'A' + 1);
                 }
                 else
@@ -350,15 +590,56 @@ namespace isc.time.report.be.application.Services.TimeReports
             return colIdx;
         }
 
-
         private bool IsWeekendColumn(int colIdx, int year, int month)
         {
-            int day = colIdx - 6; // columna 7 = día 1
+            int day = colIdx - 6; // Columna 7 (G) = día 1
             if (day < 1 || day > DateTime.DaysInMonth(year, month))
                 return false;
 
             var dayOfWeek = new DateTime(year, month, day).DayOfWeek;
             return dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday;
+        }
+
+
+        public async Task<TimeReportDataFillDto> GetTimeReportDataFillAsync(int employeeId, int clientId)
+        {
+            var employee = await employeeRepository.GetEmployeeByIDAsync(employeeId);
+            if (employee == null || employee.Person == null)
+                throw new Exception("Empleado o datos personales no encontrados.");
+
+            var client = await clientRepository.GetClientByIDAsync(clientId);
+            if (client == null)
+                throw new Exception("Cliente no encontrado.");
+
+            var projectIds = await timeReportRepository.GetProjectIdsForEmployeeByClientAsync(employeeId, clientId);
+            if (projectIds == null || !projectIds.Any())
+                return new TimeReportDataFillDto
+                {
+                    FirstName = employee.Person.FirstName,
+                    LastName = employee.Person.LastName,
+                    TradeName = client.TradeName ?? string.Empty,
+                    Activities = new List<TimeReportActivityDto>()
+                };
+
+            var activities = await timeReportRepository.GetActivitiesByEmployeeAndProjectsAsync(employeeId, projectIds)
+                              ?? new List<DailyActivity>();
+
+            return new TimeReportDataFillDto
+            {
+                FirstName = employee.Person.FirstName,
+                LastName = employee.Person.LastName,
+                TradeName = client.TradeName ?? string.Empty,
+                Activities = activities.Select(a => new TimeReportActivityDto
+                {
+                    LeaderId = a.Project?.EmployeeProject?.FirstOrDefault()?.EmployeeID ?? 0, // o buscar por tabla de Leader si es necesario
+                    ActivityTypeID = a.ActivityTypeID,
+                    ActivityType = a.ActivityType,
+                    HoursQuantity = a.HoursQuantity,
+                    ActivityDate = a.ActivityDate,
+                    ActivityDescription = a.ActivityDescription,
+                    Notes = a.Notes
+                }).ToList()
+            };
         }
 
 

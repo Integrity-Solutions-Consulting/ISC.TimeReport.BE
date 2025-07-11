@@ -8,6 +8,6 @@ namespace isc.time.report.be.application.Interfaces.Service.TimeReports
 {
     public interface ITimeReportService
     {
-        Task<byte[]> GenerateExcelReportAsync(int employeeId, int year, int month);
+        Task<byte[]> GenerateExcelReportAsync(int employeeId, int clientId, int year, int month);
     }
 }
