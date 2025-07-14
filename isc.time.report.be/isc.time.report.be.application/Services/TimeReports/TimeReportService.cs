@@ -3,6 +3,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using isc.time.report.be.application.Interfaces.Repository.Clients;
 using isc.time.report.be.application.Interfaces.Repository.Employees;
+using isc.time.report.be.application.Interfaces.Repository.Leaders;
 using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.application.Interfaces.Service.TimeReports;
 using isc.time.report.be.domain.Entity.DailyActivities;
@@ -21,17 +22,20 @@ namespace isc.time.report.be.application.Services.TimeReports
         private readonly IClientRepository clientRepository;
         private readonly IEmployeeRepository employeeRepository;
         private readonly ITimeReportRepository timeReportRepository;
-        public TimeReportService(IClientRepository clientRepository, IEmployeeRepository employeeRepository, ITimeReportRepository timeReportRepository)
+        private readonly ILeaderRepository leaderRepository;
+        public TimeReportService(IClientRepository clientRepository, IEmployeeRepository employeeRepository, ITimeReportRepository timeReportRepository, ILeaderRepository leaderRepository)
         {
             this.clientRepository = clientRepository;
             this.employeeRepository = employeeRepository;
             this.timeReportRepository = timeReportRepository;
+            this.leaderRepository = leaderRepository;
         }
 
         public async Task<byte[]> GenerateExcelReportAsync(int employeeId, int clientId, int year, int month)
         {
 
-
+            // Obtener datos reales
+            var reportData = await GetTimeReportDataFillAsync(employeeId, clientId);
 
 
             using var stream = new MemoryStream();
@@ -55,7 +59,7 @@ namespace isc.time.report.be.application.Services.TimeReports
                 // Definir anchos de columnas
                 var columns = new Columns();
                 columns.Append(CreateColumn(1, 1, 3.56));      // A
-                columns.Append(CreateColumn(2, 2, 18.44));     // B
+                columns.Append(CreateColumn(2, 2, 22));     // B
                 columns.Append(CreateColumn(3, 3, 18.11));     // C
                 columns.Append(CreateColumn(4, 4, 21.22));     // D
                 columns.Append(CreateColumn(5, 5, 63.44));     // E
@@ -113,6 +117,7 @@ namespace isc.time.report.be.application.Services.TimeReports
                 row2.Append(
                     CreateCell("", 0), CreateCell("", 0), CreateCell("", 0),
                     CreateCell("", 0), CreateCell("", 0),CreateCell(GetMonthName(month), 2),
+                    CreateCell("", 0), CreateCell("", 0),
                     CreateCell(year.ToString(), 2)
                 );
                 sheetData.Append(row2);
@@ -126,16 +131,16 @@ namespace isc.time.report.be.application.Services.TimeReports
                 row4.Append(
                     CreateCell("Cliente:", 3),
                     CreateCell("", 0),
-                    CreateCell("Nombre del Cliente", 3)
+                    CreateCell(reportData.TradeName, 3)
                 );
                 sheetData.Append(row4);
 
                 // Fila 5 - Consultor
                 var row5 = new Row { RowIndex = 5, Height = 16.8, CustomHeight = true };
                 row5.Append(
-                    CreateCell("Nombre del Consultor:", 3),
+                    CreateCell("Nombre del consultor:", 3),
                     CreateCell("", 0),
-                    CreateCell("Juan Pérez", 3)
+                    CreateCell(reportData.FirstName+" "+reportData.LastName, 3)
 
 
                     //aqui va lo de dias habiles
@@ -149,12 +154,12 @@ namespace isc.time.report.be.application.Services.TimeReports
                 // Añadir celdas fijas A-G
                 row6.Append(
                     CreateCell("N°", 5),                                   // A
-                    CreateCell("Tipo de actividad", 4),                   // B
-                    CreateCell("Líder de proyecto", 4),                   // C
-                    CreateCell("Código requerimiento / incidente", 4),    // D
-                    CreateCell("Descripción de trabajos realizados", 4),  // E
-                    CreateCell("Total horas por actividad", 4),           // F
-                    CreateCell("Distribución de tiempo en el día", 4)     // G
+                    CreateCell("TIPO DE ACTIVIDAD", 4),                   // B
+                    CreateCell("LIDER DE PROYECTO", 4),                   // C
+                    CreateCell("CODIGO REQUERIMIENTO / INCIDENTE", 4),    // D
+                    CreateCell("DESCRIPCION DE TRABAJOS REALIZADOS", 4),  // E
+                    CreateCell("TOTAL HORAS POR ACTIVIDAD", 4),           // F
+                    CreateCell("DISTRIBUCION DE TIEMPO DEL DIA", 4)     // G
                 );
 
                 // Añadir una celda por cada día del mes (G hasta AK)
@@ -187,14 +192,13 @@ namespace isc.time.report.be.application.Services.TimeReports
                 }
                 sheetData.Append(row8);
 
-                // Obtener datos reales
-                var reportData = await GetTimeReportDataFillAsync(employeeId, clientId);
+
 
                 // Reemplazar cliente en celda C4
-                row4.Elements<Cell>().ElementAt(2).CellValue = new CellValue(reportData.TradeName);
+                //row4.Elements<Cell>().ElementAt(2).CellValue = new CellValue(reportData.TradeName);
 
                 // Reemplazar nombre completo en celda C5
-                row5.Elements<Cell>().ElementAt(2).CellValue = new CellValue($"{reportData.FirstName} {reportData.LastName}");
+                //row5.Elements<Cell>().ElementAt(2).CellValue = new CellValue($"{reportData.FirstName} {reportData.LastName}");
 
                 uint rowIndex = 9;
                 int actividadIndex = 1;
@@ -206,11 +210,11 @@ namespace isc.time.report.be.application.Services.TimeReports
                 // Crear filas de actividades
                 foreach (var actividadAgrupada in reportData.Activities.GroupBy(a => new
                 {
-                    a.LeaderId,
-                    a.ActivityTypeID,
-                    a.ActivityType,
+                    a.ActivityType.Name,
+                    a.LeaderName,
+                    a.RequirementCode,
                     a.ActivityDescription,
-                    a.Notes
+                    a.ActivityType.ColorCode
                 }))
                 {
                     var row = new Row { RowIndex = rowIndex, Height = 24.60, CustomHeight = true };
@@ -232,10 +236,10 @@ namespace isc.time.report.be.application.Services.TimeReports
                     // Columnas A–F
                     row.Append(
                         CreateCell(actividadIndex.ToString(), 5),                                      // A: número
-                        CreateCell(actividadAgrupada.Key.ActivityTypeID.ToString(), 6),                // B: tipo de actividad
-                        CreateCell("", 6),                                                              // C: vacío
-                        CreateCell(actividadAgrupada.Key.Notes ?? "", 6),                               // D: notas
-                        CreateCell(actividadAgrupada.Key.ActivityDescription, 6),                      // E: descripción
+                        CreateCell(actividadAgrupada.Key.Name.ToString(), 6),                
+                        CreateCell(actividadAgrupada.Key.LeaderName, 6),                                                          
+                        CreateCell(actividadAgrupada.Key.RequirementCode ?? "", 6),                        
+                        CreateCell(actividadAgrupada.Key.ActivityDescription, 7),                      // E: descripción
                         CreateCell(sumaHoras.ToString("0.##"), 6)                                       // F: total horas por actividad
                     );
 
@@ -268,21 +272,21 @@ namespace isc.time.report.be.application.Services.TimeReports
                     totalRow.Append(CreateCell("", 5));
 
                 // Celda F: total general de horas
-                totalRow.Append(CreateCell(totalPorDia.Sum().ToString("0.0"), 6));
+                totalRow.Append(CreateCell(totalPorDia.Sum().ToString("0.0"), 11));
 
                 // Columnas G–AK: sumas por día
                 for (int d = 0; d < diasEnMes; d++)
                 {
                     var fecha = new DateTime(year, month, d + 1);
                     bool esFinDeSemana = fecha.DayOfWeek == DayOfWeek.Saturday || fecha.DayOfWeek == DayOfWeek.Sunday;
-                    uint estilo = esFinDeSemana ? 8u : 6u;
+                    uint estilo = esFinDeSemana ? 8u : 11u;
 
                     var valor = totalPorDia[d];
                     totalRow.Append(CreateCell(valor.ToString("0.0"), estilo));
                 }
 
                 // Celda AL: total otra vez
-                totalRow.Append(CreateCell(totalPorDia.Sum().ToString("0.0"), 6));
+                totalRow.Append(CreateCell(totalPorDia.Sum().ToString("0.0"), 11));
 
                 sheetData.Append(totalRow);
 
@@ -324,16 +328,16 @@ namespace isc.time.report.be.application.Services.TimeReports
                 // === FILA 2: Elaborado por / Revisado por ===
                 var sigRow2 = new Row { RowIndex = extraStartRow + 1 };
                 sigRow2.Append(CreateCell(""));  // A
-                sigRow2.Append(CreateCell("Elaborado por:"));  // B
-                sigRow2.Append(CreateCell(""));
-                sigRow2.Append(CreateCell(""));
+                sigRow2.Append(CreateCell("Elaborado por:",9));  // B
+                sigRow2.Append(CreateCell("", 9));
+                sigRow2.Append(CreateCell("", 9));
 
                 for (int i = 5; i < 9; i++) // E a H
                     sigRow2.Append(CreateCell(""));
 
-                sigRow2.Append(CreateCell("Revisado y Aprobado por:")); // I
+                sigRow2.Append(CreateCell("Revisado y Aprobado por:",9)); // I
                 for (int i = 10; i <= 21; i++)
-                    sigRow2.Append(CreateCell(""));
+                    sigRow2.Append(CreateCell("", 9));
 
                 sheetData.Append(sigRow2);
 
@@ -344,7 +348,7 @@ namespace isc.time.report.be.application.Services.TimeReports
                 // === FILA 3: RPS RISK PROCESS SOLUTIONS S.A. (solo B-D) ===
                 var sigRow3 = new Row { RowIndex = extraStartRow + 2 };
                 sigRow3.Append(CreateCell(""));     // A
-                sigRow3.Append(CreateCell("RPS RISK PROCESS SOLUTIONS S.A.")); // B
+                sigRow3.Append(CreateCell("RPS RISK PROCESS SOLUTIONS S.A.", 10)); // B
                 sigRow3.Append(CreateCell(""));     // C
                 sigRow3.Append(CreateCell(""));     // D
 
@@ -475,6 +479,12 @@ namespace isc.time.report.be.application.Services.TimeReports
                         new FontSize { Val = 11 },
                         new Bold(),
                         new FontName { Val = "Calibri" }
+                    ),
+                    new Font( // 6 - Calibri 12pt, negrita, azul
+                        new FontSize { Val = 12 },
+                        new Color { Rgb = "FF0000FF" }, // Azul
+                        new Bold(),
+                        new FontName { Val = "Calibri" }
                     )
                 ),
 
@@ -482,13 +492,13 @@ namespace isc.time.report.be.application.Services.TimeReports
                     new Fill(new PatternFill { PatternType = PatternValues.None }), // 0
                     new Fill(new PatternFill { PatternType = PatternValues.Gray125 }), // 1
                     new Fill(new PatternFill( // 2 - Gris oscuro 25%
-                        new ForegroundColor { Rgb = "FF7F7F7F" })
+                        new ForegroundColor { Rgb = "FFBFBFBF" })
                     { PatternType = PatternValues.Solid }),
                     new Fill(new PatternFill( // 3 - Amarillo claro
-                        new ForegroundColor { Rgb = "FFFFFF99" })
+                        new ForegroundColor { Rgb = "FFFFFF7F" })
                     { PatternType = PatternValues.Solid }),
                     new Fill(new PatternFill( // 4 - Azul claro énfasis 1
-                        new ForegroundColor { Rgb = "FF00B0F0" })
+                        new ForegroundColor { Rgb = "FF8DB4E2" })
                     { PatternType = PatternValues.Solid })
                 ),
 
@@ -499,7 +509,14 @@ namespace isc.time.report.be.application.Services.TimeReports
                         new RightBorder { Style = BorderStyleValues.Thin },
                         new TopBorder { Style = BorderStyleValues.Thin },
                         new BottomBorder { Style = BorderStyleValues.Thin },
-                        new DiagonalBorder())
+                        new DiagonalBorder()),
+                    new Border( // 2 - Borde solo arriba
+                    new LeftBorder(),
+                    new RightBorder(),
+                    new TopBorder { Style = BorderStyleValues.Thin },
+                    new BottomBorder(),
+                    new DiagonalBorder())
+
                 ),
 
                 new CellFormats(
@@ -632,6 +649,53 @@ namespace isc.time.report.be.application.Services.TimeReports
                         ApplyFill = true,
                         ApplyBorder = true,
                         ApplyAlignment = true
+                    },
+
+                    new CellFormat // 9 - 11pt, borde arriba, centrado, negrita
+                    {
+                        FontId = 5, // Calibri 11, negrita
+                        FillId = 0,
+                        BorderId = 2, // borde solo arriba
+                        Alignment = new Alignment
+                        {
+                            Horizontal = HorizontalAlignmentValues.Center,
+                            Vertical = VerticalAlignmentValues.Center,
+                            WrapText = true
+                        },
+                        ApplyFont = true,
+                        ApplyBorder = true,
+                        ApplyAlignment = true
+                    },
+
+                    new CellFormat // 10 - 11pt, centrado, negrita, sin bordes
+                    {
+                        FontId = 5,
+                        FillId = 0,
+                        BorderId = 0,
+                        Alignment = new Alignment
+                        {
+                            Horizontal = HorizontalAlignmentValues.Center,
+                            Vertical = VerticalAlignmentValues.Center,
+                            WrapText = true
+                        },
+                        ApplyFont = true,
+                        ApplyAlignment = true
+                    },
+
+                    new CellFormat // 11 - 12pt azul, centrado, bordes completos
+                    {
+                        FontId = 6,
+                        FillId = 0,
+                        BorderId = 1, // bordes completos
+                        Alignment = new Alignment
+                        {
+                            Horizontal = HorizontalAlignmentValues.Center,
+                            Vertical = VerticalAlignmentValues.Center,
+                            WrapText = true
+                        },
+                        ApplyFont = true,
+                        ApplyBorder = true,
+                        ApplyAlignment = true
                     }
                 )
             );
@@ -681,7 +745,7 @@ namespace isc.time.report.be.application.Services.TimeReports
         public async Task<TimeReportDataFillDto> GetTimeReportDataFillAsync(int employeeId, int clientId)
         {
             var employee = await employeeRepository.GetEmployeeByIDAsync(employeeId);
-            if (employee == null || employee.Person == null)
+            if (employee?.Person == null)
                 throw new Exception("Empleado o datos personales no encontrados.");
 
             var client = await clientRepository.GetClientByIDAsync(clientId);
@@ -690,6 +754,7 @@ namespace isc.time.report.be.application.Services.TimeReports
 
             var projectIds = await timeReportRepository.GetProjectIdsForEmployeeByClientAsync(employeeId, clientId);
             if (projectIds == null || !projectIds.Any())
+            {
                 return new TimeReportDataFillDto
                 {
                     FirstName = employee.Person.FirstName,
@@ -697,28 +762,39 @@ namespace isc.time.report.be.application.Services.TimeReports
                     TradeName = client.TradeName ?? string.Empty,
                     Activities = new List<TimeReportActivityDto>()
                 };
+            }
 
             var activities = await timeReportRepository.GetActivitiesByEmployeeAndProjectsAsync(employeeId, projectIds)
                               ?? new List<DailyActivity>();
+
+            var leaders = await leaderRepository.GetActiveLeadersByProjectIdsAsync(projectIds);
+
+            var activityDtos = activities.Select(a =>
+            {
+                var leader = leaders.FirstOrDefault(l => l.ProjectID == a.ProjectID);
+                var leaderName = leader != null ? $"{leader.Person.FirstName} {leader.Person.LastName}" : string.Empty;
+
+                return new TimeReportActivityDto
+                {
+                    LeaderId = leader?.PersonID ?? 0,
+                    LeaderName = leaderName,
+                    ActivityTypeID = a.ActivityTypeID,
+                    ActivityType = a.ActivityType,
+                    HoursQuantity = a.HoursQuantity,
+                    ActivityDate = a.ActivityDate,
+                    ActivityDescription = a.ActivityDescription,
+                    Notes = a.Notes,
+                    RequirementCode = a.RequirementCode
+                };
+            }).ToList();
 
             return new TimeReportDataFillDto
             {
                 FirstName = employee.Person.FirstName,
                 LastName = employee.Person.LastName,
                 TradeName = client.TradeName ?? string.Empty,
-                Activities = activities.Select(a => new TimeReportActivityDto
-                {
-                    LeaderId = a.Project?.EmployeeProject?.FirstOrDefault()?.EmployeeID ?? 0, // o buscar por tabla de Leader si es necesario
-                    ActivityTypeID = a.ActivityTypeID,
-                    ActivityType = a.ActivityType,
-                    HoursQuantity = a.HoursQuantity,
-                    ActivityDate = a.ActivityDate,
-                    ActivityDescription = a.ActivityDescription,
-                    Notes = a.Notes
-                }).ToList()
+                Activities = activityDtos
             };
         }
-
-
     }
 }

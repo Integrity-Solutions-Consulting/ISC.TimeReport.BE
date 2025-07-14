@@ -331,6 +331,7 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.IsBillable).HasColumnName("is_billable");
                 entity.Property(e => e.ApprovedByID).HasColumnName("approved_by");
                 entity.Property(e => e.ApprovalDate).HasColumnName("approval_date");
+                entity.Property(e => e.RequirementCode).HasColumnName("requirement_code");
                 entity.Property(e => e.Status).HasColumnName("status");
                 entity.Property(e => e.CreationUser).HasColumnName("creation_user");
                 entity.Property(e => e.ModificationUser).HasColumnName("modification_user");

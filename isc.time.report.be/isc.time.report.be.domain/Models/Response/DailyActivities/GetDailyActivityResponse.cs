@@ -23,6 +23,7 @@ namespace isc.time.report.be.domain.Models.Response.DailyActivities
         public bool IsBillable { get; set; }
         public int? ApprovedByID { get; set; }
         public DateTime? ApprovalDate { get; set; }
+        public string RequirementCode { get; set; }
         public bool Status { get; set; }
     }
 }
