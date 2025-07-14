@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using isc.time.report.be.application.Interfaces.Repository.Clients;
 using isc.time.report.be.application.Interfaces.Repository.Employees;
 using isc.time.report.be.application.Interfaces.Repository.Leaders;
+using isc.time.report.be.application.Interfaces.Repository.Permissions;
 using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.application.Interfaces.Service.TimeReports;
 using isc.time.report.be.domain.Entity.DailyActivities;
@@ -23,12 +24,14 @@ namespace isc.time.report.be.application.Services.TimeReports
         private readonly IEmployeeRepository employeeRepository;
         private readonly ITimeReportRepository timeReportRepository;
         private readonly ILeaderRepository leaderRepository;
-        public TimeReportService(IClientRepository clientRepository, IEmployeeRepository employeeRepository, ITimeReportRepository timeReportRepository, ILeaderRepository leaderRepository)
+        private readonly IPermissionRepository permissionRepository;
+        public TimeReportService(IClientRepository clientRepository, IEmployeeRepository employeeRepository, ITimeReportRepository timeReportRepository, ILeaderRepository leaderRepository, IPermissionRepository permissionRepository)
         {
             this.clientRepository = clientRepository;
             this.employeeRepository = employeeRepository;
             this.timeReportRepository = timeReportRepository;
             this.leaderRepository = leaderRepository;
+            this.permissionRepository = permissionRepository;
         }
 
         public async Task<byte[]> GenerateExcelReportAsync(int employeeId, int clientId, int year, int month)
@@ -36,6 +39,19 @@ namespace isc.time.report.be.application.Services.TimeReports
 
             // Obtener datos reales
             var reportData = await GetTimeReportDataFillAsync(employeeId, clientId);
+
+            var holidays = await timeReportRepository.GetActiveHolidaysByMonthAndYearAsync(month, year);
+
+            var permissions = await permissionRepository.GetPermissionsAprovedByEmployeeIdAsync(employeeId);
+
+            var diasPermiso = new HashSet<DateOnly>();
+
+            var permissionRanges = permissions
+                .Select(p => new {
+                    Start = DateOnly.FromDateTime(p.StartDate),
+                    End = DateOnly.FromDateTime(p.EndDate)
+                })
+                .ToList();
 
 
             using var stream = new MemoryStream();
@@ -247,8 +263,19 @@ namespace isc.time.report.be.application.Services.TimeReports
                     for (int d = 1; d <= diasEnMes; d++)
                     {
                         var fecha = new DateTime(year, month, d);
-                        bool esFinDeSemana = fecha.DayOfWeek == DayOfWeek.Saturday || fecha.DayOfWeek == DayOfWeek.Sunday;
-                        uint estilo = esFinDeSemana ? 8u : 6u;
+                        var dateOnly = DateOnly.FromDateTime(fecha);
+
+                        bool esFinDeSemana = fecha.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday;
+                        bool esFeriado = holidays.Any(h => h.HolidayDate == dateOnly);
+                        bool enPermiso = permissionRanges.Any(r => dateOnly >= r.Start && dateOnly <= r.End);
+
+                        uint estilo = esFeriado
+                            ? 13u
+                            : enPermiso
+                                ? 14u
+                                : esFinDeSemana
+                                    ? 8u
+                                    : 6u;
 
                         row.Append(CreateCell(horasPorDia[d - 1] ?? "", estilo));
                     }
@@ -278,11 +305,21 @@ namespace isc.time.report.be.application.Services.TimeReports
                 for (int d = 0; d < diasEnMes; d++)
                 {
                     var fecha = new DateTime(year, month, d + 1);
-                    bool esFinDeSemana = fecha.DayOfWeek == DayOfWeek.Saturday || fecha.DayOfWeek == DayOfWeek.Sunday;
-                    uint estilo = esFinDeSemana ? 8u : 11u;
+                    var dateOnly = DateOnly.FromDateTime(fecha);
 
-                    var valor = totalPorDia[d];
-                    totalRow.Append(CreateCell(valor.ToString("0.0"), estilo));
+                    bool esFinDeSemana = fecha.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday;
+                    bool esFeriado = holidays.Any(h => h.HolidayDate == dateOnly);
+                    bool enPermiso = permissionRanges.Any(r => dateOnly >= r.Start && dateOnly <= r.End);
+
+                    uint estilo = esFeriado
+                        ? 13u
+                        : enPermiso
+                            ? 14u
+                            : esFinDeSemana
+                                ? 8u
+                                : 11u;
+
+                    totalRow.Append(CreateCell(totalPorDia[d].ToString("0.0"), estilo));
                 }
 
                 // Celda AL: total otra vez
@@ -374,9 +411,47 @@ namespace isc.time.report.be.application.Services.TimeReports
 
 
 
+                // Fila inicial del bloque de nomenclatura
+                uint nomenclaturaStartRow = extraStartRow + 4;
 
+                // Textos que irán en la columna C
+                string[] textosC = { "Vacaciones", "Feriado", "Permiso", "Fines de Semana" };
 
+                // Estilos específicos para cada fila del bloque (columna C)
+                uint[] estilosC = { 12, 13, 14, 15 };
 
+                // Estilo vacío (para columna A)
+                uint estiloVacio = 0;
+
+                // Estilo para todas las celdas de columna B (título "Nomenclatura" y celdas vacías mergeadas)
+                uint estiloNomenclaturaTitulo = 6;
+
+                for (uint i = 0; i < textosC.Length; i++)
+                {
+                    var row = new Row
+                    {
+                        RowIndex = nomenclaturaStartRow + i,
+                        Height = 18,
+                        CustomHeight = true
+                    };
+
+                    // Columna A: vacía
+                    row.Append(CreateCell("", estiloVacio));
+
+                    // Columna B: siempre con estilo 6, solo la primera con texto
+                    row.Append(CreateCell(i == 0 ? "Nomenclatura" : "", estiloNomenclaturaTitulo));
+
+                    // Columna C: texto con estilo individual
+                    row.Append(CreateCell(textosC[i], estilosC[i]));
+
+                    sheetData.Append(row);
+                }
+
+                // Merge vertical de B (B{start}:B{start+3}) con estilo 6 aplicado en todas esas celdas
+                mergeCells.Append(new MergeCell
+                {
+                    Reference = $"B{nomenclaturaStartRow}:B{nomenclaturaStartRow + 3}"
+                });
 
 
 
@@ -485,6 +560,10 @@ namespace isc.time.report.be.application.Services.TimeReports
                         new Color { Rgb = "FF0000FF" }, // Azul
                         new Bold(),
                         new FontName { Val = "Calibri" }
+                    ),
+                    new Font( // 7 - Calibri 12pt, normal (nuevo para tus estilos)
+                    new FontSize { Val = 12 },
+                    new FontName { Val = "Calibri" }
                     )
                 ),
 
@@ -498,6 +577,22 @@ namespace isc.time.report.be.application.Services.TimeReports
                         new ForegroundColor { Rgb = "FFFFFF7F" })
                     { PatternType = PatternValues.Solid }),
                     new Fill(new PatternFill( // 4 - Azul claro énfasis 1
+                        new ForegroundColor { Rgb = "FF8DB4E2" })
+                    { PatternType = PatternValues.Solid }),
+
+                    new Fill(new PatternFill( // 5 - Fondo #FFC000 (naranja)
+                    new ForegroundColor { Rgb = "FFFFC000" })
+                    { PatternType = PatternValues.Solid }),
+
+                    new Fill(new PatternFill( // 6 - Fondo #FFFF00 (amarillo puro)
+                        new ForegroundColor { Rgb = "FFFFFF00" })
+                    { PatternType = PatternValues.Solid }),
+
+                    new Fill(new PatternFill( // 7 - Fondo #76933C (verde oscuro)
+                        new ForegroundColor { Rgb = "FF76933C" })
+                    { PatternType = PatternValues.Solid }),
+
+                    new Fill(new PatternFill( // 8 - Fondo #8DB4E2 (azul claro)
                         new ForegroundColor { Rgb = "FF8DB4E2" })
                     { PatternType = PatternValues.Solid })
                 ),
@@ -696,7 +791,83 @@ namespace isc.time.report.be.application.Services.TimeReports
                         ApplyFont = true,
                         ApplyBorder = true,
                         ApplyAlignment = true
+                    },
+
+                    new CellFormat // 12 - Calibri 12, fondo #naranja, bordes completos, centrado
+                    {
+                        FontId = 7, // Calibri 12 normal
+                        FillId = 5, // #FFC000
+                        BorderId = 1, // Bordes completos
+                        Alignment = new Alignment
+                        {
+                            Horizontal = HorizontalAlignmentValues.Center,
+                            Vertical = VerticalAlignmentValues.Center,
+                            WrapText = true
+                        },
+                        ApplyFont = true,
+                        ApplyFill = true,
+                        ApplyBorder = true,
+                        ApplyAlignment = true
+                    },
+
+                    new CellFormat // 13 - Calibri 12, fondo #amarillo, bordes completos, centrado
+                    {
+                        FontId = 7,
+                        FillId = 6,
+                        BorderId = 1,
+                        Alignment = new Alignment
+                        {
+                            Horizontal = HorizontalAlignmentValues.Center,
+                            Vertical = VerticalAlignmentValues.Center,
+                            WrapText = true
+                        },
+                        ApplyFont = true,
+                        ApplyFill = true,
+                        ApplyBorder = true,
+                        ApplyAlignment = true
+                    },
+
+                    new CellFormat // 14 - Calibri 12, fondo #verde, bordes completos, centrado
+                    {
+                        FontId = 7,
+                        FillId = 7,
+                        BorderId = 1,
+                        Alignment = new Alignment
+                        {
+                            Horizontal = HorizontalAlignmentValues.Center,
+                            Vertical = VerticalAlignmentValues.Center,
+                            WrapText = true
+                        },
+                        ApplyFont = true,
+                        ApplyFill = true,
+                        ApplyBorder = true,
+                        ApplyAlignment = true
+                    },
+
+                    new CellFormat // 15 - Calibri 12, fondo #celeste, bordes completos, centrado
+                    {
+                        FontId = 7,
+                        FillId = 8,
+                        BorderId = 1,
+                        Alignment = new Alignment
+                        {
+                            Horizontal = HorizontalAlignmentValues.Center,
+                            Vertical = VerticalAlignmentValues.Center,
+                            WrapText = true
+                        },
+                        ApplyFont = true,
+                        ApplyFill = true,
+                        ApplyBorder = true,
+                        ApplyAlignment = true
                     }
+
+
+
+
+
+
+
+
                 )
             );
         }

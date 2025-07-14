@@ -1,5 +1,6 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.domain.Entity.DailyActivities;
+using isc.time.report.be.domain.Entity.Holidays;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -35,6 +36,18 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
                 .Where(a => a.EmployeeID == employeeId && projectIds.Contains(a.ProjectID ?? 0))
                 .ToListAsync();
         }
+
+        public async Task<List<Holiday>> GetActiveHolidaysByMonthAndYearAsync(int month, int year)
+        {
+            return await _dbContext.Holidays
+                .Where(h => h.Status == true && (
+                    (h.IsRecurring && h.HolidayDate.Month == month) ||
+                    (!h.IsRecurring && h.HolidayDate.Month == month && h.HolidayDate.Year == year)
+                ))
+                .ToListAsync();
+        }
+
+
 
     }
 }

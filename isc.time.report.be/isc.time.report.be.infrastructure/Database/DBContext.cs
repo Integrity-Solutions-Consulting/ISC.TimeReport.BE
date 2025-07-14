@@ -402,7 +402,7 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.TotalHours).HasColumnName("total_hours");
                 entity.Property(e => e.IsPaid).HasColumnName("is_paid");
                 entity.Property(e => e.Description).HasColumnName("description");
-                entity.Property(e => e.ApprovalStatus).HasColumnName("approval_status");
+                entity.Property(e => e.ApprovalStatusID).HasColumnName("ApprovalStatusID");
                 entity.Property(e => e.ApprovedByID).HasColumnName("approved_by");
                 entity.Property(e => e.ApprovalDate).HasColumnName("approval_date");
                 entity.Property(e => e.Observation).HasColumnName("observation");

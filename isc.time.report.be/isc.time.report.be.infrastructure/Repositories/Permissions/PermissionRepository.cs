@@ -60,5 +60,12 @@ namespace isc.time.report.be.infrastructure.Repositories.Permissions
 
             return permission;
         }
+
+        public async Task<List<Permission>> GetPermissionsAprovedByEmployeeIdAsync(int employeeId)
+        {
+            return await _dbContext.Permissions
+                .Where(p => p.EmployeeID == employeeId && p.ApprovalStatusID == 2)
+                .ToListAsync();
+        }
     }
 }

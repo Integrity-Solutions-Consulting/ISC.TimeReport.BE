@@ -56,7 +56,7 @@ namespace isc.time.report.be.application.Services.Permissions
             if (permissionOrig == null)
                 throw new KeyNotFoundException($"No se encontró el permiso con ID {request.PermissionID}");
 
-            permissionOrig.ApprovalStatus = request.ApprovalStatus;
+            permissionOrig.ApprovalStatusID = request.ApprovalStatusID;
             permissionOrig.ApprovedByID = approvedById;
             permissionOrig.ApprovalDate = DateTime.Now;
             permissionOrig.Observation = request.Observation;
