@@ -10,7 +10,7 @@ namespace isc.time.report.be.domain.Entity.Holidays
     public class Holiday : BaseEntity
     {
         public string HolidayName { get; set; } = null!;
-        public string HolidayDate { get; set; } = null!; // Formato MM-DD
+        public DateOnly HolidayDate { get; set; } // Formato DATEEE DEBE SER
         public bool IsRecurring { get; set; } = true;
         public string HolidayType { get; set; } = "NATIONAL";
         public string? Description { get; set; }

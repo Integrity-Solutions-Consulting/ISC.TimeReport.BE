@@ -27,5 +27,6 @@ namespace isc.time.report.be.domain.Entity.DailyActivities
         public int? ApprovedByID { get; set; }        //CLAVE FORANEA DE QUIEN LO APROBO
         public User ApprovedByUser { get; set; }
         public DateTime? ApprovalDate { get; set; }
+        public string? RequirementCode { get; set; }
     }
 }

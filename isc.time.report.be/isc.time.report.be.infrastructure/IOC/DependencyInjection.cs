@@ -8,6 +8,7 @@ using isc.time.report.be.application.Interfaces.Repository.Permissions;
 using isc.time.report.be.application.Interfaces.Repository.PermissionTypes;
 using isc.time.report.be.application.Interfaces.Repository.Persons;
 using isc.time.report.be.application.Interfaces.Repository.Projects;
+using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.application.Interfaces.Repository.Users;
 using isc.time.report.be.application.Interfaces.Service.DailyActivities;
 using isc.time.report.be.infrastructure.Database;
@@ -21,6 +22,7 @@ using isc.time.report.be.infrastructure.Repositories.Permissions;
 using isc.time.report.be.infrastructure.Repositories.PermissionTypes;
 using isc.time.report.be.infrastructure.Repositories.Persons;
 using isc.time.report.be.infrastructure.Repositories.Projects;
+using isc.time.report.be.infrastructure.Repositories.TimeReports;
 using isc.time.report.be.infrastructure.Repositories.Users;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +52,7 @@ namespace isc.time.report.be.infrastructure.IOC
             services.AddScoped<IPermissionRepository, PermissionRepository>();
             services.AddScoped<IPermissionTypeRepository, PermissionTypeRepository>();
             services.AddScoped<IDailyActivityRepository, DailyActivityRepository>();
+            services.AddScoped<ITimeReportRepository, TimeReportRepository>();
 
             return services;
         }

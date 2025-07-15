@@ -21,7 +21,7 @@ namespace isc.time.report.be.domain.Entity.Permisions
         public decimal? TotalHours { get; set; }
         public bool IsPaid { get; set; } = true;
         public string? Description { get; set; }
-        public string ApprovalStatus { get; set; } = "PENDING";
+        public int ApprovalStatusID { get; set; }
         public int? ApprovedByID { get; set; }
         public User ApprovedBy { get; set; }
         public DateTime? ApprovalDate { get; set; }

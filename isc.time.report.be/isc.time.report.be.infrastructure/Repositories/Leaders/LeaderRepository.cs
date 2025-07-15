@@ -151,5 +151,16 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
             await _dbContext.SaveChangesAsync();
             return leader;
         }
+
+        public async Task<List<Leader>> GetActiveLeadersByProjectIdsAsync(List<int> projectIds)
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+
+            return await _dbContext.Leaders
+                .Include(l => l.Person)
+                .Where(l => projectIds.Contains(l.ProjectID) &&
+                            (l.EndDate == null || l.EndDate > today))
+                .ToListAsync();
+        }
     }
 }

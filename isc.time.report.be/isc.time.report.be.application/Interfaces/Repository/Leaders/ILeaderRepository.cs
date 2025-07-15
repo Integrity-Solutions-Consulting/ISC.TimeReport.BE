@@ -18,5 +18,6 @@ namespace isc.time.report.be.application.Interfaces.Repository.Leaders
         Task<Leader> UpdateLeaderWithPersonAsync(Leader leader);
         Task<Leader> InactivateLeaderAsync(int leaderId);
         Task<Leader> ActivateLeaderAsync(int leaderId);
+        Task<List<Leader>> GetActiveLeadersByProjectIdsAsync(List<int> projectIds);
     }
 }
