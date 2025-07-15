@@ -17,9 +17,9 @@ namespace isc.time.report.be.api.Controllers.v1.TimeReports
         }
 
         [HttpGet("export-excel")]
-        public async Task<IActionResult> ExportToExcel([FromQuery] int employeeId, [FromQuery] int clientId, [FromQuery] int year, [FromQuery] int month)
+        public async Task<IActionResult> ExportToExcel([FromQuery] int employeeId, [FromQuery] int clientId, [FromQuery] int year, [FromQuery] int month, [FromQuery] bool fullMonth)
         {
-            var fileBytes = await _timeReportService.GenerateExcelReportAsync(employeeId, clientId, year, month);
+            var fileBytes = await _timeReportService.GenerateExcelReportAsync(employeeId, clientId, year, month, fullMonth);
 
             var fileName = $"TimeReport_{employeeId}_{year}_{month}.xlsm";
             const string contentType = "application/vnd.ms-excel.sheet.macroEnabled.12";

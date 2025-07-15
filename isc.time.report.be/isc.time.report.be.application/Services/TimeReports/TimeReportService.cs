@@ -36,11 +36,11 @@ namespace isc.time.report.be.application.Services.TimeReports
             this.permissionRepository = permissionRepository;
         }
 
-        public async Task<byte[]> GenerateExcelReportAsync(int employeeId, int clientId, int year, int month)
+        public async Task<byte[]> GenerateExcelReportAsync(int employeeId, int clientId, int year, int month, bool fullMonth)
         {
 
             // Obtener datos reales
-            var reportData = await GetTimeReportDataFillAsync(employeeId, clientId);
+            var reportData = await GetTimeReportDataFillAsync(employeeId, clientId, year, month, fullMonth);
 
             var holidays = await timeReportRepository.GetActiveHolidaysByMonthAndYearAsync(month, year);
 
@@ -226,39 +226,25 @@ namespace isc.time.report.be.application.Services.TimeReports
                 decimal[] totalPorDia = new decimal[diasEnMes];
 
                 // Crear filas de actividades
-                foreach (var actividadAgrupada in reportData.Activities.GroupBy(a => new
-                {
-                    a.ActivityType.Name,
-                    a.LeaderName,
-                    a.RequirementCode,
-                    a.ActivityDescription,
-                    a.ActivityType.ColorCode
-                }))
+                foreach (var actividad in reportData.Activities)
                 {
                     var row = new Row { RowIndex = rowIndex, Height = 24.60, CustomHeight = true };
 
-                    // Inicializar arreglo para esta fila
                     string[] horasPorDia = new string[diasEnMes];
-                    decimal sumaHoras = 0;
+                    decimal sumaHoras = actividad.HoursQuantity;
 
-                    foreach (var act in actividadAgrupada)
-                    {
-                        int dia = act.ActivityDate.Day;
-                        decimal horas = act.HoursQuantity;
-
-                        sumaHoras += horas;
-                        totalPorDia[dia - 1] += horas;
-                        horasPorDia[dia - 1] = horas.ToString("0.##");
-                    }
+                    int dia = actividad.ActivityDate.Day;
+                    horasPorDia[dia - 1] = actividad.HoursQuantity.ToString("0.##");
+                    totalPorDia[dia - 1] += actividad.HoursQuantity;
 
                     // Columnas A–F
                     row.Append(
-                        CreateCell(actividadIndex.ToString(), 5),                                      // A: número
-                        CreateCell(actividadAgrupada.Key.Name.ToString(), 6),                
-                        CreateCell(actividadAgrupada.Key.LeaderName, 6),                                                          
-                        CreateCell(actividadAgrupada.Key.RequirementCode ?? "", 6),                        
-                        CreateCell(actividadAgrupada.Key.ActivityDescription, 7),                      // E: descripción
-                        CreateCell(sumaHoras.ToString("0.##"), 6)                                       // F: total horas por actividad
+                        CreateCell(actividadIndex.ToString(), 5),                           // A: número
+                        CreateCell(actividad.ActivityType.Name, 6),                         // B: tipo actividad
+                        CreateCell(actividad.LeaderName, 6),                                // C: líder
+                        CreateCell(actividad.RequirementCode ?? "", 6),                     // D: código requerimiento
+                        CreateCell(actividad.ActivityDescription, 7),                       // E: descripción
+                        CreateCell(sumaHoras.ToString("0.##"), 6)                           // F: total horas por actividad (1 día en este caso)
                     );
 
                     // Columnas G–AK (una por cada día)
@@ -289,6 +275,7 @@ namespace isc.time.report.be.application.Services.TimeReports
                     rowIndex++;
                     actividadIndex++;
                 }
+
 
                 // === Fila TOTAL por día ===
                 var totalRow = new Row { RowIndex = rowIndex, Height = 20, CustomHeight = true };
@@ -901,7 +888,7 @@ namespace isc.time.report.be.application.Services.TimeReports
         }
 
 
-        public async Task<TimeReportDataFillDto> GetTimeReportDataFillAsync(int employeeId, int clientId)
+        public async Task<TimeReportDataFillDto> GetTimeReportDataFillAsync(int employeeId, int clientId, int year, int month, bool fullMonth)
         {
             var employee = await employeeRepository.GetEmployeeByIDAsync(employeeId);
             if (employee?.Person == null)
@@ -923,8 +910,8 @@ namespace isc.time.report.be.application.Services.TimeReports
                 };
             }
 
-            var activities = await timeReportRepository.GetActivitiesByEmployeeAndProjectsAsync(employeeId, projectIds)
-                              ?? new List<DailyActivity>();
+            var activities = await timeReportRepository.GetActivitiesByEmployeeAndProjectsAsync(
+                employeeId, projectIds, year, month, fullMonth) ?? new List<DailyActivity>();
 
             var leaders = await leaderRepository.GetActiveLeadersByProjectIdsAsync(projectIds);
 

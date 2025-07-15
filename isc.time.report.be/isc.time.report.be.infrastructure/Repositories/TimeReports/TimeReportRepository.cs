@@ -28,12 +28,26 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
                 .ToListAsync();
         }
 
-        public async Task<List<DailyActivity>> GetActivitiesByEmployeeAndProjectsAsync(int employeeId, List<int> projectIds)
+        public async Task<List<DailyActivity>> GetActivitiesByEmployeeAndProjectsAsync(
+            int employeeId,
+            List<int> projectIds,
+            int year,
+            int month,
+            bool fullMonth)
         {
+            var startDate = new DateOnly(year, month, 1);
+            var endDate = fullMonth
+                ? startDate.AddMonths(1).AddDays(-1)
+                : new DateOnly(year, month, 15);
+
             return await _dbContext.DailyActivities
                 .Include(a => a.ActivityType)
                 .Include(a => a.Project)
-                .Where(a => a.EmployeeID == employeeId && projectIds.Contains(a.ProjectID ?? 0))
+                .Where(a => a.EmployeeID == employeeId
+                    && projectIds.Contains(a.ProjectID ?? 0)
+                    && a.Status
+                    && a.ActivityDate >= startDate
+                    && a.ActivityDate <= endDate)
                 .ToListAsync();
         }
 
