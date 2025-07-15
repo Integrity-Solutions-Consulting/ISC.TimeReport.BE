@@ -1,6 +1,8 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using A = DocumentFormat.OpenXml.Drawing;
+using Xdr = DocumentFormat.OpenXml.Drawing.Spreadsheet;
 using isc.time.report.be.application.Interfaces.Repository.Clients;
 using isc.time.report.be.application.Interfaces.Repository.Employees;
 using isc.time.report.be.application.Interfaces.Repository.Leaders;
@@ -365,7 +367,7 @@ namespace isc.time.report.be.application.Services.TimeReports
                 // === FILA 2: Elaborado por / Revisado por ===
                 var sigRow2 = new Row { RowIndex = extraStartRow + 1 };
                 sigRow2.Append(CreateCell(""));  // A
-                sigRow2.Append(CreateCell("Elaborado por:",9));  // B
+                sigRow2.Append(CreateCell("Elaborado por: " + reportData.FirstName + " " + reportData.LastName, 9));  // B
                 sigRow2.Append(CreateCell("", 9));
                 sigRow2.Append(CreateCell("", 9));
 
@@ -453,22 +455,8 @@ namespace isc.time.report.be.application.Services.TimeReports
                     Reference = $"B{nomenclaturaStartRow}:B{nomenclaturaStartRow + 3}"
                 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                var drawingsPart = worksheetPart.AddNewPart<DrawingsPart>();
+                InsertImageToWorksheet(drawingsPart, worksheetPart, "C:\\Users\\User\\Desktop\\ISC.TimeReport.BE\\isc.time.report.be\\isc.time.report.be\\Templates\\LogoRPSIntegrity.png");
 
 
 
@@ -967,5 +955,67 @@ namespace isc.time.report.be.application.Services.TimeReports
                 Activities = activityDtos
             };
         }
+        private void InsertImageToWorksheet(DrawingsPart drawingsPart, WorksheetPart worksheetPart, string imagePath)
+        {
+            using var imageStream = File.OpenRead(imagePath);
+            var imagePart = drawingsPart.AddImagePart(ImagePartType.Png);
+            imagePart.FeedData(imageStream);
+
+            // Crear el contenedor de dibujo si no existe
+            if (drawingsPart.WorksheetDrawing == null)
+            {
+                drawingsPart.WorksheetDrawing = new Xdr.WorksheetDrawing();
+            }
+
+            // Crear relación entre hoja y dibujo si no existe
+            if (!worksheetPart.Worksheet.Elements<Drawing>().Any())
+            {
+                var drawing = new Drawing { Id = worksheetPart.GetIdOfPart(drawingsPart) };
+                worksheetPart.Worksheet.Append(drawing);
+            }
+
+            var fromColumn = 34; // AX
+            var fromRow = 0;    // Fila 100
+            var toColumn = fromColumn + 4; // termina en BA (53)
+            var toRow = fromRow + 3;       // termina en fila 106
+
+            var nvps = new Xdr.NonVisualPictureProperties(
+                new Xdr.NonVisualDrawingProperties { Id = 0U, Name = "Logo" },
+                new Xdr.NonVisualPictureDrawingProperties(new A.PictureLocks { NoChangeAspect = true })
+            );
+
+            var blipFill = new Xdr.BlipFill(
+                new A.Blip { Embed = drawingsPart.GetIdOfPart(imagePart), CompressionState = A.BlipCompressionValues.Print },
+                new A.Stretch(new A.FillRectangle())
+            );
+
+            var shapeProps = new Xdr.ShapeProperties(
+                new A.Transform2D(
+                    new A.Offset { X = 0, Y = 0 },
+                    new A.Extents { Cx = 990000L, Cy = 792000L }),
+                new A.PresetGeometry(new A.AdjustValueList()) { Preset = A.ShapeTypeValues.Rectangle }
+            );
+
+            var picture = new Xdr.Picture(nvps, blipFill, shapeProps);
+
+            var anchor = new Xdr.TwoCellAnchor(
+                new Xdr.FromMarker(
+                    new Xdr.ColumnId(fromColumn.ToString()),
+                    new Xdr.ColumnOffset("0"),
+                    new Xdr.RowId(fromRow.ToString()),
+                    new Xdr.RowOffset("0")),
+                new Xdr.ToMarker(
+                    new Xdr.ColumnId(toColumn.ToString()),
+                    new Xdr.ColumnOffset("0"),
+                    new Xdr.RowId(toRow.ToString()),
+                    new Xdr.RowOffset("0")),
+                picture,
+                new Xdr.ClientData()
+            );
+
+            drawingsPart.WorksheetDrawing.Append(anchor);
+            drawingsPart.WorksheetDrawing.Save();
+        }
+
     }
 }
