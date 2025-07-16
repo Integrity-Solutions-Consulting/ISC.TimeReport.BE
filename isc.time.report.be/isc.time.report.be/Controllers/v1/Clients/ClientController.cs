@@ -86,6 +86,13 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
             var result = await _clientService.ActivateClient(id);
             return Ok(result);
         }
+
+        [HttpGet("get-clients-by-employee/{id}")]
+        public async Task<ActionResult<SuccessResponse<List<GetClientsByEmployeeIDResponse>>>> GetClientsByEmployee(int id)
+        {
+            var result = await _clientService.GetClientsByEmployeeIdAsync(id);
+            return Ok(result);
+        }
     }
 }
 

@@ -19,6 +19,7 @@ namespace isc.time.report.be.application.Interfaces.Repository.Clients
         Task<Client> UpdateClientWithPersonAsync(Client client);
         Task<Client> InactivateClientAsync(int clientId);
         Task<Client> ActivateClientAsync(int clientId);
+        Task<List<Client>> GetClientsByEmployeeIdAsync(int employeeId);
 
     }
 }

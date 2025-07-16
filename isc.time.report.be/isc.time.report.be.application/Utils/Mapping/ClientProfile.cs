@@ -38,6 +38,13 @@ namespace isc.time.report.be.application.Utils.Mapping
 
             CreateMap<Client, ActiveInactiveClientResponse>();
             CreateMap<ActiveInactiveClientResponse, Client>();
+
+            CreateMap<Client, GetClientsByEmployeeIDResponse>();
+                //.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                //.ForMember(dest => dest.PersonID, opt => opt.MapFrom(src => src.PersonID))
+                //.ForMember(dest => dest.TradeName, opt => opt.MapFrom(src => src.TradeName))
+                //.ForMember(dest => dest.LegalName, opt => opt.MapFrom(src => src.LegalName));
+            CreateMap<GetClientsByEmployeeIDResponse, Client>();
         }
     }
 }
