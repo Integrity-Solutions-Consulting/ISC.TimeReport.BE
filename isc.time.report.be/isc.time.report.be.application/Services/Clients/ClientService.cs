@@ -100,5 +100,11 @@ namespace isc.time.report.be.application.Services.Clients
             var activated = await _clientRepository.ActivateClientAsync(clientId);
             return _mapper.Map<ActiveInactiveClientResponse>(activated);
         }
+
+        public async Task<List<GetClientsByEmployeeIDResponse>> GetClientsByEmployeeIdAsync(int employeeId)
+        {
+            var clients = await _clientRepository.GetClientsByEmployeeIdAsync(employeeId);
+            return _mapper.Map<List<GetClientsByEmployeeIDResponse>>(clients);
+        }
     }
 }

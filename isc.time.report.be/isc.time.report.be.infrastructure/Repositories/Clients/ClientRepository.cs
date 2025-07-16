@@ -1,4 +1,5 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.Clients;
+﻿using DocumentFormat.OpenXml.InkML;
+using isc.time.report.be.application.Interfaces.Repository.Clients;
 using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Persons;
 using isc.time.report.be.domain.Entity.Shared;
@@ -150,6 +151,15 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
             _dbContext.Entry(client).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync();
             return client;
+        }
+        public async Task<List<Client>> GetClientsByEmployeeIdAsync(int employeeId)
+        {
+            return await _dbContext.EmployeeProjects
+                .Where(ep => ep.EmployeeID == employeeId)
+                .Select(ep => ep.Project.Client)
+                .Distinct()
+                .Include(c => c.Person)
+                .ToListAsync();
         }
     }
 }
