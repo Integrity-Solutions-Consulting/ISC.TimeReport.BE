@@ -21,10 +21,12 @@ namespace isc.time.report.be.application.Services.DailyActivities
         private readonly ITimeReportRepository _timeReportRepository;
         private readonly IPermissionRepository _permissionRepository;
 
-        public DailyActivityService(IDailyActivityRepository repository, IMapper mapper)
+        public DailyActivityService(IDailyActivityRepository repository, IMapper mapper, ITimeReportRepository timeReportRepository, IPermissionRepository permissionRepository)
         {
             _repository = repository;
             _mapper = mapper;
+            _timeReportRepository = timeReportRepository;
+            _permissionRepository = permissionRepository;
         }
 
         public async Task<List<GetDailyActivityResponse>> GetAllAsync()
