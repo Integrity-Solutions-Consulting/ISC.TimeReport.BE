@@ -1,4 +1,5 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.Auth;
+using isc.time.report.be.application.Interfaces.Repository.Catalogs;
 using isc.time.report.be.application.Interfaces.Repository.Clients;
 using isc.time.report.be.application.Interfaces.Repository.DailyActivities;
 using isc.time.report.be.application.Interfaces.Repository.Employees;
@@ -13,6 +14,7 @@ using isc.time.report.be.application.Interfaces.Repository.Users;
 using isc.time.report.be.application.Interfaces.Service.DailyActivities;
 using isc.time.report.be.infrastructure.Database;
 using isc.time.report.be.infrastructure.Repositories.Auth;
+using isc.time.report.be.infrastructure.Repositories.Catalogs;
 using isc.time.report.be.infrastructure.Repositories.Clients;
 using isc.time.report.be.infrastructure.Repositories.DailyActivities;
 using isc.time.report.be.infrastructure.Repositories.Employees;
@@ -53,6 +55,7 @@ namespace isc.time.report.be.infrastructure.IOC
             services.AddScoped<IPermissionTypeRepository, PermissionTypeRepository>();
             services.AddScoped<IDailyActivityRepository, DailyActivityRepository>();
             services.AddScoped<ITimeReportRepository, TimeReportRepository>();
+            services.AddScoped<ICatalogRepository, CatalogRepository>();
 
             return services;
         }

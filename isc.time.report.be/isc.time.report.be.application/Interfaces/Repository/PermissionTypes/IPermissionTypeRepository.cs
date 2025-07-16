@@ -1,4 +1,4 @@
-﻿using isc.time.report.be.domain.Entity.Permisions;
+﻿using isc.time.report.be.domain.Entity.Catalogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;

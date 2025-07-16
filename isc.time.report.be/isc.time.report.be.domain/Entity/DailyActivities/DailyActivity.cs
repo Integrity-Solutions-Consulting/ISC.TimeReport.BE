@@ -1,5 +1,5 @@
-﻿using isc.time.report.be.domain.Entity.Activities;
-using isc.time.report.be.domain.Entity.Auth;
+﻿using isc.time.report.be.domain.Entity.Auth;
+using isc.time.report.be.domain.Entity.Catalogs;
 using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Entity.Shared;

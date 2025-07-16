@@ -1,6 +1,5 @@
 ﻿using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Persons;
-using isc.time.report.be.domain.Entity.Positions;
 using isc.time.report.be.domain.Entity.Projects;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,5 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.Auth;
+using isc.time.report.be.application.Interfaces.Service.Catalogs;
 using isc.time.report.be.application.Interfaces.Service.Clients;
 using isc.time.report.be.application.Interfaces.Service.DailyActivities;
 using isc.time.report.be.application.Interfaces.Service.Employees;
@@ -12,6 +13,7 @@ using isc.time.report.be.application.Interfaces.Service.TimeReports;
 using isc.time.report.be.application.Interfaces.Service.Users;
 using isc.time.report.be.application.Services;
 using isc.time.report.be.application.Services.Auth;
+using isc.time.report.be.application.Services.Catalogs;
 using isc.time.report.be.application.Services.Clients;
 using isc.time.report.be.application.Services.DailyActivities;
 using isc.time.report.be.application.Services.Employees;
@@ -55,6 +57,7 @@ namespace isc.time.report.be.application.IOC
             services.AddScoped<IPermissionTypeService, PermissionTypeService>();
             services.AddScoped<IDailyActivityService,DailyActivityService>();
             services.AddScoped<ITimeReportService, TimeReportService>();
+            services.AddScoped<ICatalogService, CatalogService>();
 
 
             services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));

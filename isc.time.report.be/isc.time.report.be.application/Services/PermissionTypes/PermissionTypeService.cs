@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using isc.time.report.be.application.Interfaces.Repository.PermissionTypes;
 using isc.time.report.be.application.Interfaces.Service.PermissionTypes;
-using isc.time.report.be.domain.Entity.Permisions;
+using isc.time.report.be.domain.Entity.Catalogs;
 using isc.time.report.be.domain.Models.Request.PermissionTypes;
 using isc.time.report.be.domain.Models.Response.PermissionTypes;
 

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using isc.time.report.be.domain.Entity.Shared;
 
-namespace isc.time.report.be.domain.Entity.Nationalities
+namespace isc.time.report.be.domain.Models.Response.Catalogs
 {
-    public class Nationality : BaseEntity
+    public class GetNationalityResponse
     {
+        public int Id { get; set; }
         public string? Description { get; set; }
     }
 }

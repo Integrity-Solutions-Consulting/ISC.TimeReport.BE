@@ -1,20 +1,17 @@
-﻿using isc.time.report.be.domain.Entity.Activities;
-using isc.time.report.be.domain.Entity.Auth;
+﻿using isc.time.report.be.domain.Entity.Auth;
+using isc.time.report.be.domain.Entity.Catalogs;
 using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.DailyActivities;
 using isc.time.report.be.domain.Entity.Employees;
-using isc.time.report.be.domain.Entity.Genders;
 using isc.time.report.be.domain.Entity.Historycs;
 using isc.time.report.be.domain.Entity.Holidays;
-using isc.time.report.be.domain.Entity.IdentificationTypes;
 using isc.time.report.be.domain.Entity.Leaders;
 using isc.time.report.be.domain.Entity.Modules;
-using isc.time.report.be.domain.Entity.Nationalities;
 using isc.time.report.be.domain.Entity.Permisions;
 using isc.time.report.be.domain.Entity.Persons;
-using isc.time.report.be.domain.Entity.Positions;
 using isc.time.report.be.domain.Entity.Projects;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -584,6 +581,27 @@ namespace isc.time.report.be.infrastructure.Database
                       .IsUnique()
                       .HasDatabaseName("UQ_UserModules_UserModule");
             });
+
+            modelBuilder.Entity<ApprovalStatus>(entity =>
+            {
+                entity.ToTable("ApprovalStatus");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnName("ApprovalStatusID");
+                entity.Property(e => e.StatusCode).HasColumnName("status_code");
+                entity.Property(e => e.StatusName).HasColumnName("status_name");
+                entity.Property(e => e.Description).HasColumnName("description");
+
+                entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.CreationUser).HasColumnName("creation_user");
+                entity.Property(e => e.ModificationUser).HasColumnName("modification_user");
+                entity.Property(e => e.CreationDate).HasColumnName("creation_date");
+                entity.Property(e => e.ModificationDate).HasColumnName("modification_date");
+                entity.Property(e => e.CreationIp).HasColumnName("creation_ip");
+                entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
+            });
+
+
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -610,5 +628,6 @@ namespace isc.time.report.be.infrastructure.Database
         public DbSet<Module> Modules { get; set; }
         public DbSet<RoleModule> RoleModules { get; set; }
         public DbSet<UserModule> UserModules { get; set; }
+        public DbSet<ApprovalStatus> ApprovalStatus { get; set; }
     }
 }

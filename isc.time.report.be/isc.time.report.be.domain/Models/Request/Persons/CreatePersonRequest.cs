@@ -1,7 +1,4 @@
-﻿using isc.time.report.be.domain.Entity.Genders;
-using isc.time.report.be.domain.Entity.IdentificationTypes;
-using isc.time.report.be.domain.Entity.Nationalities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

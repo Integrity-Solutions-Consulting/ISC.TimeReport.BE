@@ -1,6 +1,6 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.Permissions;
 using isc.time.report.be.application.Interfaces.Repository.PermissionTypes;
-using isc.time.report.be.domain.Entity.Permisions;
+using isc.time.report.be.domain.Entity.Catalogs;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using System;

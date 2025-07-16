@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using isc.time.report.be.domain.Entity.Shared;
 
-namespace isc.time.report.be.domain.Entity.Genders
+namespace isc.time.report.be.domain.Entity.Catalogs
 {
     public class Gender : BaseEntity
     {
