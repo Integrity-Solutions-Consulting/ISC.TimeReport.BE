@@ -4,10 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using isc.time.report.be.domain.Entity.Genders;
-using isc.time.report.be.domain.Entity.Nationalities;
-using isc.time.report.be.domain.Entity.IdentificationTypes;
 using isc.time.report.be.domain.Entity.Shared;
+using isc.time.report.be.domain.Entity.Catalogs;
 
 namespace isc.time.report.be.domain.Entity.Persons
 {

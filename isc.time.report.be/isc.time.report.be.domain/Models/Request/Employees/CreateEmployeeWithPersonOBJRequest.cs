@@ -1,10 +1,5 @@
 ﻿using isc.time.report.be.domain.Entity.Auth;
 using isc.time.report.be.domain.Entity.Employees;
-using isc.time.report.be.domain.Entity.Genders;
-using isc.time.report.be.domain.Entity.IdentificationTypes;
-using isc.time.report.be.domain.Entity.Nationalities;
-using isc.time.report.be.domain.Entity.Persons;
-using isc.time.report.be.domain.Entity.Positions;
 using isc.time.report.be.domain.Models.Request.Persons;
 using System;
 using System.Collections.Generic;

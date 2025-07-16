@@ -1,7 +1,6 @@
 ﻿using isc.time.report.be.domain.Entity.Auth;
 using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Persons;
-using isc.time.report.be.domain.Entity.Positions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,15 +1,15 @@
-﻿using isc.time.report.be.domain.Entity.Shared;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace isc.time.report.be.domain.Entity.Activities
+namespace isc.time.report.be.domain.Models.Response.Catalogs
 {
-    public class ActivityType : BaseEntity
+    public class GetActivityTypeResponse
     {
-        public string Name { get; set; } = null!;
+        public int Id { get; set; }
+        public string Name { get; set; }
         public string? Description { get; set; }
         public string? ColorCode { get; set; }
     }

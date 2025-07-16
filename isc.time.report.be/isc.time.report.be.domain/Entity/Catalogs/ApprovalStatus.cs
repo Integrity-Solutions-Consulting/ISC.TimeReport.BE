@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace isc.time.report.be.domain.Entity.Positions
+namespace isc.time.report.be.domain.Entity.Catalogs
 {
-    public class Position : BaseEntity
+    public class ApprovalStatus : BaseEntity
     {
-        public string PositionName { get; set; } = null!;
-        public string Department { get; set; } = null!;
+        public string StatusCode { get; set; }
+        public string StatusName { get; set; }
         public string? Description { get; set; }
     }
 }

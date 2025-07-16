@@ -1,4 +1,5 @@
 ﻿using isc.time.report.be.domain.Entity.Auth;
+using isc.time.report.be.domain.Entity.Catalogs;
 using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Shared;
 using System;

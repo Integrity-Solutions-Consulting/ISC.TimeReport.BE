@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace isc.time.report.be.domain.Entity.Projects
+namespace isc.time.report.be.domain.Entity.Catalogs
 {
     public class ProjectStatus : BaseEntity
     {
