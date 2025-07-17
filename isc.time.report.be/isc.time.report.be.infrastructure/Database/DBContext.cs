@@ -208,11 +208,11 @@ namespace isc.time.report.be.infrastructure.Database
 
                 entity.Property(e => e.PersonID).HasColumnName("PersonID");
                 entity.Property(e => e.PositionID).HasColumnName("PositionID");
+                entity.Property(e => e.DepartmentID).HasColumnName("DepartmentID");
                 entity.Property(e => e.EmployeeCode).HasColumnName("employee_code");
                 entity.Property(e => e.HireDate).HasColumnName("hire_date");
                 entity.Property(e => e.TerminationDate).HasColumnName("termination_date");
                 entity.Property(e => e.ContractType).HasColumnName("contract_type");
-                entity.Property(e => e.Department).HasColumnName("department");
                 entity.Property(e => e.CorporateEmail).HasColumnName("corporate_email");
                 entity.Property(e => e.Salary).HasColumnName("salary");
 
@@ -600,6 +600,23 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
             });
 
+            modelBuilder.Entity<Departament>(entity =>
+            {
+                entity.ToTable("Departaments");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnName("DepartmentID");
+                entity.Property(e => e.DepartamentName).HasColumnName("department_name");
+                entity.Property(e => e.Description).HasColumnName("description");
+
+                entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.CreationUser).HasColumnName("creation_user");
+                entity.Property(e => e.ModificationUser).HasColumnName("modification_user");
+                entity.Property(e => e.CreationDate).HasColumnName("creation_date");
+                entity.Property(e => e.ModificationDate).HasColumnName("modification_date");
+                entity.Property(e => e.CreationIp).HasColumnName("creation_ip");
+                entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
+            });
+
 
 
             base.OnModelCreating(modelBuilder);
@@ -629,5 +646,6 @@ namespace isc.time.report.be.infrastructure.Database
         public DbSet<RoleModule> RoleModules { get; set; }
         public DbSet<UserModule> UserModules { get; set; }
         public DbSet<ApprovalStatus> ApprovalStatus { get; set; }
+        public DbSet<Departament> Departaments { get; set; }
     }
 }
