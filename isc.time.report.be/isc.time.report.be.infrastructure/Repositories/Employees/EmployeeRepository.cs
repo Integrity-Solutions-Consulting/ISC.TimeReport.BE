@@ -35,7 +35,6 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
 
                 query = query.Where(e =>
                     (e.EmployeeCode != null && e.EmployeeCode.ToLower().Contains(normalizedSearch)) ||
-                    (e.Department != null && e.Department.ToLower().Contains(normalizedSearch)) ||
                     (e.CorporateEmail != null && e.CorporateEmail.ToLower().Contains(normalizedSearch)) ||
                     (e.Person != null && (
                         (e.Person.FirstName != null && e.Person.FirstName.ToLower().Contains(normalizedSearch)) ||

@@ -19,7 +19,7 @@ namespace isc.time.report.be.domain.Models.Response.Employees
         public DateTime HireDate { get; set; }
         public DateTime? TerminationDate { get; set; }
         public bool? ContractType { get; set; }
-        public string? Department { get; set; }
+        public int? DepartmentID { get; set; }
         public string? CorporateEmail { get; set; }
         public decimal? Salary { get; set; }
     }

@@ -16,11 +16,12 @@ namespace isc.time.report.be.domain.Entity.Employees
         public Person Person { get; set; }
         public int? PositionID { get; set; }
         public Position Position { get; set; }
+        public int? DepartmentID { get; set; }
+        public Departament Department { get; set; }
         public string EmployeeCode { get; set; } = null!;
-        public DateTime HireDate { get; set; }
+        public DateTime? HireDate { get; set; }
         public DateTime? TerminationDate { get; set; }
         public bool? ContractType { get; set; }
-        public string? Department { get; set; }
         public string? CorporateEmail { get; set; }
         public decimal? Salary { get; set; }
         public List<EmployeeProject> EmployeeProject { get; set; }
