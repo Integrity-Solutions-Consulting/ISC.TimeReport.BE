@@ -603,9 +603,9 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
             });
 
-            modelBuilder.Entity<Departament>(entity =>
+            modelBuilder.Entity<Department>(entity =>
             {
-                entity.ToTable("Departaments");
+                entity.ToTable("Departments");
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id).HasColumnName("DepartmentID");
                 entity.Property(e => e.DepartamentName).HasColumnName("department_name");
@@ -666,7 +666,7 @@ namespace isc.time.report.be.infrastructure.Database
         public DbSet<RoleModule> RoleModules { get; set; }
         public DbSet<UserModule> UserModules { get; set; }
         public DbSet<ApprovalStatus> ApprovalStatus { get; set; }
-        public DbSet<Departament> Departaments { get; set; }
+        public DbSet<Department> Departments { get; set; }
         public DbSet<ProjectType> ProjectTypes { get; set; }
     }
 }

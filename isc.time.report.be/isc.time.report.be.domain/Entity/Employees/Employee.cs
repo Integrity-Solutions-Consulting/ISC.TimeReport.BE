@@ -17,7 +17,7 @@ namespace isc.time.report.be.domain.Entity.Employees
         public int? PositionID { get; set; }
         public Position Position { get; set; }
         public int? DepartmentID { get; set; }
-        public Departament Department { get; set; }
+        public Department Department { get; set; }
         public string EmployeeCode { get; set; } = null!;
         public DateTime? HireDate { get; set; }
         public DateTime? TerminationDate { get; set; }

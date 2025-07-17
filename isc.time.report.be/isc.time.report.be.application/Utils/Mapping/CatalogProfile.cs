@@ -19,6 +19,9 @@ namespace isc.time.report.be.application.Utils.Mapping
             CreateMap<ApprovalStatus, GetApprovalStatusResponse>();
             CreateMap<GetApprovalStatusResponse, ApprovalStatus>();
 
+            CreateMap<Department, GetDepartmentResponse>();
+            CreateMap<GetDepartmentResponse, Department>();
+
             CreateMap<Gender, GetGenderResponse>();
             CreateMap<GetGenderResponse, Gender>();
 
@@ -36,6 +39,9 @@ namespace isc.time.report.be.application.Utils.Mapping
 
             CreateMap<ProjectStatus, GetProjectStatusResponse>();
             CreateMap<GetProjectStatusResponse, ProjectStatus>();
+
+            CreateMap<ProjectType, GetProjectTypeResponse>();
+            CreateMap<GetProjectTypeResponse, ProjectType>();
         }
     }
 }

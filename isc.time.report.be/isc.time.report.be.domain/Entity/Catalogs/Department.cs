@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace isc.time.report.be.domain.Entity.Catalogs
 {
-    public class ProjectType : BaseEntity
+    public class Department : BaseEntity
     {
-        public string TypeName { get; set; } = null!;
-        public bool? SubType { get; set; }
+        public string DepartamentName { get; set; } = null!;
+        public string? Description { get; set; }
     }
 }

@@ -11,11 +11,13 @@ namespace isc.time.report.be.application.Interfaces.Service.Catalogs
     {
         Task<List<GetActivityTypeResponse>> GetActivityTypesAsync();
         Task<List<GetApprovalStatusResponse>> GetApprovalStatusesAsync();
+        Task<List<GetDepartmentResponse>> GetDepartmentsAsync();
         Task<List<GetGenderResponse>> GetGendersAsync();
         Task<List<GetIdentificationTypeResponse>> GetIdentificationTypesAsync();
         Task<List<GetNationalityResponse>> GetNationalitiesAsync();
         Task<List<GetPermissionTypeResponse>> GetPermissionTypesAsync();
         Task<List<GetPositionResponse>> GetPositionsAsync();
         Task<List<GetProjectStatusResponse>> GetProjectStatusesAsync();
+        Task<List<GetProjectTypeResponse>> GetProjectTypesAsync();
     }
 }

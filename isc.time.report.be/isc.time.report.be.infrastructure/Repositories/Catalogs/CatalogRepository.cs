@@ -31,6 +31,12 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
                 .Where(e => e.Status)
                 .ToListAsync();
         }
+        public async Task<List<Department>> GetDepartmentActivosAsync()
+        {
+            return await _dbContext.Departments
+                .Where(e => e.Status)
+                .ToListAsync();
+        }
         public async Task<List<Gender>> GetGenderActivosAsync()
         {
             return await _dbContext.Genders
@@ -64,6 +70,13 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
         public async Task<List<ProjectStatus>> GetProjectStatusActivosAsync()
         {
             return await _dbContext.ProjectStatus
+                .Where(e => e.Status)
+                .ToListAsync();
+        }
+
+        public async Task<List<ProjectType>> GetProjectTypeActivosAsync()
+        {
+            return await _dbContext.ProjectTypes
                 .Where(e => e.Status)
                 .ToListAsync();
         }
