@@ -32,6 +32,11 @@ namespace isc.time.report.be.application.Services.Catalogs
             var result = await _catalogRepository.GetApprovalStatusActivosAsync();
             return _mapper.Map<List<GetApprovalStatusResponse>>(result);
         }
+        public async Task<List<GetDepartmentResponse>> GetDepartmentsAsync()
+        {
+            var result = await _catalogRepository.GetDepartmentActivosAsync();
+            return _mapper.Map<List<GetDepartmentResponse>>(result);
+        }
 
         public async Task<List<GetGenderResponse>> GetGendersAsync()
         {
@@ -67,6 +72,11 @@ namespace isc.time.report.be.application.Services.Catalogs
         {
             var result = await _catalogRepository.GetProjectStatusActivosAsync();
             return _mapper.Map<List<GetProjectStatusResponse>>(result);
+        }
+        public async Task<List<GetProjectTypeResponse>> GetProjectTypesAsync()
+        {
+            var result = await _catalogRepository.GetProjectTypeActivosAsync();
+            return _mapper.Map<List<GetProjectTypeResponse>>(result);
         }
     }
 }

@@ -29,6 +29,13 @@ namespace isc.time.report.be.api.Controllers.v1.Catalogs
             return Ok(result);
         }
 
+        [HttpGet("departments")]
+        public async Task<IActionResult> GetDepartments()
+        {
+            var result = await _catalogService.GetDepartmentsAsync();
+            return Ok(result);
+        }
+
         [HttpGet("genders")]
         public async Task<IActionResult> GetGenders()
         {
@@ -71,5 +78,11 @@ namespace isc.time.report.be.api.Controllers.v1.Catalogs
             return Ok(result);
         }
 
+        [HttpGet("project-type")]
+        public async Task<IActionResult> GetProjectTypes()
+        {
+            var result = await _catalogService.GetProjectTypesAsync();
+            return Ok(result);
+        }
     }
 }
