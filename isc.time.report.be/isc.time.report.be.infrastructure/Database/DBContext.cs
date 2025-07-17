@@ -179,6 +179,7 @@ namespace isc.time.report.be.infrastructure.Database
 
                 entity.Property(e => e.ClientID).HasColumnName("ClientID");
                 entity.Property(e => e.ProjectStatusID).HasColumnName("ProjectStatusID");
+                entity.Property(e => e.ProjectTypeID).HasColumnName("ProjectTypeID");
                 entity.Property(e => e.Code).HasColumnName("code");
                 entity.Property(e => e.Name).HasColumnName("name");
                 entity.Property(e => e.Description).HasColumnName("description");
@@ -198,6 +199,7 @@ namespace isc.time.report.be.infrastructure.Database
 
                 entity.HasOne(e => e.Client).WithMany().HasForeignKey(e => e.ClientID);
                 entity.HasOne(e => e.ProjectStatus).WithMany().HasForeignKey(e => e.ProjectStatusID);
+                entity.HasOne(e => e.ProjectType).WithMany().HasForeignKey(e => e.ProjectTypeID);
             });
 
             modelBuilder.Entity<Employee>(entity =>
@@ -226,6 +228,7 @@ namespace isc.time.report.be.infrastructure.Database
 
                 entity.HasOne(e => e.Person).WithMany().HasForeignKey(e => e.PersonID);
                 entity.HasOne(e => e.Position).WithMany().HasForeignKey(e => e.PositionID);
+                entity.HasOne(e => e.Department).WithMany().HasForeignKey(e => e.DepartmentID);
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -617,6 +620,23 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
             });
 
+            modelBuilder.Entity<ProjectType>(entity =>
+            {
+                entity.ToTable("ProjectTypes");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnName("ProjectTypeID");
+                entity.Property(e => e.TypeName).HasColumnName("type_name");
+                entity.Property(e => e.SubType).HasColumnName("subtype");
+
+                entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.CreationUser).HasColumnName("creation_user");
+                entity.Property(e => e.ModificationUser).HasColumnName("modification_user");
+                entity.Property(e => e.CreationDate).HasColumnName("creation_date");
+                entity.Property(e => e.ModificationDate).HasColumnName("modification_date");
+                entity.Property(e => e.CreationIp).HasColumnName("creation_ip");
+                entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
+            });
+
 
 
             base.OnModelCreating(modelBuilder);
@@ -647,5 +667,6 @@ namespace isc.time.report.be.infrastructure.Database
         public DbSet<UserModule> UserModules { get; set; }
         public DbSet<ApprovalStatus> ApprovalStatus { get; set; }
         public DbSet<Departament> Departaments { get; set; }
+        public DbSet<ProjectType> ProjectTypes { get; set; }
     }
 }

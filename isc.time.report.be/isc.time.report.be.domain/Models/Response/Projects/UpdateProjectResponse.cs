@@ -11,6 +11,7 @@ namespace isc.time.report.be.domain.Models.Response.Projects
         public int Id { get; set; }
         public int ClientID { get; set; }
         public int ProjectStatusID { get; set; }
+        public int? ProjectTypeID { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }

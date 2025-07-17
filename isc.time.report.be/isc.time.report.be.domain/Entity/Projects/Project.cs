@@ -16,6 +16,8 @@ namespace isc.time.report.be.domain.Entity.Projects
         public Client Client { get; set; }
         public int ProjectStatusID { get; set; }
         public ProjectStatus ProjectStatus { get; set; }
+        public int? ProjectTypeID { get; set; }
+        public ProjectType ProjectType { get; set; }
         public string Code { get; set; }
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
