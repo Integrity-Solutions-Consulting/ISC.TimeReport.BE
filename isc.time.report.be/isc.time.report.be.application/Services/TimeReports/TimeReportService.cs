@@ -1,8 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using A = DocumentFormat.OpenXml.Drawing;
-using Xdr = DocumentFormat.OpenXml.Drawing.Spreadsheet;
 using isc.time.report.be.application.Interfaces.Repository.Clients;
 using isc.time.report.be.application.Interfaces.Repository.Employees;
 using isc.time.report.be.application.Interfaces.Repository.Leaders;
@@ -11,12 +9,15 @@ using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.application.Interfaces.Service.TimeReports;
 using isc.time.report.be.domain.Entity.DailyActivities;
 using isc.time.report.be.domain.Models.Dto.TimeReports;
+using isc.time.report.be.domain.Models.Response.Dashboards;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using A = DocumentFormat.OpenXml.Drawing;
+using Xdr = DocumentFormat.OpenXml.Drawing.Spreadsheet;
 
 namespace isc.time.report.be.application.Services.TimeReports
 {
@@ -1002,6 +1003,11 @@ namespace isc.time.report.be.application.Services.TimeReports
 
             drawingsPart.WorksheetDrawing.Append(anchor);
             drawingsPart.WorksheetDrawing.Save();
+        }
+
+        public async Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteAsync()
+        {
+            return await timeReportRepository.GetRecursosTimeReportPendienteAsync();
         }
 
     }

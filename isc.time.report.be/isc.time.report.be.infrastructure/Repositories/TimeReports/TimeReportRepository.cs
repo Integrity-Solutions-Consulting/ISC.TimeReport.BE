@@ -1,6 +1,8 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.TimeReports;
+﻿using DocumentFormat.OpenXml.InkML;
+using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.domain.Entity.DailyActivities;
 using isc.time.report.be.domain.Entity.Holidays;
+using isc.time.report.be.domain.Models.Response.Dashboards;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -61,7 +63,10 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
                 .ToListAsync();
         }
 
-
+        public async Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteAsync()
+        {
+            return await _dbContext.Set<DashboardRecursosPendientesDto>().FromSqlRaw("EXEC dbo.sp_RecursosTimeReportPendiente").ToListAsync();
+        }
 
     }
 }

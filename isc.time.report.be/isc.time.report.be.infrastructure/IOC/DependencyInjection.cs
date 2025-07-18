@@ -2,6 +2,7 @@
 using isc.time.report.be.application.Interfaces.Repository.Catalogs;
 using isc.time.report.be.application.Interfaces.Repository.Clients;
 using isc.time.report.be.application.Interfaces.Repository.DailyActivities;
+using isc.time.report.be.application.Interfaces.Repository.Dashboards;
 using isc.time.report.be.application.Interfaces.Repository.Employees;
 using isc.time.report.be.application.Interfaces.Repository.Leaders;
 using isc.time.report.be.application.Interfaces.Repository.Menus;
@@ -12,11 +13,13 @@ using isc.time.report.be.application.Interfaces.Repository.Projects;
 using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.application.Interfaces.Repository.Users;
 using isc.time.report.be.application.Interfaces.Service.DailyActivities;
+using isc.time.report.be.application.Interfaces.Service.Dashboards;
 using isc.time.report.be.infrastructure.Database;
 using isc.time.report.be.infrastructure.Repositories.Auth;
 using isc.time.report.be.infrastructure.Repositories.Catalogs;
 using isc.time.report.be.infrastructure.Repositories.Clients;
 using isc.time.report.be.infrastructure.Repositories.DailyActivities;
+using isc.time.report.be.infrastructure.Repositories.Dashboards;
 using isc.time.report.be.infrastructure.Repositories.Employees;
 using isc.time.report.be.infrastructure.Repositories.Leaders;
 using isc.time.report.be.infrastructure.Repositories.Menus;
@@ -56,6 +59,7 @@ namespace isc.time.report.be.infrastructure.IOC
             services.AddScoped<IDailyActivityRepository, DailyActivityRepository>();
             services.AddScoped<ITimeReportRepository, TimeReportRepository>();
             services.AddScoped<ICatalogRepository, CatalogRepository>();
+            services.AddScoped<IDashboardRepository, DashboardRepository>();
 
             return services;
         }
@@ -79,10 +83,6 @@ namespace isc.time.report.be.infrastructure.IOC
 
             return services;
         }
-
-
-
-
 
 
     }
