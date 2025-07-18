@@ -10,6 +10,7 @@ using isc.time.report.be.domain.Entity.Modules;
 using isc.time.report.be.domain.Entity.Permisions;
 using isc.time.report.be.domain.Entity.Persons;
 using isc.time.report.be.domain.Entity.Projects;
+using isc.time.report.be.domain.Models.Response.Dashboards;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using System;
@@ -637,6 +638,10 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
             });
 
+            modelBuilder.Entity<DashboardHorasActividadDto>().HasNoKey();
+            modelBuilder.Entity<DashboardRecursosClienteDto>().HasNoKey();
+            modelBuilder.Entity<DashboardResumenProyectoDto>().HasNoKey();
+            modelBuilder.Entity<DashboardRecursosPendientesDto>().HasNoKey();
 
 
             base.OnModelCreating(modelBuilder);

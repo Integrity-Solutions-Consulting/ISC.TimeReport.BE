@@ -26,6 +26,12 @@ namespace isc.time.report.be.api.Controllers.v1.TimeReports
 
             return File(fileBytes, contentType, fileName);
         }
+
+        [HttpGet("recursos-pendientes")] public async Task<IActionResult> GetRecursosPendientes()
+        {
+            var result = await _timeReportService.GetRecursosTimeReportPendienteAsync();
+            return Ok(result);
+        }
     }
 
 
