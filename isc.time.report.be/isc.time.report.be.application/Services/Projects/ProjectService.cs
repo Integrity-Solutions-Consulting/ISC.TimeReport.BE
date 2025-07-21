@@ -124,51 +124,93 @@ namespace isc.time.report.be.application.Services.Projects
 
         public async Task AssignEmployeesToProject(AssignEmployeesToProjectRequest request)
         {
+
+            //foreach (var item in request.EmployeeProjectMiddle)
+            //{
+            //    if ((item.EmployeeId.HasValue && item.ProviderId.HasValue) ||
+            //        (!item.EmployeeId.HasValue && !item.ProviderId.HasValue))
+            //    {
+            //        throw new ArgumentException(
+            //            "Cada asignación debe tener solo EmployeeId o solo ProviderId.");
+            //    }
+            //}
+
+
             var existing = await projectRepository.GetByProjectIdAsync(request.ProjectID);
 
+            var now = DateTime.UtcNow;
             var finalList = new List<EmployeeProject>();
 
-            var now = DateTime.Now;
-
-            foreach (var empId in request.EmployeeIDs)
+            // 3. Procesar cada entrada entrante
+            foreach (var dto in request.EmployeeProjectMiddle)
             {
-                var match = existing.FirstOrDefault(e => e.EmployeeID == empId);
+                // Buscar match por EmployeeID o ProviderID
+                var match = existing
+                    .FirstOrDefault(ep =>
+                        ep.EmployeeID == dto.EmployeeId 
+                        //&&
+                        //ep.ProviderID == dto.ProviderId
+                        );
 
                 if (match == null)
                 {
+                    // Nuevo registro
                     finalList.Add(new EmployeeProject
                     {
-                        EmployeeID = empId,
                         ProjectID = request.ProjectID,
+                        EmployeeID = dto.EmployeeId,
+                        //ProviderID = dto.ProviderId,
+                        AssignedRole = dto.AssignedRole,
+                        CostPerHour = dto.CostPerHour,
+                        AllocatedHours = dto.AllocatedHours,
                         Status = true,
                         AssignmentDate = now,
                         CreationDate = now,
                         CreationUser = "SYSTEM"
                     });
                 }
-                else if (!match.Status)
+                else if (match.Status)
                 {
-                    match.Status = true;
-                    match.ModificationDate = now;
-                    match.ModificationUser = "SYSTEM";
+
+                        match.Status = true;
+                        match.ModificationDate = now;
+                        match.ModificationUser = "SYSTEM";
+
+                    match.AssignedRole = dto.AssignedRole;
+                    match.CostPerHour = dto.CostPerHour;
+                    match.AllocatedHours = dto.AllocatedHours;
+
                     finalList.Add(match);
                 }
                 else
                 {
+                    if (!match.Status)
+                    {
+                        match.Status = true;
+                        match.ModificationDate = now;
+                        match.ModificationUser = "SYSTEM";
+                    }
+                    match.AssignedRole = dto.AssignedRole;
+                    match.CostPerHour = dto.CostPerHour;
+                    match.AllocatedHours = dto.AllocatedHours;
+
                     finalList.Add(match);
                 }
             }
 
             foreach (var ep in existing)
             {
-                if (!request.EmployeeIDs.Contains(ep.EmployeeID))
+                bool incoming = request.EmployeeProjectMiddle.Any(dto =>
+                    dto.EmployeeId == ep.EmployeeID 
+                    //&&
+                    //dto.ProviderId == ep.ProviderID
+                    );
+
+                if (!incoming && ep.Status)
                 {
-                    if (ep.Status)
-                    {
-                        ep.Status = false;
-                        ep.ModificationDate = now;
-                        ep.ModificationUser = "SYSTEM";
-                    }
+                    ep.Status = false;
+                    ep.ModificationDate = now;
+                    ep.ModificationUser = "SYSTEM";
                     finalList.Add(ep);
                 }
             }
@@ -200,6 +242,10 @@ namespace isc.time.report.be.application.Services.Projects
                 {
                     Id = ep.Id,
                     EmployeeID = ep.EmployeeID,
+                    //ProviderID = ep.ProviderID,
+                    AssignedRole = ep.AssignedRole,
+                    CostPerHour = ep.CostPerHour,
+                    AllocatedHours = ep.AllocatedHours,
                     ProjectID = ep.ProjectID,
                     Status = ep.Status
                 }).ToList(),

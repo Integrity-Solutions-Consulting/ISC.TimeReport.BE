@@ -29,6 +29,7 @@ using isc.time.report.be.infrastructure.Repositories.Persons;
 using isc.time.report.be.infrastructure.Repositories.Projects;
 using isc.time.report.be.infrastructure.Repositories.TimeReports;
 using isc.time.report.be.infrastructure.Repositories.Users;
+using isc.time.report.be.infrastructure.Utils.Peticiones;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -60,6 +61,9 @@ namespace isc.time.report.be.infrastructure.IOC
             services.AddScoped<ITimeReportRepository, TimeReportRepository>();
             services.AddScoped<ICatalogRepository, CatalogRepository>();
             services.AddScoped<IDashboardRepository, DashboardRepository>();
+
+
+            services.AddScoped<HttpUtils>();
 
             return services;
         }
