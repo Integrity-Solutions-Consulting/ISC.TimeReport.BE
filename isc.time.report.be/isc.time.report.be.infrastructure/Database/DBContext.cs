@@ -269,6 +269,10 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.AssignmentDate).HasColumnName("assignment_date");
                 entity.Property(e => e.AssignmentEndDate).HasColumnName("assignment_end_date");
 
+                entity.Property(e => e.AssignedRole).HasColumnName("assigned_role");
+                entity.Property(e => e.CostPerHour).HasColumnName("cost_per_hour");
+                entity.Property(e => e.AllocatedHours).HasColumnName("allocated_hours");
+
                 entity.Property(e => e.Status).HasColumnName("status");
                 entity.Property(e => e.CreationUser).HasColumnName("creation_user");
                 entity.Property(e => e.ModificationUser).HasColumnName("modification_user");
