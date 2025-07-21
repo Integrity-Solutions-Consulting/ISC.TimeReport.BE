@@ -124,7 +124,7 @@ namespace isc.time.report.be.application.Services.Projects
 
         public async Task AssignEmployeesToProject(AssignEmployeesToProjectRequest request)
         {
-
+            // Validación opcional: exactamente uno de los dos IDs debe estar presente
             //foreach (var item in request.EmployeeProjectMiddle)
             //{
             //    if ((item.EmployeeId.HasValue && item.ProviderId.HasValue) ||
@@ -135,26 +135,21 @@ namespace isc.time.report.be.application.Services.Projects
             //    }
             //}
 
-
             var existing = await projectRepository.GetByProjectIdAsync(request.ProjectID);
 
             var now = DateTime.UtcNow;
             var finalList = new List<EmployeeProject>();
 
-            // 3. Procesar cada entrada entrante
             foreach (var dto in request.EmployeeProjectMiddle)
             {
-                // Buscar match por EmployeeID o ProviderID
-                var match = existing
-                    .FirstOrDefault(ep =>
-                        ep.EmployeeID == dto.EmployeeId 
-                        //&&
-                        //ep.ProviderID == dto.ProviderId
-                        );
+                var match = existing.FirstOrDefault(ep =>
+                    ep.EmployeeID == dto.EmployeeId 
+                    //&&
+                    //ep.ProviderID == dto.ProviderId
+                    );
 
                 if (match == null)
                 {
-                    // Nuevo registro
                     finalList.Add(new EmployeeProject
                     {
                         ProjectID = request.ProjectID,
@@ -169,19 +164,6 @@ namespace isc.time.report.be.application.Services.Projects
                         CreationUser = "SYSTEM"
                     });
                 }
-                else if (match.Status)
-                {
-
-                        match.Status = true;
-                        match.ModificationDate = now;
-                        match.ModificationUser = "SYSTEM";
-
-                    match.AssignedRole = dto.AssignedRole;
-                    match.CostPerHour = dto.CostPerHour;
-                    match.AllocatedHours = dto.AllocatedHours;
-
-                    finalList.Add(match);
-                }
                 else
                 {
                     if (!match.Status)
@@ -190,6 +172,7 @@ namespace isc.time.report.be.application.Services.Projects
                         match.ModificationDate = now;
                         match.ModificationUser = "SYSTEM";
                     }
+
                     match.AssignedRole = dto.AssignedRole;
                     match.CostPerHour = dto.CostPerHour;
                     match.AllocatedHours = dto.AllocatedHours;
@@ -197,6 +180,10 @@ namespace isc.time.report.be.application.Services.Projects
                     finalList.Add(match);
                 }
             }
+
+            // Desactivar solo los que no estén incluidos y sean del mismo tipo (empleado o proveedor)
+            bool contieneSoloEmpleados = request.EmployeeProjectMiddle.All(e => e.EmployeeId.HasValue);
+            //bool contieneSoloProveedores = request.EmployeeProjectMiddle.All(e => e.ProviderId.HasValue);
 
             foreach (var ep in existing)
             {
@@ -208,10 +195,16 @@ namespace isc.time.report.be.application.Services.Projects
 
                 if (!incoming && ep.Status)
                 {
-                    ep.Status = false;
-                    ep.ModificationDate = now;
-                    ep.ModificationUser = "SYSTEM";
-                    finalList.Add(ep);
+                    if ((contieneSoloEmpleados && ep.EmployeeID.HasValue) 
+                        //||
+                        //(contieneSoloProveedores && ep.ProviderID.HasValue)
+                        )
+                    {
+                        ep.Status = false;
+                        ep.ModificationDate = now;
+                        ep.ModificationUser = "SYSTEM";
+                        finalList.Add(ep);
+                    }
                 }
             }
 
