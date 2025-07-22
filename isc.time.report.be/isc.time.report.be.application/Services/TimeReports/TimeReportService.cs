@@ -170,7 +170,7 @@ namespace isc.time.report.be.application.Services.TimeReports
                 // Fila 6 - Encabezados principales
                 var row6 = new Row { RowIndex = 6, Height = 15, CustomHeight = true };
 
-                // Añadir celdas fijas A-G
+                // Añadir celdas fijas A–G
                 row6.Append(
                     CreateCell("N°", 5),                                   // A
                     CreateCell("TIPO DE ACTIVIDAD", 4),                   // B
@@ -178,13 +178,13 @@ namespace isc.time.report.be.application.Services.TimeReports
                     CreateCell("CODIGO REQUERIMIENTO / INCIDENTE", 4),    // D
                     CreateCell("DESCRIPCION DE TRABAJOS REALIZADOS", 4),  // E
                     CreateCell("TOTAL HORAS POR ACTIVIDAD", 4),           // F
-                    CreateCell("DISTRIBUCION DE TIEMPO DEL DIA", 4)     // G
+                    CreateCell("DISTRIBUCION DE TIEMPO DEL DIA", 4)       // G
                 );
 
-                // Añadir una celda por cada día del mes (G hasta AK)
-                for (int d = 2; d <= DateTime.DaysInMonth(year, month); d++)
+                // Añadir celdas G–AK: una por cada día del mes (hasta 31)
+                for (int d = 2; d <= 31; d++)  // empezamos en 2 porque la primera celda de días ya es G (día 1)
                 {
-                    row6.Append(CreateCell("", 4)); // Puedes poner el número de día si quieres
+                    row6.Append(CreateCell("", 4));
                 }
 
                 // Añadir celda final AL (columna 38)
@@ -193,21 +193,30 @@ namespace isc.time.report.be.application.Services.TimeReports
                 sheetData.Append(row6);
 
 
-                // Fila 7 - Números de día
+
+                // Fila 7 - Números de días (01 a 31)
                 var row7 = new Row { RowIndex = 7, Height = 15, CustomHeight = true };
                 for (int i = 0; i < 6; i++) row7.Append(CreateCell("", 4));
-                for (int d = 1; d <= DateTime.DaysInMonth(year, month); d++)
-                    row7.Append(CreateCell(d.ToString("00"), 4));
+
+                int totalDays = DateTime.DaysInMonth(year, month);
+                for (int d = 1; d <= 31; d++)
+                {
+                    string value = d <= totalDays ? d.ToString("00") : ""; // Mostrar número o celda vacía
+                    row7.Append(CreateCell(value, 4));
+                }
                 sheetData.Append(row7);
 
-                // Fila 8 - Días de la semana
+                // Fila 8 - Letras de días de la semana (D, L, M, ...)
                 var row8 = new Row { RowIndex = 8, Height = 15, CustomHeight = true };
                 var letras = new[] { "D", "L", "M", "M", "J", "V", "S" };
                 for (int i = 0; i < 6; i++) row8.Append(CreateCell("", 4));
-                for (int d = 1; d <= DateTime.DaysInMonth(year, month); d++)
+
+                for (int d = 1; d <= 31; d++)
                 {
-                    var dia = new DateTime(year, month, d).DayOfWeek;
-                    row8.Append(CreateCell(letras[(int)dia], 4));
+                    string value = d <= totalDays
+                        ? letras[(int)new DateTime(year, month, d).DayOfWeek]
+                        : ""; // Mostrar letra del día o vacío
+                    row8.Append(CreateCell(value, 4));
                 }
                 sheetData.Append(row8);
 
@@ -223,15 +232,16 @@ namespace isc.time.report.be.application.Services.TimeReports
                 int actividadIndex = 1;
                 int diasEnMes = DateTime.DaysInMonth(year, month);
 
-                // Inicializar arreglo de suma por día
-                decimal[] totalPorDia = new decimal[diasEnMes];
+                // Inicializar arreglo de suma por día con 31 entradas
+                decimal[] totalPorDia = new decimal[31];
 
                 // Crear filas de actividades
                 foreach (var actividad in reportData.Activities)
                 {
                     var row = new Row { RowIndex = rowIndex, Height = 24.60, CustomHeight = true };
 
-                    string[] horasPorDia = new string[diasEnMes];
+                    // Arreglo de horas por día con 31 entradas
+                    string[] horasPorDia = new string[31];
                     decimal sumaHoras = actividad.HoursQuantity;
 
                     int dia = actividad.ActivityDate.Day;
@@ -248,25 +258,37 @@ namespace isc.time.report.be.application.Services.TimeReports
                         CreateCell(sumaHoras.ToString("0.##"), 6)                           // F: total horas por actividad (1 día en este caso)
                     );
 
-                    // Columnas G–AK (una por cada día)
-                    for (int d = 1; d <= diasEnMes; d++)
+                    // Columnas G–AK (31 columnas de días)
+                    for (int d = 1; d <= 31; d++)
                     {
-                        var fecha = new DateTime(year, month, d);
-                        var dateOnly = DateOnly.FromDateTime(fecha);
+                        string valor = horasPorDia[d - 1] ?? "";
+                        uint estilo;
 
-                        bool esFinDeSemana = fecha.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday;
-                        bool esFeriado = holidays.Any(h => h.HolidayDate == dateOnly);
-                        bool enPermiso = permissionRanges.Any(r => dateOnly >= r.Start && dateOnly <= r.End);
+                        if (d <= diasEnMes)
+                        {
+                            var fecha = new DateTime(year, month, d);
+                            var dateOnly = DateOnly.FromDateTime(fecha);
 
-                        uint estilo = esFeriado
-                            ? 13u
-                            : enPermiso
-                                ? 14u
-                                : esFinDeSemana
-                                    ? 8u
-                                    : 6u;
+                            bool esFinDeSemana = fecha.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday;
+                            bool esFeriado = holidays.Any(h => h.HolidayDate == dateOnly);
+                            bool enPermiso = permissionRanges.Any(r => dateOnly >= r.Start && dateOnly <= r.End);
 
-                        row.Append(CreateCell(horasPorDia[d - 1] ?? "", estilo));
+                            estilo = esFeriado
+                                ? 13u
+                                : enPermiso
+                                    ? 14u
+                                    : esFinDeSemana
+                                        ? 8u
+                                        : 6u;
+                        }
+                        else
+                        {
+                            // Día ficticio (ej: 31 en abril), sin datos ni formato especial
+                            estilo = 16u;
+                            valor = "";
+                        }
+
+                        row.Append(CreateCell(valor, estilo));
                     }
 
                     // Columna AL (total otra vez)
@@ -291,25 +313,38 @@ namespace isc.time.report.be.application.Services.TimeReports
                 // Celda F: total general de horas
                 totalRow.Append(CreateCell(totalPorDia.Sum().ToString("0.0"), 11));
 
-                // Columnas G–AK: sumas por día
-                for (int d = 0; d < diasEnMes; d++)
+                // Columnas G–AK: sumas por día (siempre 31 columnas)
+                for (int d = 0; d < 31; d++)
                 {
-                    var fecha = new DateTime(year, month, d + 1);
-                    var dateOnly = DateOnly.FromDateTime(fecha);
+                    string valor = d < diasEnMes
+                        ? totalPorDia[d].ToString("0.0")
+                        : ""; // Vacío si el día no existe
 
-                    bool esFinDeSemana = fecha.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday;
-                    bool esFeriado = holidays.Any(h => h.HolidayDate == dateOnly);
-                    bool enPermiso = permissionRanges.Any(r => dateOnly >= r.Start && dateOnly <= r.End);
+                    uint estilo;
 
-                    uint estilo = esFeriado
-                        ? 13u
-                        : enPermiso
-                            ? 14u
-                            : esFinDeSemana
-                                ? 8u
-                                : 11u;
+                    if (d < diasEnMes)
+                    {
+                        var fecha = new DateTime(year, month, d + 1);
+                        var dateOnly = DateOnly.FromDateTime(fecha);
 
-                    totalRow.Append(CreateCell(totalPorDia[d].ToString("0.0"), estilo));
+                        bool esFinDeSemana = fecha.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday;
+                        bool esFeriado = holidays.Any(h => h.HolidayDate == dateOnly);
+                        bool enPermiso = permissionRanges.Any(r => dateOnly >= r.Start && dateOnly <= r.End);
+
+                        estilo = esFeriado
+                            ? 13u
+                            : enPermiso
+                                ? 14u
+                                : esFinDeSemana
+                                    ? 8u
+                                    : 11u;
+                    }
+                    else
+                    {
+                        estilo = 16u; // Estilo estándar para celdas vacías
+                    }
+
+                    totalRow.Append(CreateCell(valor, estilo));
                 }
 
                 // Celda AL: total otra vez
@@ -318,9 +353,8 @@ namespace isc.time.report.be.application.Services.TimeReports
                 sheetData.Append(totalRow);
 
                 // Añadir celda combinada A{rowIndex}:E{rowIndex}
-                var mergeTotal = new MergeCell { Reference = $"A{rowIndex}:E{rowIndex}" };
-
                 mergeCells.Append(new MergeCell { Reference = $"A{rowIndex}:E{rowIndex}" });
+
 
 
 
@@ -579,7 +613,13 @@ namespace isc.time.report.be.application.Services.TimeReports
 
                     new Fill(new PatternFill( // 8 - Fondo #8DB4E2 (azul claro)
                         new ForegroundColor { Rgb = "FF8DB4E2" })
+                    { PatternType = PatternValues.Solid }),
+
+                    new Fill(new PatternFill( // 9 - Fondo completamente negro
+                    new ForegroundColor { Rgb = "FF000000" }) // Negro
                     { PatternType = PatternValues.Solid })
+
+
                 ),
 
                 new Borders(
@@ -844,12 +884,24 @@ namespace isc.time.report.be.application.Services.TimeReports
                         ApplyFill = true,
                         ApplyBorder = true,
                         ApplyAlignment = true
+                    },
+
+                    new CellFormat // 16 - Fondo negro, texto negro, bordes, centrado
+                    {
+                        FontId = 0,       // Texto negro (por defecto)
+                        FillId = 9,       // Fondo negro
+                        BorderId = 1,     // Bordes completos
+                        Alignment = new Alignment
+                        {
+                            Horizontal = HorizontalAlignmentValues.Center,
+                            Vertical = VerticalAlignmentValues.Center,
+                            WrapText = true
+                        },
+                        ApplyFont = true,
+                        ApplyFill = true,
+                        ApplyBorder = true,
+                        ApplyAlignment = true
                     }
-
-
-
-
-
 
 
 
