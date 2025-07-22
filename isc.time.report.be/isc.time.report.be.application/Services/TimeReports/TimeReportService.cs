@@ -443,16 +443,17 @@ namespace isc.time.report.be.application.Services.TimeReports
                     Reference = $"B{nomenclaturaStartRow}:B{nomenclaturaStartRow + 3}"
                 });
 
-                var projectRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\..\\"));
-                var fullPath = Path.Combine(projectRoot, "Templates", "LogoRPSIntegrity.png");
+                var basePath = AppDomain.CurrentDomain.BaseDirectory;
+                var logoPath = Path.Combine(basePath, "Templates", "LogoRPSIntegrity.png");
+
+                if (!File.Exists(logoPath))
+                    throw new FileNotFoundException($"No se encontró el logo en: {logoPath}");
+
 
 
                 var drawingsPart = worksheetPart.AddNewPart<DrawingsPart>();
-                InsertImageToWorksheet(drawingsPart, worksheetPart, fullPath);
-                if (!File.Exists(fullPath))
-                {
-                    throw new FileNotFoundException("No se encontró el archivo del logo en la ruta esperada.", fullPath);
-                }
+                InsertImageToWorksheet(drawingsPart, worksheetPart, logoPath);
+
 
 
 
