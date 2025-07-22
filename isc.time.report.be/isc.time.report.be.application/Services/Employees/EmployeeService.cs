@@ -59,7 +59,7 @@ namespace isc.time.report.be.application.Services.Employees
         public async Task<CreateEmployeeResponse> CreateEmployeeWithPerson(CreateEmployeeWithPersonOBJRequest request)
         {
             var employee = _mapper.Map<Employee>(request);
-            var created = await _employeeRepository.CreateEmployeeWithPersonAsync(employee);
+            var created = await _employeeRepository.CreateEmployeeWithPersonForInventoryAsync(employee);
             return _mapper.Map<CreateEmployeeResponse>(created);
         }
 
@@ -82,20 +82,20 @@ namespace isc.time.report.be.application.Services.Employees
                 throw new ClientFaultException("No existe el empleado", 401);
 
             _mapper.Map(request, employee);
-            var updated = await _employeeRepository.UpdateEmployeeWithPersonAsync(employee);
+            var updated = await _employeeRepository.UpdateEmployeeWithPersonForInventoryAsync(employee);
             updated = await _employeeRepository.GetEmployeeByIDAsync(employee.Id);
             return _mapper.Map<UpdateEmployeeResponse>(updated);
         }
 
         public async Task<ActiveInactiveEmployeeResponse> InactivateEmployee(int employeeId)
         {
-            var inactivated = await _employeeRepository.InactivateEmployeeAsync(employeeId);
+            var inactivated = await _employeeRepository.InactivateEmployeeForInventoryAsync(employeeId);
             return _mapper.Map<ActiveInactiveEmployeeResponse>(inactivated);
         }
 
         public async Task<ActiveInactiveEmployeeResponse> ActivateEmployee(int employeeId)
         {
-            var activated = await _employeeRepository.ActivateEmployeeAsync(employeeId);
+            var activated = await _employeeRepository.ActivateEmployeeForInventoryAsync(employeeId);
             return _mapper.Map<ActiveInactiveEmployeeResponse>(activated);
         }
     }

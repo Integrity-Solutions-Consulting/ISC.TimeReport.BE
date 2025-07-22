@@ -124,29 +124,24 @@ namespace isc.time.report.be.application.Services.Projects
 
         public async Task AssignEmployeesToProject(AssignEmployeesToProjectRequest request)
         {
-            // Validación opcional: exactamente uno de los dos IDs debe estar presente
-            //foreach (var item in request.EmployeeProjectMiddle)
-            //{
-            //    if ((item.EmployeeId.HasValue && item.ProviderId.HasValue) ||
-            //        (!item.EmployeeId.HasValue && !item.ProviderId.HasValue))
-            //    {
-            //        throw new ArgumentException(
-            //            "Cada asignación debe tener solo EmployeeId o solo ProviderId.");
-            //    }
-            //}
+            bool todosSonEmpleados = request.EmployeeProjectMiddle.All(e => e.EmployeeId.HasValue && e.SupplierID == null);
+            bool todosSonProveedores = request.EmployeeProjectMiddle.All(e => e.SupplierID.HasValue && e.EmployeeId == null);
+
+            if (!todosSonEmpleados && !todosSonProveedores)
+            {
+                throw new ArgumentException("Todas las asignaciones deben ser exclusivamente de empleados o exclusivamente de proveedores. El campo no utilizado debe ser null.");
+            }
 
             var existing = await projectRepository.GetByProjectIdAsync(request.ProjectID);
-
             var now = DateTime.UtcNow;
             var finalList = new List<EmployeeProject>();
 
             foreach (var dto in request.EmployeeProjectMiddle)
             {
                 var match = existing.FirstOrDefault(ep =>
-                    ep.EmployeeID == dto.EmployeeId 
-                    //&&
-                    //ep.ProviderID == dto.ProviderId
-                    );
+                    ep.EmployeeID == dto.EmployeeId &&
+                    ep.SupplierID == dto.SupplierID
+                );
 
                 if (match == null)
                 {
@@ -154,7 +149,7 @@ namespace isc.time.report.be.application.Services.Projects
                     {
                         ProjectID = request.ProjectID,
                         EmployeeID = dto.EmployeeId,
-                        //ProviderID = dto.ProviderId,
+                        SupplierID = dto.SupplierID,
                         AssignedRole = dto.AssignedRole,
                         CostPerHour = dto.CostPerHour,
                         AllocatedHours = dto.AllocatedHours,
@@ -181,24 +176,24 @@ namespace isc.time.report.be.application.Services.Projects
                 }
             }
 
-            // Desactivar solo los que no estén incluidos y sean del mismo tipo (empleado o proveedor)
-            bool contieneSoloEmpleados = request.EmployeeProjectMiddle.All(e => e.EmployeeId.HasValue);
-            //bool contieneSoloProveedores = request.EmployeeProjectMiddle.All(e => e.ProviderId.HasValue);
-
+            // 🔄 Desactivación: solo del tipo contrario, el otro se deja tal cual
             foreach (var ep in existing)
             {
-                bool incoming = request.EmployeeProjectMiddle.Any(dto =>
-                    dto.EmployeeId == ep.EmployeeID 
-                    //&&
-                    //dto.ProviderId == ep.ProviderID
-                    );
+                bool sigueActivo = request.EmployeeProjectMiddle.Any(dto =>
+                    dto.EmployeeId == ep.EmployeeID &&
+                    dto.SupplierID == ep.SupplierID
+                );
 
-                if (!incoming && ep.Status)
+                if (!sigueActivo && ep.Status)
                 {
-                    if ((contieneSoloEmpleados && ep.EmployeeID.HasValue) 
-                        //||
-                        //(contieneSoloProveedores && ep.ProviderID.HasValue)
-                        )
+                    if (todosSonEmpleados && ep.EmployeeID.HasValue)
+                    {
+                        ep.Status = false;
+                        ep.ModificationDate = now;
+                        ep.ModificationUser = "SYSTEM";
+                        finalList.Add(ep);
+                    }
+                    else if (todosSonProveedores && ep.SupplierID.HasValue)
                     {
                         ep.Status = false;
                         ep.ModificationDate = now;
@@ -231,32 +226,36 @@ namespace isc.time.report.be.application.Services.Projects
                 ActualStartDate = project.ActualStartDate,
                 ActualEndDate = project.ActualEndDate,
                 Budget = project.Budget,
+
                 EmployeeProjects = project.EmployeeProject.Select(ep => new GetEmployeeProjectResponse
                 {
                     Id = ep.Id,
                     EmployeeID = ep.EmployeeID,
-                    //ProviderID = ep.ProviderID,
+                    SupplierID = ep.SupplierID,
                     AssignedRole = ep.AssignedRole,
                     CostPerHour = ep.CostPerHour,
                     AllocatedHours = ep.AllocatedHours,
                     ProjectID = ep.ProjectID,
                     Status = ep.Status
                 }).ToList(),
-                EmployeesPersonInfo = project.EmployeeProject.Select(ep => ep.Employee).Distinct().Select(e => new GetEmployeesPersonInfoResponse
-                {
-                    Id = e.Id,
-                    PersonID = e.PersonID,
-                    EmployeeCode = e.EmployeeCode,
-                    IdentificationNumber = e.Person.IdentificationNumber,
-                    FirstName = e.Person.FirstName,
-                    LastName = e.Person.LastName,
-                    Status = e.Status
-                }).ToList()
+
+                EmployeesPersonInfo = project.EmployeeProject
+                    .Where(ep => ep.Employee != null)
+                    .Select(ep => ep.Employee)
+                    .Distinct()
+                    .Select(e => new GetEmployeesPersonInfoResponse
+                    {
+                        Id = e.Id,
+                        PersonID = e.PersonID,
+                        EmployeeCode = e.EmployeeCode,
+                        IdentificationNumber = e.Person?.IdentificationNumber,
+                        FirstName = e.Person?.FirstName,
+                        LastName = e.Person?.LastName,
+                        Status = e.Status
+                    }).ToList()
             };
 
             return response;
         }
-
-
     }
 }

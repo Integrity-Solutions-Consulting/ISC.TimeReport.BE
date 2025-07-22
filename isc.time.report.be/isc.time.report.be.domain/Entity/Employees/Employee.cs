@@ -18,6 +18,8 @@ namespace isc.time.report.be.domain.Entity.Employees
         public Position Position { get; set; }
         public int? DepartmentID { get; set; }
         public Department Department { get; set; }
+        public int WorkModeID { get; set; }
+        public WorkMode WorkMode { get; set; }
         public string EmployeeCode { get; set; } = null!;
         public DateTime? HireDate { get; set; }
         public DateTime? TerminationDate { get; set; }

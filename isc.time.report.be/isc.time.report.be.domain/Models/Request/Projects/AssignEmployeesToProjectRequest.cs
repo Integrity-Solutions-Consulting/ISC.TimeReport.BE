@@ -15,7 +15,7 @@ namespace isc.time.report.be.domain.Models.Request.Projects
     public class EmployeeProjectMiddleRequest
     {
         public int? EmployeeId { get; set; }
-        //public int? ProviderId { get; set; }
+        public int? SupplierID { get; set; }
         public string AssignedRole { get; set; }
         public decimal CostPerHour { get; set; }
         public decimal AllocatedHours { get; set; }

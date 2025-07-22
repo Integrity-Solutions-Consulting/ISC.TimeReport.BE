@@ -14,5 +14,6 @@ namespace isc.time.report.be.domain.Entity.Clients
         public Person? Person { get; set; }
         public string? TradeName { get; set; }
         public string? LegalName { get; set; }
+        public string? Company { get; set; }
     }
 }

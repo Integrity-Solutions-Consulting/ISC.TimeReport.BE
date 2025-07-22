@@ -11,13 +11,16 @@ namespace isc.time.report.be.infrastructure.Utils.Peticiones
 {
     public class HttpUtils
     {
-        public async Task<T?> SendRequest<T>(string url, HttpMethod method, object? body = null)
+        public async Task<T?> SendRequest<T>(string url, HttpMethod method, object? body = null, string? token = null)
         {
-
             using (var httpClient = new HttpClient())
             {
-
                 var request = new HttpRequestMessage(method, url);
+
+                if (!string.IsNullOrWhiteSpace(token))
+                {
+                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                }
 
                 if (body != null && (method == HttpMethod.Post || method == HttpMethod.Put))
                 {
@@ -33,8 +36,6 @@ namespace isc.time.report.be.infrastructure.Utils.Peticiones
                 }
 
                 return await response.Content.ReadFromJsonAsync<T>();
-
-
             }
         }
     }
