@@ -141,6 +141,7 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.PersonID).HasColumnName("PersonID");
                 entity.Property(e => e.TradeName).HasColumnName("trade_name");
                 entity.Property(e => e.LegalName).HasColumnName("legal_name");
+                entity.Property(e => e.Company).HasColumnName("company");
 
                 entity.Property(e => e.Status).HasColumnName("status");
                 entity.Property(e => e.CreationUser).HasColumnName("creation_user");
@@ -212,6 +213,8 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.PersonID).HasColumnName("PersonID");
                 entity.Property(e => e.PositionID).HasColumnName("PositionID");
                 entity.Property(e => e.DepartmentID).HasColumnName("DepartmentID");
+                entity.Property(e => e.WorkModeID).HasColumnName("WorkModeID");
+
                 entity.Property(e => e.EmployeeCode).HasColumnName("employee_code");
                 entity.Property(e => e.HireDate).HasColumnName("hire_date");
                 entity.Property(e => e.TerminationDate).HasColumnName("termination_date");
@@ -266,6 +269,8 @@ namespace isc.time.report.be.infrastructure.Database
 
                 entity.Property(e => e.EmployeeID).HasColumnName("EmployeeID");
                 entity.Property(e => e.ProjectID).HasColumnName("ProjectID");
+                entity.Property(e => e.SupplierID).HasColumnName("SupplierID");
+
                 entity.Property(e => e.AssignmentDate).HasColumnName("assignment_date");
                 entity.Property(e => e.AssignmentEndDate).HasColumnName("assignment_end_date");
 
@@ -281,7 +286,6 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.CreationIp).HasColumnName("creation_ip");
                 entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
 
-                entity.HasOne(e => e.Employee).WithMany(e => e.EmployeeProject).HasForeignKey(e => e.EmployeeID);
                 entity.HasOne(e => e.Project).WithMany(p => p.EmployeeProject).HasForeignKey(e => e.ProjectID);
             });
 
@@ -642,6 +646,41 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
             });
 
+            modelBuilder.Entity<WorkMode>(entity =>
+            {
+                entity.ToTable("WorkMode");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnName("WorkModeID");
+                entity.Property(e => e.Name).HasColumnName("name");
+                entity.Property(e => e.Description).HasColumnName("description");
+
+                entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.CreationUser).HasColumnName("creation_user");
+                entity.Property(e => e.ModificationUser).HasColumnName("modification_user");
+                entity.Property(e => e.CreationDate).HasColumnName("creation_date");
+                entity.Property(e => e.ModificationDate).HasColumnName("modification_date");
+                entity.Property(e => e.CreationIp).HasColumnName("creation_ip");
+                entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
+            });
+
+            modelBuilder.Entity<InventoryToken>(entity =>
+            {
+                entity.ToTable("InventoryToken");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnName("InventoryTokenID");
+                entity.Property(e => e.Token).HasColumnName("Token");
+
+                entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.CreationUser).HasColumnName("creation_user");
+                entity.Property(e => e.ModificationUser).HasColumnName("modification_user");
+                entity.Property(e => e.CreationDate).HasColumnName("creation_date");
+                entity.Property(e => e.ModificationDate).HasColumnName("modification_date");
+                entity.Property(e => e.CreationIp).HasColumnName("creation_ip");
+                entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
+            });
+
+
+
             modelBuilder.Entity<DashboardHorasActividadDto>().HasNoKey();
             modelBuilder.Entity<DashboardRecursosClienteDto>().HasNoKey();
             modelBuilder.Entity<DashboardResumenProyectoDto>().HasNoKey();
@@ -677,5 +716,7 @@ namespace isc.time.report.be.infrastructure.Database
         public DbSet<ApprovalStatus> ApprovalStatus { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<ProjectType> ProjectTypes { get; set; }
+        public DbSet<WorkMode> WorkModes { get; set; }
+        public DbSet<InventoryToken> InventoryTokens { get; set; }
     }
 }

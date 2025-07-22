@@ -120,8 +120,26 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
                     _dbContext.EmployeeProjects.Update(ep);
                 }
             }
-            await _dbContext.SaveChangesAsync();
+
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException dbEx)
+            {
+                // Este tipo de excepción puede envolver errores de SQL Server
+                var innerMessage = dbEx.InnerException?.Message;
+
+                // Puedes loguear o lanzar una excepción más clara
+                throw new Exception($"Error al guardar los cambios: {innerMessage}", dbEx);
+            }
+            catch (Exception ex)
+            {
+                // Captura cualquier otro tipo de error
+                throw new Exception("Ocurrió un error inesperado al guardar las asignaciones.", ex);
+            }
         }
+
 
         public async Task<Project?> GetProjectDetailByIDAsync(int projectId)
         {
