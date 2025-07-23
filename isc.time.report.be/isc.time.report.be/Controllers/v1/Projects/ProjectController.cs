@@ -9,6 +9,7 @@ using isc.time.report.be.domain.Models.Response.Projects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace isc.time.report.be.api.Controllers.v1.Projects
 {
@@ -23,12 +24,26 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
         {
             _projectService = projectService;
         }
+        private int GetEmployeeIdFromToken()
+            => int.Parse(User.Claims.First(c => c.Type == "EmployeeID").Value);
 
-        [Authorize(Roles = "Administrador,Gerente,Lider")]
+        private int GetUserIdFromToken()
+            => int.Parse(User.Claims.First(c => c.Type == "UserID").Value);
+
+        private List<string> GetRolesFromToken()
+            => User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+
+
+        [Authorize(Roles = "Administrador,Gerente,Lider,Colaborador")]
         [HttpGet("GetAllProjects")]
-        public async Task<ActionResult<SuccessResponse<PagedResult<GetAllProjectsResponse>>>> GetAllProjects([FromQuery] PaginationParams paginationParams, [FromQuery] string? search)
+        public async Task<ActionResult<SuccessResponse<PagedResult<GetAllProjectsResponse>>>> GetAllProjects(
+            [FromQuery] PaginationParams paginationParams,
+            [FromQuery] string? search)
         {
-            var projects = await _projectService.GetAllProjectsPaginated(paginationParams, search);
+            int employeeId = GetEmployeeIdFromToken();
+            List<string> roles = GetRolesFromToken();
+
+            var projects = await _projectService.GetAllProjectsPaginated(paginationParams, search, employeeId, roles);
             return Ok(projects);
         }
 
