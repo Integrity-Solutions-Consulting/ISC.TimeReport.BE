@@ -36,14 +36,21 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
 
         [Authorize(Roles = "Administrador,Gerente,Lider,Colaborador")]
         [HttpGet("GetAllProjects")]
-        public async Task<ActionResult<SuccessResponse<PagedResult<GetAllProjectsResponse>>>> GetAllProjects(
-            [FromQuery] PaginationParams paginationParams,
-            [FromQuery] string? search)
+        public async Task<ActionResult<SuccessResponse<PagedResult<GetAllProjectsResponse>>>> GetAllProjects([FromQuery] PaginationParams paginationParams, [FromQuery] string? search)
+        {
+            var projects = await _projectService.GetAllProjectsPaginated(paginationParams, search);
+            return Ok(projects);
+        }
+
+        [Authorize(Roles = "Administrador,Gerente,Lider,Colaborador")]
+        [HttpGet("GetAllProjectsWhereEmployee")]
+        public async Task<ActionResult<SuccessResponse<PagedResult<GetAllProjectsResponse>>>> GetAllProjectsByEmployeeID(
+        [FromQuery] PaginationParams paginationParams,
+        [FromQuery] string? search)
         {
             int employeeId = GetEmployeeIdFromToken();
-            List<string> roles = GetRolesFromToken();
 
-            var projects = await _projectService.GetAllProjectsPaginated(paginationParams, search, employeeId, roles);
+            var projects = await _projectService.GetAllProjectsByEmployeeIDPaginated(paginationParams, search, employeeId);
             return Ok(projects);
         }
 
