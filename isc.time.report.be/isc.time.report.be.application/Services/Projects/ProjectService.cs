@@ -33,13 +33,28 @@ namespace isc.time.report.be.application.Services.Projects
             _mapper = mapper;
         }
 
-        public async Task<PagedResult<GetAllProjectsResponse>> GetAllProjectsPaginated(PaginationParams paginationParams, string? search, int employeeId, List<string> roles)
+        public async Task<PagedResult<GetAllProjectsResponse>> GetAllProjectsPaginated(PaginationParams paginationParams, string? search)
         {
-            bool isPrivileged = roles.Any(r => r == "Administrador" || r == "Gerente" || r == "Lider");
+            var result = await projectRepository.GetAllProjectsPaginatedAsync(paginationParams, search);
 
-            var result = isPrivileged
-                ? await projectRepository.GetAllProjectsPaginatedAsync(paginationParams, search)
-                : await projectRepository.GetAssignedProjectsForEmployeeAsync(paginationParams, search, employeeId);
+            var responseItems = _mapper.Map<List<GetAllProjectsResponse>>(result.Items);
+
+            return new PagedResult<GetAllProjectsResponse>
+            {
+                Items = responseItems,
+                TotalItems = result.TotalItems,
+                PageNumber = result.PageNumber,
+                PageSize = result.PageSize
+            };
+        }
+
+        public async Task<PagedResult<GetAllProjectsResponse>> GetAllProjectsByEmployeeIDPaginated(
+            PaginationParams paginationParams,
+            string? search,
+            int employeeId)
+        {
+            // Obtiene solo los proyectos asignados al empleado
+            var result = await projectRepository.GetAssignedProjectsForEmployeeAsync(paginationParams, search, employeeId);
 
             var responseItems = _mapper.Map<List<GetAllProjectsResponse>>(result.Items);
 
