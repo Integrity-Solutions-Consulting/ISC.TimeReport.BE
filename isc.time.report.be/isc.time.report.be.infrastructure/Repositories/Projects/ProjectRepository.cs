@@ -37,6 +37,24 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
 
             return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
         }
+        public async Task<PagedResult<Project>> GetAssignedProjectsForEmployeeAsync(PaginationParams paginationParams, string? search, int employeeId)
+        {
+            var query = _dbContext.Projects
+                .Where(p => p.Status == true && p.EmployeeProject.Any(ep => ep.EmployeeID == employeeId))
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                string normalizedSearch = search.Trim().ToLower();
+
+                query = query.Where(p =>
+                    p.Name.ToLower().Contains(normalizedSearch) ||
+                    p.Code.ToLower().Contains(normalizedSearch));
+            }
+
+            return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
+        }
+
 
         public async Task<Project> GetProjectByIDAsync(int projectId)
         {

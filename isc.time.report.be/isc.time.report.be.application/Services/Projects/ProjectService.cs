@@ -33,9 +33,13 @@ namespace isc.time.report.be.application.Services.Projects
             _mapper = mapper;
         }
 
-        public async Task<PagedResult<GetAllProjectsResponse>> GetAllProjectsPaginated(PaginationParams paginationParams, string? search)
+        public async Task<PagedResult<GetAllProjectsResponse>> GetAllProjectsPaginated(PaginationParams paginationParams, string? search, int employeeId, List<string> roles)
         {
-            var result = await projectRepository.GetAllProjectsPaginatedAsync(paginationParams, search);
+            bool isPrivileged = roles.Any(r => r == "Administrador" || r == "Gerente" || r == "Lider");
+
+            var result = isPrivileged
+                ? await projectRepository.GetAllProjectsPaginatedAsync(paginationParams, search)
+                : await projectRepository.GetAssignedProjectsForEmployeeAsync(paginationParams, search, employeeId);
 
             var responseItems = _mapper.Map<List<GetAllProjectsResponse>>(result.Items);
 
