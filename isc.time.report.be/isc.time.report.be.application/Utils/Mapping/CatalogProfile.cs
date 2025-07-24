@@ -42,6 +42,9 @@ namespace isc.time.report.be.application.Utils.Mapping
 
             CreateMap<ProjectType, GetProjectTypeResponse>();
             CreateMap<GetProjectTypeResponse, ProjectType>();
+
+            CreateMap<WorkMode, GetWorkModeResponse>();
+            CreateMap<GetWorkModeResponse, WorkMode>();
         }
     }
 }

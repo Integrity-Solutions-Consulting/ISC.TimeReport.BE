@@ -84,5 +84,12 @@ namespace isc.time.report.be.api.Controllers.v1.Catalogs
             var result = await _catalogService.GetProjectTypesAsync();
             return Ok(result);
         }
+
+        [HttpGet("work-mode")]
+        public async Task<IActionResult> GetWorkModes()
+        {
+            var result = await _catalogService.GetWorkModesAsync();
+            return Ok(result);
+        }
     }
 }

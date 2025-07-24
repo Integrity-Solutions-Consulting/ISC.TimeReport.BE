@@ -19,5 +19,6 @@ namespace isc.time.report.be.application.Interfaces.Repository.Catalogs
         Task<List<Position>> GetPositionActivosAsync();
         Task<List<ProjectStatus>> GetProjectStatusActivosAsync();
         Task<List<ProjectType>> GetProjectTypeActivosAsync();
+        Task<List<WorkMode>> GetWorkModeActivosAsync();
     }
 }
