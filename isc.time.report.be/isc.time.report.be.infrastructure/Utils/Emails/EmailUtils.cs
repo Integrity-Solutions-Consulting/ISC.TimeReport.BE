@@ -2,14 +2,19 @@
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace isc.time.report.be.application.Services.Auth
+namespace isc.time.report.be.infrastructure.Utils.Emails
 {
-    public class EmailService
+    public class EmailUtils
     {
         private readonly EmailSettings _settings;
 
-        public EmailService(IOptions<EmailSettings> options)
+        public EmailUtils(IOptions<EmailSettings> options)
         {
             _settings = options.Value;
         }

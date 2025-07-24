@@ -13,6 +13,7 @@ namespace isc.time.report.be.domain.Models.Request.Employees
     {
         public CreatePersonRequest Person { get; set; }
         public int? PositionID { get; set; }
+        public int WorkModeID { get; set; } = 1;
         public string EmployeeCode { get; set; } = null!;
         public DateTime HireDate { get; set; }
         public DateTime? TerminationDate { get; set; }

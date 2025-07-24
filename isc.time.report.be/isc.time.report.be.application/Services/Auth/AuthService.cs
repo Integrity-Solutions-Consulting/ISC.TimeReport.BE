@@ -1,4 +1,5 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.Auth;
+using isc.time.report.be.application.Interfaces.Repository.Employees;
 using isc.time.report.be.application.Interfaces.Repository.Menus;
 using isc.time.report.be.application.Interfaces.Repository.Users;
 using isc.time.report.be.application.Interfaces.Service.Auth;
@@ -25,16 +26,16 @@ namespace isc.time.report.be.application.Services.Auth
         private readonly IMenuRepository menuRepository;
         private readonly PasswordUtils passwordUtils;
         private readonly JWTUtils jwtUtils;
-        private readonly EmailService emailService;
         private readonly IUserRepository userRepository;
-        public AuthService(IAuthRepository authRepository, PasswordUtils passwordUtils, JWTUtils jwtUtils, IMenuRepository menuRepository, EmailService emailService, IUserRepository userRepository)
+        private readonly IEmployeeRepository _employeeRepository;
+        public AuthService(IAuthRepository authRepository, PasswordUtils passwordUtils, JWTUtils jwtUtils, IMenuRepository menuRepository, IUserRepository userRepository, IEmployeeRepository employeeRepository)
         {
             this.authRepository = authRepository;
             this.passwordUtils = passwordUtils;
             this.jwtUtils = jwtUtils;
             this.menuRepository = menuRepository;
-            this.emailService = emailService;
             this.userRepository = userRepository;
+            _employeeRepository = employeeRepository;
         }
         /// <summary>
         /// SI SE ESTA USANDO
@@ -101,46 +102,45 @@ namespace isc.time.report.be.application.Services.Auth
 
         public async Task<RegisterResponse> Register(RegisterRequest registerRequest)
         {
+            var employee = await _employeeRepository.GetEmployeeByIDAsync(registerRequest.EmployeeID);
+            if (employee == null || string.IsNullOrWhiteSpace(employee.CorporateEmail))
+                throw new ClientFaultException("El empleado no tiene un correo corporativo registrado.", 400);
 
-            if (registerRequest.Username == "string" || registerRequest.Password == "string")
-            {
-                throw new ClientFaultException("Complete los campos faltantes.", 401);
-            }
-
-            if (string.IsNullOrWhiteSpace(registerRequest.Username) || string.IsNullOrWhiteSpace(registerRequest.Password))
-            {
-                throw new ClientFaultException("Complete los campos faltantes.", 401);
-            }
+            if (string.IsNullOrWhiteSpace(registerRequest.Username))
+                throw new ClientFaultException("El campo de usuario no puede estar vacío.", 401);
 
             var emailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
             if (!emailRegex.IsMatch(registerRequest.Username))
-            {
                 throw new ClientFaultException("Ingrese un correo electrónico válido.", 401);
-            }
 
-            if (registerRequest.Password.Length < 8)
-            {
-                throw new ClientFaultException("La contraseña debe tener al menos 8 caracteres.", 401);
-            }
-
-            var user = await authRepository.GetUserAndRoleByUsername(registerRequest.Username);
-            if (user != null)
-            {
+            var existingUser = await authRepository.GetUserAndRoleByUsername(registerRequest.Username);
+            if (existingUser != null)
                 throw new ClientFaultException("El nombre de usuario no está disponible.", 401);
-            }
 
-            var userNew = await authRepository.CreateUser(new User
+            var generatedPassword = PasswordUtils.GenerateSecurePassword();
+            var passwordHash = passwordUtils.HashPassword(generatedPassword);
+
+            var user = new User
             {
                 EmployeeID = registerRequest.EmployeeID,
                 Username = registerRequest.Username,
-                PasswordHash = passwordUtils.HashPassword(registerRequest.Password),
-                IsActive = registerRequest.IsActive,
-            }, 
-            registerRequest.RolesID);
+                PasswordHash = passwordHash,
+                IsActive = true,
+                MustChangePassword = true
+            };
 
-            var RolesList = await authRepository.GetAllRolesByRolesID(registerRequest.RolesID);
+            var html = $@"
+            <html><body>
+            <p>Hola, se ha creado una cuenta de acceso para ti.</p>
+            <p><strong>Usuario:</strong> {registerRequest.Username}</p>
+            <p><strong>Contraseña temporal:</strong> {generatedPassword}</p>
+            <p>Por seguridad, deberás cambiar la contraseña al iniciar sesión.</p>
+            </body></html>";
 
-            var Roles = RolesList.Select(r => new RoleResponse
+            var userNew = await authRepository.CreateUser(user, registerRequest.RolesID, employee.CorporateEmail, html);
+
+            var rolesList = await authRepository.GetAllRolesByRolesID(registerRequest.RolesID);
+            var roles = rolesList.Select(r => new RoleResponse
             {
                 Id = r.Id,
                 RoleName = r.RoleName
@@ -151,8 +151,8 @@ namespace isc.time.report.be.application.Services.Auth
                 EmployeeID = userNew.EmployeeID,
                 Username = userNew.Username,
                 IsActive = userNew.IsActive,
-                MustChangePassword= userNew.MustChangePassword,
-                Roles = Roles
+                MustChangePassword = userNew.MustChangePassword,
+                Roles = roles
             };
         }
 
@@ -234,46 +234,45 @@ namespace isc.time.report.be.application.Services.Auth
         {
             var user = await authRepository.GetUserWithEmployeeAsync(username);
 
-            if (user == null || user.Employee == null || string.IsNullOrEmpty(user.Employee.CorporateEmail))
+            if (user == null || user.Employee == null || string.IsNullOrWhiteSpace(user.Employee.CorporateEmail))
                 return;
 
-                    var token = jwtUtils.GenerateToken(user, 3);
-
+            var token = jwtUtils.GenerateToken(user, 3);
             var frontUrl = "https://chatgpt.com/";
             var link = $"{frontUrl}{token}";
 
             var html = $@"
-                    <!DOCTYPE html>
-                    <html lang='es'>
-                    <head>
-                        <meta charset='UTF-8'>
-                        <title>Recuperación de contraseña</title>
-                        <style>
-                            body {{ margin: 0; padding: 0; background-color: #f2f2f2; font-family: 'Raleway', sans-serif; color: #0d0d0d; }}
-                            .container {{ width: 100%; padding: 30px 0; display: flex; justify-content: center; align-items: center; }}
-                            .card {{ background-color: #ffffff; padding: 30px; max-width: 500px; width: 90%; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); border-radius: 12px; text-align: center; }}
-                            .logo {{ width: 150px; margin-bottom: 20px; }}
-                            .title {{ font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: bold; color: #1c4d8c; margin-bottom: 10px; }}
-                            .subtitle {{ font-family: 'League Spartan', sans-serif; font-size: 16px; color: #555; margin-bottom: 20px; }}
-                            .button {{ display: inline-block; margin-top: 20px; padding: 12px 20px; background-color: #1c4d8c; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold; }}
-                            .footer {{ font-size: 13px; color: #666; margin-top: 30px; }}
-                        </style>
-                    </head>
-                    <body>
-                        <div class='container'>
-                            <div class='card'>
-                                <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8ZCctTKfGFdHZHIYBnQqcSkHUvs9khINITA&s' alt='Logo de la compañía' class='logo'>
-                                <div class='title'>Recuperación de contraseña</div>
-                                <div class='subtitle'>Has solicitado restablecer tu contraseña.</div>
-                                <p>Haz clic en el siguiente botón para continuar con el proceso:</p>
-                                <a href='{link}' class='button'>Restablecer contraseña</a>
-                                <p class='footer'>Este enlace expirará en 3 minutos.<br>Si no solicitaste este cambio, puedes ignorar este mensaje.</p>
-                            </div>
+                <!DOCTYPE html>
+                <html lang='es'>
+                <head>
+                    <meta charset='UTF-8'>
+                    <title>Recuperación de contraseña</title>
+                    <style>
+                        body {{ margin: 0; padding: 0; background-color: #f2f2f2; font-family: 'Raleway', sans-serif; color: #0d0d0d; }}
+                        .container {{ width: 100%; padding: 30px 0; display: flex; justify-content: center; align-items: center; }}
+                        .card {{ background-color: #ffffff; padding: 30px; max-width: 500px; width: 90%; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); border-radius: 12px; text-align: center; }}
+                        .logo {{ width: 150px; margin-bottom: 20px; }}
+                        .title {{ font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: bold; color: #1c4d8c; margin-bottom: 10px; }}
+                        .subtitle {{ font-family: 'League Spartan', sans-serif; font-size: 16px; color: #555; margin-bottom: 20px; }}
+                        .button {{ display: inline-block; margin-top: 20px; padding: 12px 20px; background-color: #1c4d8c; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold; }}
+                        .footer {{ font-size: 13px; color: #666; margin-top: 30px; }}
+                    </style>
+                </head>
+                <body>
+                    <div class='container'>
+                        <div class='card'>
+                            <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8ZCctTKfGFdHZHIYBnQqcSkHUvs9khINITA&s' alt='Logo de la compañía' class='logo'>
+                            <div class='title'>Recuperación de contraseña</div>
+                            <div class='subtitle'>Has solicitado restablecer tu contraseña.</div>
+                            <p>Haz clic en el siguiente botón para continuar con el proceso:</p>
+                            <a href='{link}' class='button'>Restablecer contraseña</a>
+                            <p class='footer'>Este enlace expirará en 3 minutos.<br>Si no solicitaste este cambio, puedes ignorar este mensaje.</p>
                         </div>
-                    </body>
-                    </html>";
+                    </div>
+                </body>
+                </html>";
 
-            await emailService.SendEmailAsync(user.Employee.CorporateEmail, "Recuperación de contraseña", html);
+            await authRepository.EnviarCorreoRecuperacionPasswordAsync(username, html);
         }
 
         public async Task ResetPasswordWithToken(string token, ResetPasswordRequest request)

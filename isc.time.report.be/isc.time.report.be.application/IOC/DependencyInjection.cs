@@ -64,7 +64,6 @@ namespace isc.time.report.be.application.IOC
 
 
             services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
-            services.AddTransient<EmailService>();
 
 
             return services;

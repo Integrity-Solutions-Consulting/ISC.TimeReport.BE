@@ -19,5 +19,6 @@ namespace isc.time.report.be.application.Interfaces.Service.Catalogs
         Task<List<GetPositionResponse>> GetPositionsAsync();
         Task<List<GetProjectStatusResponse>> GetProjectStatusesAsync();
         Task<List<GetProjectTypeResponse>> GetProjectTypesAsync();
+        Task<List<GetWorkModeResponse>> GetWorkModesAsync();
     }
 }

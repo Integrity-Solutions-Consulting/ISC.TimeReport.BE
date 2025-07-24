@@ -102,7 +102,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                 idIdentificationType = employee.Person?.IdentificationTypeId ?? 0,
                 idGender = employee.Person?.GenderID ?? 0,
                 idPosition = employee.PositionID ?? 0,
-                idWorkMode = 0, //FALTA CAMPO
+                idWorkMode = employee.WorkModeID,
                 idNationality = employee.Person?.NationalityId ?? 0,
                 firstName = employee.Person?.FirstName,
                 lastName = employee.Person?.LastName,
@@ -132,20 +132,24 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
 
                     await _dbContext.SaveChangesAsync();
 
-                    var invEmpInsrt = await inventoryApiRepository.CreateEmployeeInventoryAsync(invEmployee);
+                    //var invEmpInsrt = await inventoryApiRepository.CreateEmployeeInventoryAsync(invEmployee);
 
-                    if (invEmpInsrt == null)
-                        throw new InvalidOperationException("No se pudo crear el empleado en el sistema de inventario.");
+                    //if (invEmpInsrt == null)
+                    //    throw new InvalidOperationException("No se pudo crear el empleado en el sistema de inventario.");
 
                     await transaction.CommitAsync();
 
                     return employee;
                 }
-                catch
+                catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    throw;
+
+                    // Esto te mostrará el mensaje real de la base de datos
+                    var inner = ex.InnerException?.Message ?? ex.Message;
+                    throw new Exception($"Error al guardar: {inner}", ex);
                 }
+
             }
         }
 

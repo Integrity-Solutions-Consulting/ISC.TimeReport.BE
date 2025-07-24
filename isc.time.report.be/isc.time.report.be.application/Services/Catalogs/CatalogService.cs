@@ -78,5 +78,10 @@ namespace isc.time.report.be.application.Services.Catalogs
             var result = await _catalogRepository.GetProjectTypeActivosAsync();
             return _mapper.Map<List<GetProjectTypeResponse>>(result);
         }
+        public async Task<List<GetWorkModeResponse>> GetWorkModesAsync()
+        {
+            var result = await _catalogRepository.GetWorkModeActivosAsync();
+            return _mapper.Map<List<GetWorkModeResponse>>(result);
+        }
     }
 }

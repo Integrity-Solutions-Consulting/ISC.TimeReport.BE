@@ -80,5 +80,11 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
                 .Where(e => e.Status)
                 .ToListAsync();
         }
+        public async Task<List<WorkMode>> GetWorkModeActivosAsync()
+        {
+            return await _dbContext.WorkModes
+                .Where(e => e.Status)
+                .ToListAsync();
+        }
     }
 }
