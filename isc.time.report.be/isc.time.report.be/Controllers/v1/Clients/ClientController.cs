@@ -31,6 +31,17 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador,Gerente,Lider,Colaborador")]
+        [HttpGet("GetMyClients")]
+        public async Task<ActionResult<SuccessResponse<PagedResult<GetClientsDetailsResponse>>>> GetClientsAssignedToEmployee(
+            [FromQuery] PaginationParams paginationParams,
+            [FromQuery] string? search)
+        {
+            var employeeId = int.Parse(User.Claims.First(c => c.Type == "EmployeeID").Value);
+            var result = await _clientService.GetClientsAssignedToEmployeeAsync(employeeId, paginationParams, search);
+            return Ok(result);
+        }
+
         [Authorize(Roles = "Administrador")]
         [HttpGet("GetClientByID/{id}")]
         public async Task<ActionResult<SuccessResponse<GetClientsDetailsResponse>>> GetClientById(int id)

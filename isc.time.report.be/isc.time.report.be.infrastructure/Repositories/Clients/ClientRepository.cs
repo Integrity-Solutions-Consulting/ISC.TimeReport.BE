@@ -46,6 +46,37 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
 
             return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
         }
+        public async Task<PagedResult<Client>> GetClientsAssignedToEmployeeAsync(int employeeId, PaginationParams paginationParams, string? search)
+        {
+            // Obtenemos IDs de los clientes relacionados a proyectos asignados al empleado
+            var clientIds = await _dbContext.EmployeeProjects
+                .Where(ep => ep.EmployeeID == employeeId && ep.Project.Status == true)
+                .Select(ep => ep.Project.ClientID)
+                .Distinct()
+                .ToListAsync();
+
+            var query = _dbContext.Clients
+                .Include(c => c.Person)
+                .Where(c => clientIds.Contains(c.Id))
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                string normalizedSearch = search.Trim().ToLower();
+
+                query = query.Where(c =>
+                    (c.TradeName != null && c.TradeName.ToLower().Contains(normalizedSearch)) ||
+                    (c.LegalName != null && c.LegalName.ToLower().Contains(normalizedSearch)) ||
+                    (c.Person != null && (
+                        (c.Person.FirstName != null && c.Person.FirstName.ToLower().Contains(normalizedSearch)) ||
+                        (c.Person.IdentificationNumber != null && c.Person.IdentificationNumber.ToLower().Contains(normalizedSearch)) ||
+                        (c.Person.Email != null && c.Person.Email.ToLower().Contains(normalizedSearch)) ||
+                        (c.Person.LastName != null && c.Person.LastName.ToLower().Contains(normalizedSearch))
+                    )));
+            }
+
+            return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
+        }
 
         public async Task<Client> GetClientByIDAsync(int clientId)
         {

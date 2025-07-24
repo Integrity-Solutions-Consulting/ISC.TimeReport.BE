@@ -40,6 +40,20 @@ namespace isc.time.report.be.application.Services.Clients
             };
         }
 
+        public async Task<PagedResult<GetClientsDetailsResponse>> GetClientsAssignedToEmployeeAsync(int employeeId, PaginationParams paginationParams, string? search)
+        {
+            var result = await _clientRepository.GetClientsAssignedToEmployeeAsync(employeeId, paginationParams, search);
+            var mapped = _mapper.Map<List<GetClientsDetailsResponse>>(result.Items);
+
+            return new PagedResult<GetClientsDetailsResponse>
+            {
+                Items = mapped,
+                TotalItems = result.TotalItems,
+                PageNumber = result.PageNumber,
+                PageSize = result.PageSize
+            };
+        }
+
         public async Task<GetClientsDetailsResponse> GetClientByID(int clientId)
         {
             var client = await _clientRepository.GetClientByIDAsync(clientId);
