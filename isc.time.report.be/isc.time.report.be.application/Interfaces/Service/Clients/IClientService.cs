@@ -12,6 +12,7 @@ namespace isc.time.report.be.application.Interfaces.Service.Clients
     public interface IClientService
     {
         Task<PagedResult<GetClientsDetailsResponse>> GetAllClientsPaginated(PaginationParams paginationParams, string? search);
+        Task<PagedResult<GetClientsDetailsResponse>> GetClientsAssignedToEmployeeAsync(int employeeId, PaginationParams paginationParams, string? search);
         Task<GetClientsDetailsResponse> GetClientByID(int clientId);
         Task<CreateClientResponse> CreateClientWithPersonID(CreateClientWithPersonIDRequest request);
         Task<CreateClientResponse> CreateClientWithPerson(CreateClientWithPersonOBJRequest request);
