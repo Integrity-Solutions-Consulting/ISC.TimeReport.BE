@@ -1,7 +1,9 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.Auth;
 using isc.time.report.be.domain.Entity.Auth;
 using isc.time.report.be.domain.Entity.Modules;
+using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.infrastructure.Database;
+using isc.time.report.be.infrastructure.Utils.Emails;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,9 +17,11 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
     {
 
         private readonly DBContext _dbContext;
-        public AuthRepository(DBContext databaseContext)
+        private readonly EmailUtils _emailUtils;
+        public AuthRepository(DBContext databaseContext, EmailUtils emailUtils)
         {
             _dbContext = databaseContext;
+            _emailUtils = emailUtils;
         }
         /// <summary>
         /// ESTE SI SE USA PARA ALGO
@@ -43,44 +47,42 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
         /// <param name="user"></param>
         /// <param name="RolesId"></param>
         /// <returns></returns>
-        public async Task<User> CreateUser(User user, List<int> RolesId)
+        public async Task<User> CreateUser(User user, List<int> roleIds, string destinatarioCorreo, string htmlCorreo)
         {
-            user.CreationDate = DateTime.Now;
-            user.ModificationDate = null;
-            user.Status = true;
-
-
-            if (user.UserRole == null)
-            {
-                user.UserRole = new List<UserRole>();
-            }
-
-            foreach (var roleId in RolesId)
-            {
-                user.UserRole.Add(new UserRole
-                {
-                    UserID = user.Id,
-                    RoleID = roleId
-                });
-            }
-
-            await _dbContext.Users.AddAsync(user);
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
             try
             {
+                user.CreationDate = DateTime.Now;
+                user.ModificationDate = null;
+                user.Status = true;
+
+                user.UserRole = new List<UserRole>();
+
+                foreach (var roleId in roleIds)
+                {
+                    user.UserRole.Add(new UserRole
+                    {
+                        RoleID = roleId
+                    });
+                }
+
+                await _dbContext.Users.AddAsync(user);
                 await _dbContext.SaveChangesAsync();
+
+                await _emailUtils.SendEmailAsync(destinatarioCorreo, "Credenciales de acceso", htmlCorreo);
+
+                await transaction.CommitAsync();
+
+                return user;
             }
-            catch (DbUpdateException ex)
+            catch (Exception ex)
             {
-                Console.WriteLine(ex.InnerException?.Message); // o loguéalo
-                throw;
+                await transaction.RollbackAsync();
+                throw new Exception("Error al crear el usuario o enviar el correo.", ex);
             }
-
-
-            var userRegistrado = await _dbContext.Users.FindAsync(user.Id);
-
-            return userRegistrado;
         }
+
         /// <summary>
         /// SI SE USA
         /// </summary>
@@ -223,6 +225,16 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
                 .Include(u => u.Employee)
                 .FirstOrDefaultAsync(u => u.Username == username && u.Status == true);
         }
+        public async Task EnviarCorreoRecuperacionPasswordAsync(string username, string html)
+        {
+            var user = await GetUserWithEmployeeAsync(username);
+
+            if (user == null || user.Employee == null || string.IsNullOrWhiteSpace(user.Employee.CorporateEmail))
+                throw new ClientFaultException("El usuario no tiene un correo corporativo válido registrado.", 404);
+
+            await _emailUtils.SendEmailAsync(user.Employee.CorporateEmail, "Recuperación de contraseña", html);
+        }
+
     }
 }
 

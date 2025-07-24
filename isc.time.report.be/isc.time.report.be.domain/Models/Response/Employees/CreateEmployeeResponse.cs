@@ -15,6 +15,7 @@ namespace isc.time.report.be.domain.Models.Response.Employees
         public int Id { get; set; }
         public CreatePersonResponse Person { get; set; }
         public int? PositionID { get; set; }
+        public int WorkModeID { get; set; }
         public string EmployeeCode { get; set; } = null!;
         public DateTime HireDate { get; set; }
         public DateTime? TerminationDate { get; set; }
