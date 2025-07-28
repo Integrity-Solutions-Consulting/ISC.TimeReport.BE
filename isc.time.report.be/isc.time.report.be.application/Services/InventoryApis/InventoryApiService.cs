@@ -1,6 +1,6 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.InventoryApis;
 using isc.time.report.be.application.Interfaces.Service.InventoryApis;
-using isc.time.report.be.domain.Models.Dto.InventorysApis.InventorySuppliers;
+using isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysSuppliers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

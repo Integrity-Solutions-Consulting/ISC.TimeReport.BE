@@ -1,5 +1,5 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.InventoryApis;
-using isc.time.report.be.domain.Models.Dto.InventorysApis.InventorySuppliers;
+using isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysSuppliers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

@@ -31,6 +31,7 @@ using isc.time.report.be.infrastructure.Repositories.Persons;
 using isc.time.report.be.infrastructure.Repositories.Projects;
 using isc.time.report.be.infrastructure.Repositories.TimeReports;
 using isc.time.report.be.infrastructure.Repositories.Users;
+using isc.time.report.be.infrastructure.Utils;
 using isc.time.report.be.infrastructure.Utils.Emails;
 using isc.time.report.be.infrastructure.Utils.Peticiones;
 using Microsoft.Data.SqlClient;
@@ -70,6 +71,7 @@ namespace isc.time.report.be.infrastructure.IOC
 
             services.AddSingleton<EmailUtils>();
             services.AddScoped<HttpUtils>();
+            services.AddScoped<JWTInventoryUtils>();
 
             return services;
         }

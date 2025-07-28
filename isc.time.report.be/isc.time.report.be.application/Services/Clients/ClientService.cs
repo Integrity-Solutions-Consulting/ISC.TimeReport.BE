@@ -74,7 +74,7 @@ namespace isc.time.report.be.application.Services.Clients
         public async Task<CreateClientResponse> CreateClientWithPerson(CreateClientWithPersonOBJRequest request)
         {
             var client = _mapper.Map<Client>(request);
-            var created = await _clientRepository.CreateClientWithPersonAsync(client);
+            var created = await _clientRepository.CreateClientWithPersonForInventoryAsync(client);
             return _mapper.Map<CreateClientResponse>(created);
         }
 
@@ -98,20 +98,20 @@ namespace isc.time.report.be.application.Services.Clients
 
             _mapper.Map(request, client);
 
-            var updated = await _clientRepository.UpdateClientWithPersonAsync(client);
+            var updated = await _clientRepository.UpdateClientWithPersonForInventoryAsync(client);
             updated = await _clientRepository.GetClientByIDAsync(updated.Id);
             return _mapper.Map<UpdateClientResponse>(updated);
         }
 
         public async Task<ActiveInactiveClientResponse> InactivateClient(int clientId)
         {
-            var inactivated = await _clientRepository.InactivateClientAsync(clientId);
+            var inactivated = await _clientRepository.InactivateClientForInventoryAsync(clientId);
             return _mapper.Map<ActiveInactiveClientResponse>(inactivated);
         }
 
         public async Task<ActiveInactiveClientResponse> ActivateClient(int clientId)
         {
-            var activated = await _clientRepository.ActivateClientAsync(clientId);
+            var activated = await _clientRepository.ActivateClientForInventoryAsync(clientId);
             return _mapper.Map<ActiveInactiveClientResponse>(activated);
         }
 

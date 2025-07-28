@@ -9,6 +9,6 @@ namespace isc.time.report.be.domain.Entity.Catalogs
 {
     public class InventoryToken : BaseEntity
     {
-        public string Token { get; set; }
+        public string? Token { get; set; }
     }
 }

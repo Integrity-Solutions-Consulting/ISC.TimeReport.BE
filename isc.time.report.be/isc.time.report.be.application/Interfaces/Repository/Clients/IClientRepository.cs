@@ -16,10 +16,14 @@ namespace isc.time.report.be.application.Interfaces.Repository.Clients
         Task<Client> GetClientByIDAsync(int clientId);
         Task<Client> CreateClientAsync(Client client);
         Task<Client> CreateClientWithPersonAsync(Client client);
+        Task<Client> CreateClientWithPersonForInventoryAsync(Client client);
         Task<Client> UpdateClientAsync(Client client);
         Task<Client> UpdateClientWithPersonAsync(Client client);
+        Task<Client> UpdateClientWithPersonForInventoryAsync(Client client);
         Task<Client> InactivateClientAsync(int clientId);
+        Task<Client> InactivateClientForInventoryAsync(int clientId);
         Task<Client> ActivateClientAsync(int clientId);
+        Task<Client> ActivateClientForInventoryAsync(int clientId);
         Task<List<Client>> GetClientsByEmployeeIdAsync(int employeeId);
 
     }
