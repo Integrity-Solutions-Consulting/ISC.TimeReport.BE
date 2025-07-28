@@ -1,5 +1,7 @@
-﻿using isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysEmployee;
+﻿using isc.time.report.be.application.Interfaces.Repository.InventoryApis;
+using isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysEmployee;
 using isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysLogin;
+using isc.time.report.be.domain.Models.Dto.InventorysApis.InventorySuppliers;
 using isc.time.report.be.infrastructure.Utils.Peticiones;
 using System;
 using System.Collections.Generic;
@@ -9,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
 {
-    public class InventoryApiRepository
+    public class InventoryApiRepository : IInventoryApiRepository
     {
         private readonly HttpUtils _httpUtils;
         public InventoryApiRepository(HttpUtils httpUtils)
@@ -75,6 +77,17 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
 
             var result = await _httpUtils.SendRequest<object>(url, HttpMethod.Put, null, token);
             return result != null;
+        }
+
+        public async Task<SupplierResponseDto> GetInventoryProviders()
+        {
+            var token = await LoginInventory();
+
+            var url = $"https://isc-inventory-back-api.onrender.com/api/v1/supplier/supplierType/2";
+
+            var result = await _httpUtils.SendRequest<SupplierResponseDto>(url, HttpMethod.Get, null, token);
+
+            return result;
         }
 
     }

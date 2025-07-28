@@ -1,9 +1,11 @@
-﻿using isc.time.report.be.application.Interfaces.Service.Auth;
+﻿using isc.time.report.be.application.Interfaces.Repository.InventoryApis;
+using isc.time.report.be.application.Interfaces.Service.Auth;
 using isc.time.report.be.application.Interfaces.Service.Catalogs;
 using isc.time.report.be.application.Interfaces.Service.Clients;
 using isc.time.report.be.application.Interfaces.Service.DailyActivities;
 using isc.time.report.be.application.Interfaces.Service.Dashboards;
 using isc.time.report.be.application.Interfaces.Service.Employees;
+using isc.time.report.be.application.Interfaces.Service.InventoryApis;
 using isc.time.report.be.application.Interfaces.Service.Leaders;
 using isc.time.report.be.application.Interfaces.Service.Menus;
 using isc.time.report.be.application.Interfaces.Service.Permissions;
@@ -19,6 +21,7 @@ using isc.time.report.be.application.Services.Clients;
 using isc.time.report.be.application.Services.DailyActivities;
 using isc.time.report.be.application.Services.Dashboards;
 using isc.time.report.be.application.Services.Employees;
+using isc.time.report.be.application.Services.InventoryApis;
 using isc.time.report.be.application.Services.Leaders;
 using isc.time.report.be.application.Services.Menus;
 using isc.time.report.be.application.Services.Permissions;
@@ -61,6 +64,7 @@ namespace isc.time.report.be.application.IOC
             services.AddScoped<ITimeReportService, TimeReportService>();
             services.AddScoped<ICatalogService, CatalogService>();
             services.AddScoped<IDashboardService, DashboardService>();
+            services.AddScoped<IInventoryApiService, InventoryApiService>();
 
 
             services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
