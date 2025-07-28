@@ -11,7 +11,8 @@ namespace isc.time.report.be.domain.Models.Response.Users
         public int Id { get; set; }
         public string ModuleName { get; set; } = null!;
         public string? ModulePath { get; set; }
-        public string? Icon { get; set; }
+        public string? Icon { get; set; }   
         public int? DisplayOrder { get; set; }
+        public int Submodule { get; set; }
     }
 }

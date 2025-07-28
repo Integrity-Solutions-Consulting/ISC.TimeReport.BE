@@ -22,5 +22,6 @@ namespace isc.time.report.be.domain.Models.Request.Projects
         public DateTime? ActualStartDate { get; set; }
         public DateTime? ActualEndDate { get; set; }
         public decimal? Budget { get; set; }
+        public int Hours { get; set; }
     }
 }
