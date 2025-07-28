@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace isc.time.report.be.domain.Models.Dto.InventorysApis.InventorySuppliers
+namespace isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysSuppliers
 {
     public class SupplierResponseDto
     {
