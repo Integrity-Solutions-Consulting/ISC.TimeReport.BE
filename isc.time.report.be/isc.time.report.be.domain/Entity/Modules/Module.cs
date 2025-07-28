@@ -15,6 +15,6 @@ namespace isc.time.report.be.domain.Entity.Modules
         public int? DisplayOrder { get; set; }
         public List<RoleModule> RoleModule { get; set; }
         public List<UserModule> UserModule { get; set; }
-        public int submodule {  get; set; }
+        public int Submodule {  get; set; }
     }
 }

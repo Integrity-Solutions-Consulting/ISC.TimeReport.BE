@@ -190,6 +190,7 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.ActualStartDate).HasColumnName("actual_start_date");
                 entity.Property(e => e.ActualEndDate).HasColumnName("actual_end_date");
                 entity.Property(e => e.Budget).HasColumnName("budget");
+                entity.Property(e => e.Hours).HasColumnName("hours");
 
                 entity.Property(e => e.Status).HasColumnName("status");
                 entity.Property(e => e.CreationUser).HasColumnName("creation_user");
@@ -514,6 +515,7 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.ModulePath).HasColumnName("module_path");
                 entity.Property(e => e.Icon).HasColumnName("icon");
                 entity.Property(e => e.DisplayOrder).HasColumnName("display_order");
+                entity.Property(e => e.Submodule).HasColumnName("submodule");
 
                 entity.Property(e => e.Status).HasColumnName("status");
                 entity.Property(e => e.CreationUser).HasColumnName("creation_user");

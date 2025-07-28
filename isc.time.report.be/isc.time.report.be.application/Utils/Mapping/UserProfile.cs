@@ -36,7 +36,7 @@ namespace isc.time.report.be.application.Utils.Mapping
 
             CreateMap<Module, ModuleResponse>();
             CreateMap<ModuleResponse, Module>();
-
+            
             CreateMap<User, UserResponse>();
             CreateMap<UserResponse, User>();
 
