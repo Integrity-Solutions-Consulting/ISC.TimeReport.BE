@@ -4,6 +4,7 @@ using isc.time.report.be.application.Interfaces.Repository.Clients;
 using isc.time.report.be.application.Interfaces.Repository.DailyActivities;
 using isc.time.report.be.application.Interfaces.Repository.Dashboards;
 using isc.time.report.be.application.Interfaces.Repository.Employees;
+using isc.time.report.be.application.Interfaces.Repository.InventoryApis;
 using isc.time.report.be.application.Interfaces.Repository.Leaders;
 using isc.time.report.be.application.Interfaces.Repository.Menus;
 using isc.time.report.be.application.Interfaces.Repository.Permissions;
@@ -63,6 +64,7 @@ namespace isc.time.report.be.infrastructure.IOC
             services.AddScoped<ITimeReportRepository, TimeReportRepository>();
             services.AddScoped<ICatalogRepository, CatalogRepository>();
             services.AddScoped<IDashboardRepository, DashboardRepository>();
+            services.AddScoped<IInventoryApiRepository, InventoryApiRepository>();
             services.AddScoped<InventoryApiRepository>();
 
 
