@@ -20,7 +20,7 @@ namespace isc.time.report.be.domain.Models.Response.Projects
         public DateTime? ActualStartDate { get; set; }
         public DateTime? ActualEndDate { get; set; }
         public decimal? Budget { get; set; }
+        public decimal Hours { get; set; }
         public bool? Status { get; set; }
-        public int Hours { get; set; }
     }
 }
