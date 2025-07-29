@@ -682,7 +682,7 @@ namespace isc.time.report.be.infrastructure.Database
             });
 
 
-
+            modelBuilder.Entity<DashboardResumenGeneralDto>().HasNoKey();
             modelBuilder.Entity<DashboardHorasActividadDto>().HasNoKey();
             modelBuilder.Entity<DashboardRecursosClienteDto>().HasNoKey();
             modelBuilder.Entity<DashboardResumenProyectoDto>().HasNoKey();

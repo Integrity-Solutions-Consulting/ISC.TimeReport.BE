@@ -18,6 +18,15 @@ namespace isc.time.report.be.infrastructure.Repositories.Dashboards
         {
             _context = context;
         }
+        public async Task<DashboardResumenGeneralDto?> GetDashboardResumenGeneralAsync()
+        {
+            var result = await _context.Set<DashboardResumenGeneralDto>()
+                .FromSqlRaw("SELECT * FROM dbo.fn_DashboardResumenGeneral()")
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            return result;
+        }
 
         public async Task<List<DashboardHorasActividadDto>> GetHorasPorActividadPorFechaAsync(DateOnly? fecha)
         {

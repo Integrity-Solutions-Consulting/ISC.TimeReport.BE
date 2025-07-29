@@ -17,6 +17,11 @@ namespace isc.time.report.be.application.Services.Dashboards
             _repo = repo;
         }
 
+        public async Task<DashboardResumenGeneralDto?> GetDashboardResumenGeneralAsync()
+        {
+            return await _repo.GetDashboardResumenGeneralAsync();
+        }
+
         public async Task<List<DashboardHorasActividadDto>> GetHorasPorActividadPorFechaAsync(DateOnly? fecha)
         {
             return await _repo.GetHorasPorActividadPorFechaAsync(fecha);

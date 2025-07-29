@@ -14,13 +14,19 @@ namespace isc.time.report.be.api.Controllers.v1.Dashboards
             _service = service;
         }
 
+        [HttpGet("resumen-general")]
+        public async Task<IActionResult> GetDashboardResumenGeneral()
+        {
+            var result = await _service.GetDashboardResumenGeneralAsync();
+            return Ok(result);
+        }
+
         [HttpGet("horas-por-actividad")]
         public async Task<IActionResult> GetHorasPorActividad([FromQuery] DateOnly? fecha)
         {
             var result = await _service.GetHorasPorActividadPorFechaAsync(fecha);
             return Ok(result);
         }
-
 
         [HttpGet("recursos-por-cliente")] public async Task<IActionResult> GetRecursosPorCliente()
         {
