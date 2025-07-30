@@ -477,8 +477,28 @@ namespace isc.time.report.be.application.Services.TimeReports
                     Reference = $"B{nomenclaturaStartRow}:B{nomenclaturaStartRow + 3}"
                 });
 
+
+
+
                 var basePath = AppDomain.CurrentDomain.BaseDirectory;
-                var logoPath = Path.Combine(basePath, "Templates", "LogoRPSIntegrity.png");
+
+                //if (reportData.Company == "ISC")
+                //{
+                    var logoPath = Path.Combine(basePath, "Templates", "LogoRPSIntegrity.png");
+                //}
+                //else if (reportData.Company == "RPS")
+                //{
+                //    var logoPath = Path.Combine(basePath, "Templates", "LogoRPSIntegrity.png");
+                //}
+                //else
+                //{
+                //    throw
+                //}
+
+
+
+
+
 
                 if (!File.Exists(logoPath))
                     throw new FileNotFoundException($"No se encontró el logo en: {logoPath}");
@@ -1001,6 +1021,7 @@ namespace isc.time.report.be.application.Services.TimeReports
                 FirstName = employee.Person.FirstName,
                 LastName = employee.Person.LastName,
                 TradeName = client.TradeName ?? string.Empty,
+                Company = client.Company,
                 Activities = activityDtos
             };
         }

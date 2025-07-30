@@ -130,12 +130,37 @@ namespace isc.time.report.be.application.Services.Auth
             };
 
             var html = $@"
-            <html><body>
-            <p>Hola, se ha creado una cuenta de acceso para ti.</p>
-            <p><strong>Usuario:</strong> {registerRequest.Username}</p>
-            <p><strong>Contraseña temporal:</strong> {generatedPassword}</p>
-            <p>Por seguridad, deberás cambiar la contraseña al iniciar sesión.</p>
-            </body></html>";
+                <!DOCTYPE html>
+                <html lang='es'>
+                <head>
+                    <meta charset='UTF-8'>
+                    <title>Recuperación de contraseña</title>
+                    <style>
+                        body {{ margin: 0; padding: 0; background-color: #f2f2f2; font-family: 'Raleway', sans-serif; color: #0d0d0d; }}
+                        .container {{ width: 100%; padding: 30px 0; display: flex; justify-content: center; align-items: center; }}
+                        .card {{ background-color: #ffffff; padding: 30px; max-width: 500px; width: 90%; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); border-radius: 12px; text-align: center; }}
+                        .logo {{ width: 150px; margin-bottom: 20px; }}
+                        .title {{ font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: bold; color: #1c4d8c; margin-bottom: 10px; }}
+                        .subtitle {{ font-family: 'League Spartan', sans-serif; font-size: 16px; color: #555; margin-bottom: 20px; }}
+                        .button {{ display: inline-block; margin-top: 20px; padding: 12px 20px; background-color: #1c4d8c; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold; }}
+                        .footer {{ font-size: 13px; color: #666; margin-top: 30px; }}
+                    </style>
+                </head>
+                <body>
+                    <div class='container'>
+                        <div class='card'>
+                            <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8ZCctTKfGFdHZHIYBnQqcSkHUvs9khINITA&s' alt='Logo de la compañía' class='logo'>
+                            <div class='title'>Nuevo Usuario</div>
+                            <div class='subtitle'>Has solicitado Tus credenciales de Usuario.</div>
+                <p>Hola, se ha creado una cuenta de acceso para ti.</p>
+                <p><strong>Usuario:</strong> {registerRequest.Username}</p>
+                <p><strong>Contraseña temporal:</strong> {generatedPassword}</p>
+                <p>Por seguridad, deberás cambiar la contraseña al iniciar sesión.</p>
+                        </div>
+                    </div>
+                </body>
+                </html>";
+
 
             var userNew = await authRepository.CreateUser(user, registerRequest.RolesID, employee.CorporateEmail, html);
 
