@@ -1045,6 +1045,11 @@ namespace isc.time.report.be.application.Services.TimeReports
             var toColumn = fromColumn + 4; // termina en BA (53)
             var toRow = fromRow + 3;       // termina en fila 106
 
+            if (imagePath != null && imagePath.Contains("logo-isc.png", StringComparison.OrdinalIgnoreCase))
+            {
+                toColumn = fromColumn + 3;
+            }
+
             var nvps = new Xdr.NonVisualPictureProperties(
                 new Xdr.NonVisualDrawingProperties { Id = 0U, Name = "Logo" },
                 new Xdr.NonVisualPictureDrawingProperties(new A.PictureLocks { NoChangeAspect = true })
