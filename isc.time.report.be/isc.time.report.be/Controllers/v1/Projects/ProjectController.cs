@@ -116,5 +116,15 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
 
             return Ok(result);
         }
+
+        [Authorize(Roles = "Administrador,Gerente,Lider,Colaborador")]
+        [HttpGet("get-projects-by-employee")]
+        public async Task<ActionResult<SuccessResponse<List<GetProjectsByEmployeeIDResponse>>>>GetProjectsByEmployee()
+        {
+            int employeeId = GetEmployeeIdFromToken();
+
+            var list = await _projectService.GetProjectsByEmployeeIdAsync(employeeId);
+            return Ok(list);
+        }
     }
 }

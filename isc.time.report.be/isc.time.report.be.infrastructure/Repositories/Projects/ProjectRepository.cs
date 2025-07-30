@@ -168,5 +168,14 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
                 .FirstOrDefaultAsync(p => p.Id == projectId);
         }
 
+        public async Task<List<Project>> GetProjectsByEmployeeIdAsync(int employeeId)
+        {
+            return await _dbContext.EmployeeProjects
+                .Where(ep => ep.EmployeeID == employeeId)
+                .Select(ep => ep.Project)
+                .Distinct()
+                .ToListAsync();
+        }
+
     }
 }
