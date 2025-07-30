@@ -303,5 +303,35 @@ namespace isc.time.report.be.application.Services.Auth
 
             await userRepository.UpdateUser(user);
         }
+
+        public async Task ChangePasswordWithToken(string token, ChangePasswordRequest request)
+        {
+            var principal = jwtUtils.ValidateTokenAndGetPrincipal(token);
+            if (principal == null)
+                throw new ClientFaultException("Token inválido o expirado.", 401);
+
+            var userIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "UserID")?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+                throw new ClientFaultException("Token no contiene información de usuario.", 400);
+
+            if (request.NewPassword != request.ConfirmPassword)
+                throw new ClientFaultException("La nueva contraseña y su confirmación no coinciden.", 400);
+
+            int userId = int.Parse(userIdClaim);
+            var user = await authRepository.GetUserById(userId);
+
+            if (user == null)
+                throw new ClientFaultException("Usuario no encontrado.", 404);
+
+            if (!passwordUtils.VerifyPassword(request.CurrentPassword, user.PasswordHash))
+            {
+                throw new ClientFaultException("Algo ha salido mal", 401);
+            }
+
+            user.PasswordHash = passwordUtils.HashPassword(request.NewPassword);
+            user.MustChangePassword = false;
+
+            await userRepository.UpdateUser(user);
+        }
     }
 }

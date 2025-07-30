@@ -14,10 +14,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Templates\logo-isc.png" />
     <None Remove="Templates\LogoRPSIntegrity.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Templates\logo-isc.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Templates\LogoRPSIntegrity.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
