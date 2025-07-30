@@ -77,5 +77,11 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
             return Ok("Contraseña restablecida correctamente.");
         }
 
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromQuery] string token, [FromBody] ChangePasswordRequest request)
+        {
+            await authService.ChangePasswordWithToken(token, request);
+            return Ok("Contraseña restablecida correctamente.");
+        }
     }
 }

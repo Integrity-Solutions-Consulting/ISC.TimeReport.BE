@@ -19,5 +19,6 @@ namespace isc.time.report.be.application.Interfaces.Service.Auth
         Task<RoleResponse> UpdateRoleAsync(int id, UpdateRoleRequest request);
         Task RecuperarPasswordAsync(string username);
         Task ResetPasswordWithToken(string token, ResetPasswordRequest request);
+        Task ChangePasswordWithToken(string token, ChangePasswordRequest request);
     }
 }
