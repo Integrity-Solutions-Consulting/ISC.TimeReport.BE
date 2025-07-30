@@ -143,12 +143,18 @@ namespace isc.time.report.be.application.Services.Projects
 
         public async Task AssignEmployeesToProject(AssignEmployeesToProjectRequest request)
         {
-            bool todosSonEmpleados = request.EmployeeProjectMiddle.All(e => e.EmployeeId.HasValue && e.SupplierID == null);
-            bool todosSonProveedores = request.EmployeeProjectMiddle.All(e => e.SupplierID.HasValue && e.EmployeeId == null);
-
-            if (!todosSonEmpleados && !todosSonProveedores)
+            foreach (var dto in request.EmployeeProjectMiddle)
             {
-                throw new ArgumentException("Todas las asignaciones deben ser exclusivamente de empleados o exclusivamente de proveedores. El campo no utilizado debe ser null.");
+                bool tieneEmpleado = dto.EmployeeId.HasValue;
+                bool tieneProveedor = dto.SupplierID.HasValue;
+
+                if (tieneEmpleado == tieneProveedor)
+                {
+                    throw new ArgumentException(
+                        $"Cada asignación debe tener solo EmployeeId o solo SupplierID. " +
+                        $"DTO con EmployeeId={dto.EmployeeId} SupplierID={dto.SupplierID} no válido."
+                    );
+                }
             }
 
             var existing = await projectRepository.GetByProjectIdAsync(request.ProjectID);
@@ -195,30 +201,19 @@ namespace isc.time.report.be.application.Services.Projects
                 }
             }
 
-            // 🔄 Desactivación: solo del tipo contrario, el otro se deja tal cual
             foreach (var ep in existing)
             {
-                bool sigueActivo = request.EmployeeProjectMiddle.Any(dto =>
+                bool sigueEnRequest = request.EmployeeProjectMiddle.Any(dto =>
                     dto.EmployeeId == ep.EmployeeID &&
                     dto.SupplierID == ep.SupplierID
                 );
 
-                if (!sigueActivo && ep.Status)
+                if (!sigueEnRequest && ep.Status)
                 {
-                    if (todosSonEmpleados && ep.EmployeeID.HasValue)
-                    {
-                        ep.Status = false;
-                        ep.ModificationDate = now;
-                        ep.ModificationUser = "SYSTEM";
-                        finalList.Add(ep);
-                    }
-                    else if (todosSonProveedores && ep.SupplierID.HasValue)
-                    {
-                        ep.Status = false;
-                        ep.ModificationDate = now;
-                        ep.ModificationUser = "SYSTEM";
-                        finalList.Add(ep);
-                    }
+                    ep.Status = false;
+                    ep.ModificationDate = now;
+                    ep.ModificationUser = "SYSTEM";
+                    finalList.Add(ep);
                 }
             }
 
