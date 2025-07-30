@@ -35,6 +35,9 @@ namespace isc.time.report.be.application.Utils.Mapping
 
             CreateMap<Project, UpdateProjectResponse>();
             CreateMap<UpdateProjectResponse, Project>();
+
+            CreateMap<Project, GetProjectsByEmployeeIDResponse>();
+            CreateMap<GetProjectsByEmployeeIDResponse, Project>();
         }
     }
 }

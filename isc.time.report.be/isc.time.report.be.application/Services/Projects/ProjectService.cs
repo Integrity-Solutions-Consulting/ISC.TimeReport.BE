@@ -271,5 +271,11 @@ namespace isc.time.report.be.application.Services.Projects
 
             return response;
         }
+
+        public async Task<List<GetProjectsByEmployeeIDResponse>> GetProjectsByEmployeeIdAsync(int employeeId)
+        {
+            var projects = await projectRepository.GetProjectsByEmployeeIdAsync(employeeId);
+            return _mapper.Map<List<GetProjectsByEmployeeIDResponse>>(projects);
+        }
     }
 }
