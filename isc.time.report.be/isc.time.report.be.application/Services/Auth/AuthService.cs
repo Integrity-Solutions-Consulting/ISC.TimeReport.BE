@@ -262,9 +262,9 @@ namespace isc.time.report.be.application.Services.Auth
             if (user == null || user.Employee == null || string.IsNullOrWhiteSpace(user.Employee.CorporateEmail))
                 return;
 
-            var token = jwtUtils.GenerateToken(user, 3);
-            var frontUrl = "https://chatgpt.com/";
-            var link = $"{frontUrl}{token}";
+            var token = jwtUtils.GenerateToken(user, 3 ,true);
+            var frontUrl = "https://192.168.100.149/time-report.fe/auth/reset-password";
+            var link = $"{frontUrl}{"?token="}{token}";
 
             var html = $@"
                 <!DOCTYPE html>
