@@ -481,24 +481,20 @@ namespace isc.time.report.be.application.Services.TimeReports
 
 
                 var basePath = AppDomain.CurrentDomain.BaseDirectory;
+                string logoPath;
 
-                //if (reportData.Company == "ISC")
-                //{
-                    var logoPath = Path.Combine(basePath, "Templates", "LogoRPSIntegrity.png");
-                //}
-                //else if (reportData.Company == "RPS")
-                //{
-                //    var logoPath = Path.Combine(basePath, "Templates", "LogoRPSIntegrity.png");
-                //}
-                //else
-                //{
-                //    throw
-                //}
-
-
-
-
-
+                if (reportData.Company == "ISC")
+                {
+                    logoPath = Path.Combine(basePath, "Templates", "logo-isc.png");
+                }
+                else if (reportData.Company == "RPS")
+                {
+                    logoPath = Path.Combine(basePath, "Templates", "LogoRPSIntegrity.png");
+                }
+                else
+                {
+                    throw new FileNotFoundException("No se encontró la compañía a la que pertenece");
+                }
 
                 if (!File.Exists(logoPath))
                     throw new FileNotFoundException($"No se encontró el logo en: {logoPath}");
