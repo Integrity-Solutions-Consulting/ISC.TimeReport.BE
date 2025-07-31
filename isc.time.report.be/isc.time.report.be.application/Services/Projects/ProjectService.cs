@@ -114,6 +114,7 @@ namespace isc.time.report.be.application.Services.Projects
             projectGet.ActualStartDate = projectParaUpdate.ActualStartDate;
             projectGet.ActualEndDate = projectParaUpdate.ActualEndDate;
             projectGet.Budget = projectParaUpdate.Budget;
+            projectGet.Hours = projectParaUpdate.Hours;
 
             if (projectGet.StartDate > projectGet.EndDate)
             {
