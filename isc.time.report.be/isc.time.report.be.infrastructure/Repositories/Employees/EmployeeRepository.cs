@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -239,8 +240,26 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                             ? DateOnly.FromDateTime(employee.TerminationDate.Value)
                             : null
                     };
+                    try
+                    {
+                        await _dbContext.SaveChangesAsync();
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        // Error de concurrencia (alguien más modificó los mismos datos)
+                        throw new ApplicationException("Conflicto de concurrencia al intentar guardar. Refresca los datos e intenta nuevamente.", ex);
+                    }
+                    catch (ValidationException ex)
+                    {
+                        // Error de validación en el modelo (si usas DataAnnotations u otros validadores)
+                        throw new ApplicationException("Error de validación en los datos enviados.", ex);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Cualquier otro error inesperado
+                        throw new ApplicationException("Error inesperado al guardar los cambios en la base de datos.", ex);
+                    }
 
-                    await _dbContext.SaveChangesAsync();
 
                     var updated = await inventoryApiRepository.UpdateEmployeeInventoryAsync(inventoryUpdateRequest, employee.Id);
                     if (!updated)
