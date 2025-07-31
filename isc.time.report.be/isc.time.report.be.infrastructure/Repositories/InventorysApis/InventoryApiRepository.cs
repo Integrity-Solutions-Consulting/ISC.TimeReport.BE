@@ -88,7 +88,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
         {
             var token = await LoginInventory();
 
-            var url = $"https://isc-inventory-back-api.onrender.com/api/v1/employee/Update/{id}";
+            var url = $"https://isc-inventory-back-api.onrender.com/api/v1/employee/update/{id}";
 
             var result = await _httpUtils.SendRequest<object>(url, HttpMethod.Put, request, token);
 
