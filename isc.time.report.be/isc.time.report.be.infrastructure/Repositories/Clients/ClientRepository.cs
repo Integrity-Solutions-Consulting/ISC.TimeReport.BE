@@ -148,7 +148,8 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
                     Name = $"{client.Person.FirstName} {client.Person.LastName}",
                     Address = client.Person.Address ?? "No definido",
                     Email = client.Person.Email ?? "noreply@example.com",
-                    Phone = client.Person.Phone ?? "000000000"
+                    Phone = client.Person.Phone ?? "000000000",
+                    Ruc = client.Person.IdentificationNumber
                 };
 
                 var result = await _inventoryApiRepository.CreateCustomerInventoryAsync(inventoryRequest);
