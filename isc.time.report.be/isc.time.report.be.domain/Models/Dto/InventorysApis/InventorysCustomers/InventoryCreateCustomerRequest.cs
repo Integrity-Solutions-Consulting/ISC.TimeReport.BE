@@ -12,5 +12,6 @@ namespace isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysCustomer
         public string Address { get; set; } = default!;
         public string Email { get; set; } = default!;
         public string Phone { get; set; } = default!;
+        public string Ruc { get; set; }
     }
 }
