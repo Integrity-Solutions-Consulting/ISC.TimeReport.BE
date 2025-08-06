@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: time-report-api
+    container_name: time-report-api
+    ports:
+      - "8082:80"
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=ISC_TimeReport;User=sa;Password=Zp8#kV42wLp@tR3m;
+    depends_on:
+      - sqlserver
+    networks:
+      - backend-net
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: time-report-sqlserver
+    restart: always
+    environment:
+      SA_PASSWORD: "Zp8#kV42wLp@tR3m"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - backend-net
+
+volumes:
+  sqlserver_data:
+
+networks:
+  backend-net:
+    driver: bridge
