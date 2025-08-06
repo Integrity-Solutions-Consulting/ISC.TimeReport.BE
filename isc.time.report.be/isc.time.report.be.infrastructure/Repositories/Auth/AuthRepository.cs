@@ -157,7 +157,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
         public async Task<List<Role>> GetAllRolesWithModulesAsync()
         {
             return await _dbContext.Roles
-                .Include(r => r.RoleModule)
+                .Include(r => r.RoleModule.Where(rm => rm.Status == true))
                     .ThenInclude(rm => rm.Module)
                 .ToListAsync();
         }
