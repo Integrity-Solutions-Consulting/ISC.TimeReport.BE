@@ -58,7 +58,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
                 password = "Password2@"
             };
 
-            var url = "https://isc-inventory-back.onrender.com/api/v1/auth/login";
+            var url = "https://auth.inventory.integritysolutions.com.ec/api/v1/auth/login";
             var response = await _httpUtils.SendRequest<InventoryLoginResponse>(url, HttpMethod.Post, request);
 
             if (response?.data?.token == null)
@@ -77,7 +77,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
         {
             var token = await LoginInventory();
 
-            var url = "https://isc-inventory-back-api.onrender.com/api/v1/employee/save";
+            var url = "https://api.inventory.integritysolutions.com.ec/api/v1/employee/save";
 
             var result = await _httpUtils.SendRequest<object>(url, HttpMethod.Post, request, token);
 
@@ -88,7 +88,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
         {
             var token = await LoginInventory();
 
-            var url = $"https://isc-inventory-back-api.onrender.com/api/v1/employee/update/{id}";
+            var url = $"https://api.inventory.integritysolutions.com.ec/api/v1/employee/update/{id}";
 
             var result = await _httpUtils.SendRequest<object>(url, HttpMethod.Put, request, token);
 
@@ -99,7 +99,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
         {
             var token = await LoginInventory();
 
-            var url = $"https://isc-inventory-back-api.onrender.com/api/v1/employee/inactive/{id}";
+            var url = $"https://api.inventory.integritysolutions.com.ec/api/v1/employee/inactive/{id}";
 
             var result = await _httpUtils.SendRequest<object>(url, HttpMethod.Delete, null, token);
             return result != null;
@@ -109,7 +109,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
         {
             var token = await LoginInventory();
 
-            var url = $"https://isc-inventory-back-api.onrender.com/api/v1/employee/activate/{id}";
+            var url = $"https://api.inventory.integritysolutions.com.ec/api/v1/employee/activate/{id}";
 
             var result = await _httpUtils.SendRequest<object>(url, HttpMethod.Put, null, token);
             return result != null;
@@ -119,7 +119,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
         {
             var token = await LoginInventory();
 
-            var url = $"https://isc-inventory-back-api.onrender.com/api/v1/supplier/supplierType/2";
+            var url = $"https://api.inventory.integritysolutions.com.ec/api/v1/supplier/supplierType/2";
 
             var result = await _httpUtils.SendRequest<SupplierResponseDto>(url, HttpMethod.Get, null, token);
 
@@ -128,7 +128,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
         public async Task<bool> CreateCustomerInventoryAsync(InventoryCreateCustomerRequest request)
         {
             var token = await LoginInventory();
-            var url = "https://isc-inventory-back-api.onrender.com/api/v1/customers/save";
+            var url = "https://api.inventory.integritysolutions.com.ec/api/v1/customers/save";
             var result = await _httpUtils.SendRequest<object>(url, HttpMethod.Post, request, token);
             return result != null;
         }
@@ -136,7 +136,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
         public async Task<bool> UpdateCustomerInventoryAsync(InventoryUpdateCustomerRequest request, int id)
         {
             var token = await LoginInventory();
-            var url = $"https://isc-inventory-back-api.onrender.com/api/v1/customers/update/{id}";
+            var url = $"https://api.inventory.integritysolutions.com.ec/api/v1/customers/update/{id}";
             var result = await _httpUtils.SendRequest<object>(url, HttpMethod.Put, request, token);
             return result != null;
         }
@@ -144,7 +144,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
         public async Task<bool> InactivateCustomerInventoryAsync(int id)
         {
             var token = await LoginInventory();
-            var url = $"https://isc-inventory-back-api.onrender.com/api/v1/customers/inactive/{id}";
+            var url = $"https://api.inventory.integritysolutions.com.ec/api/v1/customers/inactive/{id}";
             var result = await _httpUtils.SendRequest<object>(url, HttpMethod.Delete, null, token);
             return result != null;
         }
@@ -152,7 +152,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
         public async Task<bool> ActivateCustomerInventoryAsync(int id)
         {
             var token = await LoginInventory();
-            var url = $"https://isc-inventory-back-api.onrender.com/api/v1/customers/activate/{id}";
+            var url = $"https://api.inventory.integritysolutions.com.ec/api/v1/customers/activate/{id}";
             var result = await _httpUtils.SendRequest<object>(url, HttpMethod.Patch, null, token);
             return result != null;
         }
