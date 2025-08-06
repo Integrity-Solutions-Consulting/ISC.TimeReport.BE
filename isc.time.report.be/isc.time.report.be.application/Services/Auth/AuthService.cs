@@ -224,13 +224,15 @@ namespace isc.time.report.be.application.Services.Auth
                 Id = r.Id,
                 RoleName = r.RoleName,
                 Description = r.Description,
+                Status = r.Status,
                 Modules = r.RoleModule.Select(rm => new ModuleResponse
                 {
                     Id = rm.Module.Id,
                     ModuleName = rm.Module.ModuleName,
                     ModulePath = rm.Module.ModulePath,
                     Icon = rm.Module.Icon,
-                    DisplayOrder = rm.Module.DisplayOrder
+                    DisplayOrder = rm.Module.DisplayOrder,
+                    Status = rm.Module.Status,
                 }).ToList()
             }).ToList();
         }
