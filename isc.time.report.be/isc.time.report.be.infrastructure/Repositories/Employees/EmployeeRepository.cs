@@ -133,10 +133,10 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
 
                     await _dbContext.SaveChangesAsync();
 
-                    var invEmpInsrt = await inventoryApiRepository.CreateEmployeeInventoryAsync(invEmployee);
+                    //var invEmpInsrt = await inventoryApiRepository.CreateEmployeeInventoryAsync(invEmployee);
 
-                    if (invEmpInsrt == null)
-                        throw new InvalidOperationException("No se pudo crear el empleado en el sistema de inventario.");
+                    //if (invEmpInsrt == null)
+                    //    throw new InvalidOperationException("No se pudo crear el empleado en el sistema de inventario.");
 
                     await transaction.CommitAsync();
 
@@ -261,9 +261,9 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                     }
 
 
-                    var updated = await inventoryApiRepository.UpdateEmployeeInventoryAsync(inventoryUpdateRequest, employee.Id);
-                    if (!updated)
-                        throw new InvalidOperationException("No se pudo actualizar el empleado en el sistema de inventario.");
+                    //var updated = await inventoryApiRepository.UpdateEmployeeInventoryAsync(inventoryUpdateRequest, employee.Id);
+                    //if (!updated)
+                    //    throw new InvalidOperationException("No se pudo actualizar el empleado en el sistema de inventario.");
 
                     await transaction.CommitAsync();
 
@@ -309,9 +309,9 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                 _dbContext.Entry(employee).State = EntityState.Modified;
                 await _dbContext.SaveChangesAsync();
 
-                var success = await inventoryApiRepository.InactivateStatusEmployeeInventoryAsync(employee.Id);
-                if (!success)
-                    throw new InvalidOperationException("No se pudo desactivar el empleado en el sistema de inventario.");
+                //var success = await inventoryApiRepository.InactivateStatusEmployeeInventoryAsync(employee.Id);
+                //if (!success)
+                //    throw new InvalidOperationException("No se pudo desactivar el empleado en el sistema de inventario.");
 
                 await transaction.CommitAsync();
                 return employee;
@@ -356,9 +356,9 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                 _dbContext.Entry(employee).State = EntityState.Modified;
                 await _dbContext.SaveChangesAsync();
 
-                var success = await inventoryApiRepository.ActivateStatusEmployeeInventoryAsync(employee.Id);
-                if (!success)
-                    throw new InvalidOperationException("No se pudo activar el empleado en el sistema de inventario.");
+                //var success = await inventoryApiRepository.ActivateStatusEmployeeInventoryAsync(employee.Id);
+                //if (!success)
+                //    throw new InvalidOperationException("No se pudo activar el empleado en el sistema de inventario.");
 
                 await transaction.CommitAsync();
                 return employee;
