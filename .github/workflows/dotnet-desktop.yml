@@ -28,7 +28,7 @@ jobs:
       - name: Deploy on VPS
         run: |
           ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }} << 'EOF'
-            cd ${{ secrets.VPS_DEPLOY_PATH }}
+            cd ${{ secrets.VPS_DEPLOY_PATH }}/isc.time.report.be
             docker compose down || true
             docker compose up -d --build
           EOF
