@@ -25,6 +25,6 @@ WORKDIR /app
 
 COPY --from=build /app/publish .
 
-EXPOSE 80
+EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "isc.time.report.be.api.dll"]
