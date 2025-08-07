@@ -38,3 +38,14 @@ volumes:
 networks:
   backend-net:
     driver: bridge
+
+environment:
+  - ASPNETCORE_ENVIRONMENT=Development
+  - ConnectionStrings__ConexionBD=Server=sqlserver;Database=ISC_TimeReport;User=sa;Password=Zp8#kV42wLp@tR3m;
+  - JWT__JWTSecretKey=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  - Cors__AllowedOrigins=http://localhost:4200
+  - EmailSettings__Host=smtp.tuempresa.com
+  - EmailSettings__Port=587
+  - EmailSettings__User=notificaciones@empresa.com
+  - EmailSettings__Password=clave
+
