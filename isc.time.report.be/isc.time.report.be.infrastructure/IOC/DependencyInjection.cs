@@ -78,20 +78,9 @@ namespace isc.time.report.be.infrastructure.IOC
 
         public static IServiceCollection AddDbConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
-
-            string conection = configuration["ConecctionStrings:ConexionBD"]!.ToString();
-
-            var username = Environment.GetEnvironmentVariable("ISC_TIME_REPORT_BD_USER");
-            var password = Environment.GetEnvironmentVariable("ISC_TIME_REPORT_BD_PASSWORD");
-
-            var conecctionBuilder = new SqlConnectionStringBuilder(conection)
-            {
-                Password = password,
-                UserID = username,
-            };
-
-            services.AddDbContext<DBContext>(options => options.UseSqlServer(conecctionBuilder.ConnectionString)
-            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+            services.AddDbContext<DBContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString("ConexionBD"))
+                       .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
             return services;
         }
