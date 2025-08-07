@@ -12,7 +12,7 @@ services:
     restart: always
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__ConexionBD=Server=sqlserver;Database=ISC_TimeReport;User=sa;Password=Zp8#kV42wLp@tR3m;TrustServerCertificate=True;
+      - ConnectionStrings__ConexionBD=Server=sqlserver;Database=ISC_TimeReport;User=sa;Password=Zp8#kV42wLp@tR3m;TrustServerCertificate=False;
       - JWT__JWTSecretKey=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
       - Cors__AllowedOrigins=http://localhost:4200
       - EmailSettings__SmtpServer=smtp.hostinger.com
