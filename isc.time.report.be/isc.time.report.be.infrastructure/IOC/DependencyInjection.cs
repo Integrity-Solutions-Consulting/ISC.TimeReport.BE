@@ -76,11 +76,31 @@ namespace isc.time.report.be.infrastructure.IOC
             return services;
         }
 
+        //public static IServiceCollection AddDbConfiguration(this IServiceCollection services, IConfiguration configuration)
+        //{
+        //    services.AddDbContext<DBContext>(options =>
+        //        options.UseSqlServer(configuration.GetConnectionString("ConexionBD"))
+        //               .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+
+        //    return services;
+        //}
+
+
         public static IServiceCollection AddDbConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<DBContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("ConexionBD"))
-                       .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+                options.UseSqlServer(
+                    configuration.GetConnectionString("ConexionBD"),
+                    sqlOptions =>
+                    {
+                        sqlOptions.EnableRetryOnFailure(
+                            maxRetryCount: 5,               // Reintenta hasta 5 veces
+                            maxRetryDelay: TimeSpan.FromSeconds(10), // Espera hasta 10 segundos entre intentos
+                            errorNumbersToAdd: null
+                        );
+                    }
+                ).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+            );
 
             return services;
         }
