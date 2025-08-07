@@ -126,7 +126,7 @@ if (app.Environment.IsDevelopment())
 
 app.ConfigureExcepcionHandler();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
