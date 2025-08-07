@@ -79,22 +79,31 @@ namespace isc.time.report.be.infrastructure.IOC
             return services;
         }
 
+        //public static IServiceCollection AddDbConfiguration(this IServiceCollection services, IConfiguration configuration)
+        //{
+        //    services.AddDbContext<DBContext>(options =>
+        //        options.UseSqlServer(configuration.GetConnectionString("ConexionBD"))
+        //               .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+
+        //    return services;
+        //}
+
+
         public static IServiceCollection AddDbConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
-
-            string conection = configuration["ConecctionStrings:ConexionBD"]!.ToString();
-
-            var username = Environment.GetEnvironmentVariable("ISC_TIME_REPORT_BD_USER");
-            var password = Environment.GetEnvironmentVariable("ISC_TIME_REPORT_BD_PASSWORD");
-
-            var conecctionBuilder = new SqlConnectionStringBuilder(conection)
-            {
-                Password = password,
-                UserID = username,
-            };
-
-            services.AddDbContext<DBContext>(options => options.UseSqlServer(conecctionBuilder.ConnectionString)
-            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+            services.AddDbContext<DBContext>(options =>
+                options.UseSqlServer(
+                    configuration.GetConnectionString("ConexionBD"),
+                    sqlOptions =>
+                    {
+                        sqlOptions.EnableRetryOnFailure(
+                            maxRetryCount: 5,               // Reintenta hasta 5 veces
+                            maxRetryDelay: TimeSpan.FromSeconds(10), // Espera hasta 10 segundos entre intentos
+                            errorNumbersToAdd: null
+                        );
+                    }
+                ).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+            );
 
             return services;
         }

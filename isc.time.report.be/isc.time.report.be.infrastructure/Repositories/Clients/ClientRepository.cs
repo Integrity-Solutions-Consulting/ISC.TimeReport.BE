@@ -149,12 +149,12 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
                     Address = client.Person.Address ?? "No definido",
                     Email = client.Person.Email ?? "noreply@example.com",
                     Phone = client.Person.Phone ?? "000000000",
-                    ruc = client.Person.IdentificationNumber
+                    Ruc = client.Person.IdentificationNumber
                 };
 
-                var result = await _inventoryApiRepository.CreateCustomerInventoryAsync(inventoryRequest);
-                if (!result)
-                    throw new InvalidOperationException("No se pudo registrar el cliente en el inventario.");
+                //var result = await _inventoryApiRepository.CreateCustomerInventoryAsync(inventoryRequest);
+                //if (!result)
+                //    throw new InvalidOperationException("No se pudo registrar el cliente en el inventario.");
 
                 await transaction.CommitAsync();
                 return client;
@@ -245,9 +245,9 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
                     Phone = client.Person.Phone ?? "000000000"
                 };
 
-                var success = await _inventoryApiRepository.UpdateCustomerInventoryAsync(updateRequest, client.Id);
-                if (!success)
-                    throw new InvalidOperationException("No se pudo actualizar el cliente en el inventario.");
+                //var success = await _inventoryApiRepository.UpdateCustomerInventoryAsync(updateRequest, client.Id);
+                //if (!success)
+                //    throw new InvalidOperationException("No se pudo actualizar el cliente en el inventario.");
 
                 await transaction.CommitAsync();
                 return existingClient;
@@ -288,9 +288,9 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
 
                 await _dbContext.SaveChangesAsync();
 
-                var result = await _inventoryApiRepository.InactivateCustomerInventoryAsync(clientId);
-                if (!result)
-                    throw new InvalidOperationException("No se pudo desactivar el cliente en inventario.");
+                //var result = await _inventoryApiRepository.InactivateCustomerInventoryAsync(clientId);
+                //if (!result)
+                //    throw new InvalidOperationException("No se pudo desactivar el cliente en inventario.");
 
                 await transaction.CommitAsync();
                 return client;
@@ -331,9 +331,9 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
 
                 await _dbContext.SaveChangesAsync();
 
-                var result = await _inventoryApiRepository.ActivateCustomerInventoryAsync(clientId);
-                if (!result)
-                    throw new InvalidOperationException("No se pudo activar el cliente en inventario.");
+                //var result = await _inventoryApiRepository.ActivateCustomerInventoryAsync(clientId);
+                //if (!result)
+                //    throw new InvalidOperationException("No se pudo activar el cliente en inventario.");
 
                 await transaction.CommitAsync();
                 return client;
