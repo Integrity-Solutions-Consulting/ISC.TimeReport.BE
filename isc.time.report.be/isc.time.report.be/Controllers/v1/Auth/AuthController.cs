@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace isc.time.report.be.api.Controllers.v1.Auth
 {
-    [ApiExplorerSettings(GroupName = "v1")]
+    [ApiExplorerSettings(GroupName = "v1")] 
     [ApiController]
     [Route("api/auth")]
     public class AuthController : ControllerBase

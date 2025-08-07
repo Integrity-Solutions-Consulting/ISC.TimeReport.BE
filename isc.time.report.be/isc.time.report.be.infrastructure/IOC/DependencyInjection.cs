@@ -4,6 +4,7 @@ using isc.time.report.be.application.Interfaces.Repository.Clients;
 using isc.time.report.be.application.Interfaces.Repository.DailyActivities;
 using isc.time.report.be.application.Interfaces.Repository.Dashboards;
 using isc.time.report.be.application.Interfaces.Repository.Employees;
+using isc.time.report.be.application.Interfaces.Repository.Holidays;
 using isc.time.report.be.application.Interfaces.Repository.InventoryApis;
 using isc.time.report.be.application.Interfaces.Repository.Leaders;
 using isc.time.report.be.application.Interfaces.Repository.Menus;
@@ -22,6 +23,7 @@ using isc.time.report.be.infrastructure.Repositories.Clients;
 using isc.time.report.be.infrastructure.Repositories.DailyActivities;
 using isc.time.report.be.infrastructure.Repositories.Dashboards;
 using isc.time.report.be.infrastructure.Repositories.Employees;
+using isc.time.report.be.infrastructure.Repositories.Holidays;
 using isc.time.report.be.infrastructure.Repositories.InventorysApis;
 using isc.time.report.be.infrastructure.Repositories.Leaders;
 using isc.time.report.be.infrastructure.Repositories.Menus;
@@ -67,6 +69,7 @@ namespace isc.time.report.be.infrastructure.IOC
             services.AddScoped<IDashboardRepository, DashboardRepository>();
             services.AddScoped<IInventoryApiRepository, InventoryApiRepository>();
             services.AddScoped<InventoryApiRepository>();
+            services.AddScoped<IHolidayRepository, HolidayRepository>();
 
 
             services.AddSingleton<EmailUtils>();
