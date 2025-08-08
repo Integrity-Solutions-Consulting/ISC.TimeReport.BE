@@ -26,13 +26,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-var externalConfigPath = @"C:\configs\envvars.json";
+//var externalConfigPath = @"C:\configs\envvars.json";
 
 
-if (File.Exists(externalConfigPath))
-{
-    builder.Configuration.AddJsonFile(externalConfigPath, optional: true, reloadOnChange: true);
-}
+//if (File.Exists(externalConfigPath))
+//{
+//    builder.Configuration.AddJsonFile(externalConfigPath, optional: true, reloadOnChange: true);
+//}
 
 
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
