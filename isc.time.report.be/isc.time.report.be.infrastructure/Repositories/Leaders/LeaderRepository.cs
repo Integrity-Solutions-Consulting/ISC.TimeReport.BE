@@ -1,7 +1,9 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.Leaders;
 using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Leaders;
+using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Entity.Shared;
+using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.infrastructure.Database;
 using isc.time.report.be.infrastructure.Utils.Pagination;
 using Microsoft.EntityFrameworkCore;
@@ -70,7 +72,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
         public async Task<Leader> CreateLeaderWithPersonAsync(Leader leader)
         {
             if (leader.Person == null)
-                throw new InvalidOperationException("La entidad Person no puede ser nula.");
+                throw new ClientFaultException("La entidad Person no puede ser nula.", 400);
 
             leader.Person.CreationDate = DateTime.Now;
             leader.Person.Status = true;
@@ -97,17 +99,17 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
         public async Task<Leader> UpdateLeaderWithPersonAsync(Leader leader)
         {
             if (leader == null || leader.Person == null)
-                throw new InvalidOperationException("El líder o su persona asociada no pueden ser nulos.");
+                throw new ClientFaultException("El líder o su persona asociada no pueden ser nulos.");
 
             var existingLeader = await _dbContext.Leaders
                 .Include(e => e.Person)
                 .FirstOrDefaultAsync(e => e.Id == leader.Id);
 
             if (existingLeader == null)
-                throw new InvalidOperationException($"No existe el líder con ID {leader.Id}");
+                throw new ClientFaultException($"No existe el líder con ID {leader.Id}");
 
             if (leader.Person.Id != existingLeader.Person.Id)
-                throw new InvalidOperationException("La persona ingresada no corresponde al líder");
+                throw new ClientFaultException("La persona ingresada no corresponde al líder");
 
             leader.Person.ModificationDate = DateTime.Now;
             leader.Person.ModificationUser = "SYSTEM";
@@ -130,7 +132,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
         {
             var leader = await _dbContext.Leaders.Include(e => e.Person).FirstOrDefaultAsync(e => e.Id == leaderId);
             if (leader == null)
-                throw new InvalidOperationException($"El líder con ID {leaderId} no existe.");
+                throw new ClientFaultException($"El líder con ID {leaderId} no existe.");
 
             leader.Status = false;
             leader.ModificationDate = DateTime.Now;
@@ -143,7 +145,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
         {
             var leader = await _dbContext.Leaders.Include(e => e.Person).FirstOrDefaultAsync(e => e.Id == leaderId);
             if (leader == null)
-                throw new InvalidOperationException($"El líder con ID {leaderId} no existe.");
+                throw new ClientFaultException($"El líder con ID {leaderId} no existe.");
 
             leader.Status = true;
             leader.ModificationDate = DateTime.Now;

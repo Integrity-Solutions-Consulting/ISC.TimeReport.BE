@@ -1,5 +1,6 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.Permissions;
 using isc.time.report.be.domain.Entity.Permisions;
+using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -28,7 +29,11 @@ namespace isc.time.report.be.infrastructure.Repositories.Permissions
             }
             catch (DbUpdateException ex)
             {
-                throw new Exception("Error al guardar cambios: " + ex.InnerException?.Message, ex);
+                throw new ServerFaultException(
+                    message: "Error al guardar cambios en la base de datos.",
+                    code: 500,
+                    innerException: ex
+                );
             }
             return permission;
         }

@@ -1,5 +1,6 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.Holidays;
 using isc.time.report.be.domain.Entity.Holidays;
+using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -70,7 +71,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Holidays
             var holiday = await GetHolidayByIdAsync(id);
 
             if (holiday == null)
-                throw new InvalidOperationException($"La festividad con ID {id} no existe.");
+                throw new ClientFaultException($"La festividad con ID {id} no existe.", 404);
 
             holiday.Status = false;
             //para saber quien, desde que ip y cuando lo hizo
@@ -86,7 +87,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Holidays
         {
             var holiday = await GetHolidayByIdAsync(id);
             if (holiday == null)
-                throw new InvalidOperationException($"La festividad con ID {id} no existe.");
+                throw new ClientFaultException($"La festividad con ID {id} no existe.", 404);
 
             holiday.Status = true;
             holiday.ModificationDate = DateTime.Now;

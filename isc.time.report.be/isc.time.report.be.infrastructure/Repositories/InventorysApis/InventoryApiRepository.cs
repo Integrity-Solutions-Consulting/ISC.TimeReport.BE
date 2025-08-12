@@ -1,5 +1,6 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.InventoryApis;
 using isc.time.report.be.domain.Entity.Catalogs;
+using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysCustomers;
 using isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysEmployee;
 using isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysLogin;
@@ -62,7 +63,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
             var response = await _httpUtils.SendRequest<InventoryLoginResponse>(url, HttpMethod.Post, request);
 
             if (response?.data?.token == null)
-                throw new InvalidOperationException("No se pudo obtener el token del servicio de inventario.");
+                throw new ServerFaultException("No se pudo obtener el token del servicio de inventario.");
 
             inventoryToken.Token = response.data.token;
 

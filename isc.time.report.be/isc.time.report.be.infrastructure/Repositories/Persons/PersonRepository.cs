@@ -1,7 +1,9 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.Persons;
 using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Persons;
+using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Entity.Shared;
+using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.infrastructure.Database;
 using isc.time.report.be.infrastructure.Utils.Pagination;
 using Microsoft.EntityFrameworkCore;
@@ -67,7 +69,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Persons
         {
             var person = await _dbContext.Persons.FirstOrDefaultAsync(p => p.Id == personId);
             if (person == null)
-                throw new InvalidOperationException($"La persona con ID {personId} no existe.");
+                throw new ClientFaultException($"La persona con ID {personId} no existe.");
 
             person.Status = false;
             person.ModificationDate = DateTime.Now;
@@ -80,7 +82,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Persons
         {
             var person = await _dbContext.Persons.FirstOrDefaultAsync(p => p.Id == personId);
             if (person == null)
-                throw new InvalidOperationException($"La persona con ID {personId} no existe.");
+                throw new ClientFaultException($"La persona con ID {personId} no existe.");
 
             person.Status = true;
             person.ModificationDate = DateTime.Now;

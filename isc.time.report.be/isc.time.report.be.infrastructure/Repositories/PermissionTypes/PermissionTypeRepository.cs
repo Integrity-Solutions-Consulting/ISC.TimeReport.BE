@@ -1,6 +1,7 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.Permissions;
 using isc.time.report.be.application.Interfaces.Repository.PermissionTypes;
 using isc.time.report.be.domain.Entity.Catalogs;
+using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -36,7 +37,8 @@ namespace isc.time.report.be.infrastructure.Repositories.PermissionTypes
              .AnyAsync(pt => pt.TypeCode == entity.TypeCode);
 
             if (exists)
-                throw new Exception($"Ya existe un PermissionType con el TypeCode '{entity.TypeCode}'.");
+                throw new ClientFaultException($"Ya existe un PermissionType con el TypeCode '{entity.TypeCode}'.", 400);
+
             entity.CreationDate = DateTime.Now;
             entity.CreationUser = "SYSTEM";
             entity.Status = true;
