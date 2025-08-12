@@ -53,6 +53,14 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
 
             try
             {
+                var existingUser = await _dbContext.Users
+                    .FirstOrDefaultAsync(u => u.Username == user.Username); 
+
+                if (existingUser != null)
+                {
+                    throw new Exception($"Ya existe un usuario registrado con el Nombre {user.Username}.");
+                }
+
                 user.CreationDate = DateTime.Now;
                 user.ModificationDate = null;
                 user.Status = true;
@@ -150,6 +158,17 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
 
         public async Task CreateRoleAsync(Role role)
         {
+            bool exists = await _dbContext.Roles.AnyAsync(r => r.RoleName == role.RoleName);
+            if (exists)
+                throw new InvalidOperationException($"El rol '{role.RoleName}' ya existe.");
+
+            role.CreationDate = DateTime.Now;
+            role.CreationUser = "SYSTEM";
+            role.Status = true;
+
+            await _dbContext.Roles.AddAsync(role);
+            await _dbContext.SaveChangesAsync();
+
             await _dbContext.Roles.AddAsync(role);
             await _dbContext.SaveChangesAsync();
         }

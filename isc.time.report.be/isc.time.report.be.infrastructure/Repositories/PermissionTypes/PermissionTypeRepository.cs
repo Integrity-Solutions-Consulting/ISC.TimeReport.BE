@@ -32,6 +32,11 @@ namespace isc.time.report.be.infrastructure.Repositories.PermissionTypes
 
         public async Task<PermissionType> CreatePermissionTypeAsync(PermissionType entity)
         {
+            bool exists = await _context.PermissionTypes
+             .AnyAsync(pt => pt.TypeCode == entity.TypeCode);
+
+            if (exists)
+                throw new Exception($"Ya existe un PermissionType con el TypeCode '{entity.TypeCode}'.");
             entity.CreationDate = DateTime.Now;
             entity.CreationUser = "SYSTEM";
             entity.Status = true;

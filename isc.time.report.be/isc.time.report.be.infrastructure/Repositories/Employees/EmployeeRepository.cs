@@ -131,12 +131,13 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
 
                     await _dbContext.Employees.AddAsync(employee);
 
-                    await _dbContext.SaveChangesAsync();
 
                     var invEmpInsrt = await inventoryApiRepository.CreateEmployeeInventoryAsync(invEmployee);
 
                     if (invEmpInsrt == null)
                         throw new InvalidOperationException("No se pudo crear el empleado en el sistema de inventario.");
+
+                    await _dbContext.SaveChangesAsync();
 
                     await transaction.CommitAsync();
 
