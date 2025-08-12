@@ -140,7 +140,6 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
             try
             {
                 await _dbContext.Clients.AddAsync(client);
-                await _dbContext.SaveChangesAsync();
 
                 // Enviar al inventario
                 var inventoryRequest = new InventoryCreateCustomerRequest
@@ -152,10 +151,11 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
                     Ruc = client.Person.IdentificationNumber
                 };
 
-                //var result = await _inventoryApiRepository.CreateCustomerInventoryAsync(inventoryRequest);
-                //if (!result)
-                //    throw new InvalidOperationException("No se pudo registrar el cliente en el inventario.");
+                var result = await _inventoryApiRepository.CreateCustomerInventoryAsync(inventoryRequest);
+                if (!result)
+                    throw new InvalidOperationException("No se pudo registrar el cliente en el inventario.");
 
+                await _dbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
                 return client;
             }
