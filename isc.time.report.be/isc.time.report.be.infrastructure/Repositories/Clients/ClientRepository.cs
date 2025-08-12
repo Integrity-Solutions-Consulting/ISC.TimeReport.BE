@@ -5,6 +5,7 @@ using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Persons;
 using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Entity.Shared;
+using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysCustomers;
 using isc.time.report.be.infrastructure.Database;
 using isc.time.report.be.infrastructure.Repositories.InventorysApis;
@@ -107,7 +108,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
         {
             // Asume que client.Person viene poblado
             if (client.Person == null)
-                throw new InvalidOperationException("La entidad Person no puede ser nula.");
+                throw new ClientFaultException("La entidad Person no puede ser nula.");
 
             client.Person.CreationDate = DateTime.Now;
             client.Person.Status = true;
@@ -126,7 +127,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
         public async Task<Client> CreateClientWithPersonForInventoryAsync(Client client)
         {
             if (client.Person == null)
-                throw new InvalidOperationException("La entidad Person no puede ser nula.");
+                throw new ClientFaultException("La entidad Person no puede ser nula.");
 
             client.Person.CreationDate = DateTime.Now;
             client.Person.Status = true;
@@ -141,7 +142,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
 
             if (existingClient != null)
             {
-                throw new InvalidOperationException($"Ya existe un cliente con ese numero de Identificacion '{client.Person.IdentificationNumber}'.");
+                throw new ClientFaultException($"Ya existe un cliente con ese numero de Identificacion '{client.Person.IdentificationNumber}'.");
             }
 
 
@@ -163,7 +164,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
 
                 var result = await _inventoryApiRepository.CreateCustomerInventoryAsync(inventoryRequest);
                 if (!result)
-                    throw new InvalidOperationException("No se pudo registrar el cliente en el inventario.");
+                    throw new ServerFaultException("No se pudo registrar el cliente en el inventario.");
 
                 await _dbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -188,18 +189,18 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
         public async Task<Client> UpdateClientWithPersonAsync(Client client)
         {
             if (client == null || client.Person == null)
-                throw new InvalidOperationException("El cliente o su persona asociada no pueden ser nulos.");
+                throw new ClientFaultException("El cliente o su persona asociada no pueden ser nulos.");
 
             var existingClient = await _dbContext.Clients
                 .Include(c => c.Person)
                 .FirstOrDefaultAsync(c => c.Id == client.Id);
 
             if (existingClient == null)
-                throw new InvalidOperationException($"No existe el cliente con ID {client.Id}");
+                throw new ClientFaultException($"No existe el cliente con ID {client.Id}");
 
 
             if (client.Person.Id != existingClient.Person.Id)
-                throw new InvalidOperationException("La persona ingresada, no corrsponde al ciente");
+                throw new ClientFaultException("La persona ingresada, no corrsponde al ciente");
 
             client.Person.ModificationDate = DateTime.Now;
             client.Person.ModificationUser = "SYSTEM";
@@ -221,7 +222,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
         public async Task<Client> UpdateClientWithPersonForInventoryAsync(Client client)
         {
             if (client == null || client.Person == null)
-                throw new InvalidOperationException("El cliente o su persona asociada no pueden ser nulos.");
+                throw new ClientFaultException("El cliente o su persona asociada no pueden ser nulos.");
 
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
@@ -230,10 +231,10 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
                 .FirstOrDefaultAsync(c => c.Id == client.Id);
 
             if (existingClient == null)
-                throw new InvalidOperationException($"No existe el cliente con ID {client.Id}");
+                throw new ClientFaultException($"No existe el cliente con ID {client.Id}");
 
             if (client.Person.Id != existingClient.Person.Id)
-                throw new InvalidOperationException("La persona ingresada no corresponde al cliente.");
+                throw new ClientFaultException("La persona ingresada no corresponde al cliente.");
 
             try
             {
@@ -273,7 +274,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
         {
             var client = await _dbContext.Clients.Include(c => c.Person).FirstOrDefaultAsync(c => c.Id == clientId);
             if (client == null)
-                throw new InvalidOperationException($"El cliente con ID {clientId} no existe.");
+                throw new ClientFaultException($"El cliente con ID {clientId} no existe.");
 
             client.Status = false;
             client.ModificationDate = DateTime.Now;
@@ -288,7 +289,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
 
             var client = await _dbContext.Clients.Include(c => c.Person).FirstOrDefaultAsync(c => c.Id == clientId);
             if (client == null)
-                throw new InvalidOperationException($"El cliente con ID {clientId} no existe.");
+                throw new ClientFaultException($"El cliente con ID {clientId} no existe.");
 
             try
             {
@@ -316,7 +317,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
         {
             var client = await _dbContext.Clients.Include(c => c.Person).FirstOrDefaultAsync(c => c.Id == clientId);
             if (client == null)
-                throw new InvalidOperationException($"El cliente con ID {clientId} no existe.");
+                throw new ClientFaultException($"El cliente con ID {clientId} no existe.");
 
             client.Status = true;
             client.ModificationDate = DateTime.Now;
@@ -331,7 +332,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
 
             var client = await _dbContext.Clients.Include(c => c.Person).FirstOrDefaultAsync(c => c.Id == clientId);
             if (client == null)
-                throw new InvalidOperationException($"El cliente con ID {clientId} no existe.");
+                throw new ClientFaultException($"El cliente con ID {clientId} no existe.");
 
             try
             {

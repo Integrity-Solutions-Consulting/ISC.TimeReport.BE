@@ -160,7 +160,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
         {
             bool exists = await _dbContext.Roles.AnyAsync(r => r.RoleName == role.RoleName);
             if (exists)
-                throw new InvalidOperationException($"El rol '{role.RoleName}' ya existe.");
+                throw new ClientFaultException($"El rol '{role.RoleName}' ya existe.");
 
             role.CreationDate = DateTime.Now;
             role.CreationUser = "SYSTEM";

@@ -2,6 +2,7 @@
 using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Entity.Shared;
+using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.infrastructure.Database;
 using isc.time.report.be.infrastructure.Utils.Pagination;
 using Microsoft.EntityFrameworkCore;
@@ -68,7 +69,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
 
             if (existingProject != null)
             {
-                throw new InvalidOperationException($"Ya existe un proyecto con ese código '{project.Code}'.");
+                throw new ClientFaultException($"Ya existe un proyecto con ese código '{project.Code}'.");
             }
 
             project.CreationDate = DateTime.Now;
@@ -98,7 +99,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
             var project = await _dbContext.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
 
             if (project == null)
-                throw new InvalidOperationException($"El proyecto con ID {projectId} no existe.");
+                throw new ClientFaultException($"El proyecto con ID {projectId} no existe.");
 
             project.Status = false;
             project.ModificationDate = DateTime.Now;
@@ -115,7 +116,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
             var project = await _dbContext.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
 
             if (project == null)
-                throw new InvalidOperationException($"El proyecto con ID {projectId} no existe.");
+                throw new ClientFaultException($"El proyecto con ID {projectId} no existe.");
 
             project.Status = true;
             project.ModificationDate = DateTime.Now;
@@ -154,16 +155,22 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
             }
             catch (DbUpdateException dbEx)
             {
-                // Este tipo de excepción puede envolver errores de SQL Server
-                var innerMessage = dbEx.InnerException?.Message;
+                var innerMessage = dbEx.InnerException?.Message ?? dbEx.Message;
 
-                // Puedes loguear o lanzar una excepción más clara
-                throw new Exception($"Error al guardar los cambios: {innerMessage}", dbEx);
+                // Lanza una excepción personalizada que tu middleware puede manejar
+                throw new ServerFaultException(
+                    message: $"Error al guardar los cambios: {innerMessage}",
+                    code: 500,
+                    innerException: dbEx
+                );
             }
             catch (Exception ex)
             {
-                // Captura cualquier otro tipo de error
-                throw new Exception("Ocurrió un error inesperado al guardar las asignaciones.", ex);
+                throw new ServerFaultException(
+                    message: "Ocurrió un error inesperado al guardar las asignaciones.",
+                    code: 500,
+                    innerException: ex
+                );
             }
         }
 

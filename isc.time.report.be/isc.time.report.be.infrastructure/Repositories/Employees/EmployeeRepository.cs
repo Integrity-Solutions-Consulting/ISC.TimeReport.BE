@@ -3,6 +3,7 @@ using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Persons;
 using isc.time.report.be.domain.Entity.Shared;
+using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Dto.InventorysApis;
 using isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysEmployee;
 using isc.time.report.be.infrastructure.Database;
@@ -75,7 +76,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
         public async Task<Employee> CreateEmployeeWithPersonAsync(Employee employee)
         {
             if (employee.Person == null)
-                throw new InvalidOperationException("La entidad Person no puede ser nula.");
+                throw new ClientFaultException("La entidad Person no puede ser nula.", 400);
 
             employee.Person.CreationDate = DateTime.Now;
             employee.Person.Status = true;
@@ -95,14 +96,14 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
         {
 
             if (employee.Person == null)
-                throw new InvalidOperationException("La entidad Person no puede ser nula.");
+                throw new ClientFaultException("La entidad Person no puede ser nula.", 400);
 
             var existingEmployee = await _dbContext.Employees
                 .FirstOrDefaultAsync(p => p.Person.IdentificationNumber == employee.Person.IdentificationNumber);
 
             if (existingEmployee != null)
             {
-                throw new InvalidOperationException($"Ya existe un empleado con ese Numero de Identificacion '{employee.Person.IdentificationNumber}'.");
+                throw new ClientFaultException($"Ya existe un empleado con ese Numero de Identificacion '{employee.Person.IdentificationNumber}'.", 409);
             }
 
             var invEmployee = new InventoryCreateEmployeeRequest
@@ -142,7 +143,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                     var invEmpInsrt = await inventoryApiRepository.CreateEmployeeInventoryAsync(invEmployee);
 
                     if (invEmpInsrt == null)
-                        throw new InvalidOperationException("No se pudo crear el empleado en el sistema de inventario.");
+                        throw new ServerFaultException("No se pudo crear el empleado en el sistema de inventario.");
 
                     await _dbContext.SaveChangesAsync();
 
@@ -308,7 +309,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                     .FirstOrDefaultAsync(e => e.Id == employeeId);
 
                 if (employee == null)
-                    throw new InvalidOperationException($"El empleado con ID {employeeId} no existe.");
+                    throw new ClientFaultException($"El empleado con ID {employeeId} no existe.", 404);
 
                 employee.Status = false;
                 employee.ModificationDate = DateTime.Now;
@@ -319,7 +320,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
 
                 var success = await inventoryApiRepository.InactivateStatusEmployeeInventoryAsync(employee.Id);
                 if (!success)
-                    throw new InvalidOperationException("No se pudo desactivar el empleado en el sistema de inventario.");
+                    throw new ServerFaultException("No se pudo desactivar el empleado en el sistema de inventario.");
 
                 await transaction.CommitAsync();
                 return employee;
@@ -355,7 +356,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                     .FirstOrDefaultAsync(e => e.Id == employeeId);
 
                 if (employee == null)
-                    throw new InvalidOperationException($"El empleado con ID {employeeId} no existe.");
+                    throw new ClientFaultException($"El empleado con ID {employeeId} no existe.", 404);
 
                 employee.Status = true;
                 employee.ModificationDate = DateTime.Now;
@@ -366,7 +367,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
 
                 var success = await inventoryApiRepository.ActivateStatusEmployeeInventoryAsync(employee.Id);
                 if (!success)
-                    throw new InvalidOperationException("No se pudo activar el empleado en el sistema de inventario.");
+                    throw new ServerFaultException("No se pudo activar el empleado en el sistema de inventario.");
 
                 await transaction.CommitAsync();
                 return employee;
