@@ -94,9 +94,16 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
         public async Task<Employee> CreateEmployeeWithPersonForInventoryAsync(Employee employee)
         {
 
-
             if (employee.Person == null)
                 throw new InvalidOperationException("La entidad Person no puede ser nula.");
+
+            var existingEmployee = await _dbContext.Employees
+                .FirstOrDefaultAsync(p => p.Person.IdentificationNumber == employee.Person.IdentificationNumber);
+
+            if (existingEmployee != null)
+            {
+                throw new InvalidOperationException($"Ya existe un empleado con ese Numero de Identificacion '{employee.Person.IdentificationNumber}'.");
+            }
 
             var invEmployee = new InventoryCreateEmployeeRequest
             {
