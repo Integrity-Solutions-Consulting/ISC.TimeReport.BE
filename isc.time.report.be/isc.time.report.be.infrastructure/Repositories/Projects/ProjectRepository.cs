@@ -63,16 +63,25 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
         }
         public async Task<Project> CreateProject(Project project)
         {
+            var existingProject = await _dbContext.Projects
+                .FirstOrDefaultAsync(p => p.Code == project.Code);
+
+            if (existingProject != null)
+            {
+                throw new InvalidOperationException($"Ya existe un proyecto con ese código '{project.Code}'.");
+            }
+
             project.CreationDate = DateTime.Now;
             project.ModificationDate = null;
             project.Status = true;
 
             await _dbContext.Projects.AddAsync(project);
             await _dbContext.SaveChangesAsync();
-            project = await _dbContext.Projects.FirstOrDefaultAsync(p => p.Id == project.Id && p.Status == true);
+
+            project = await _dbContext.Projects.FirstOrDefaultAsync(p => p.Id == project.Id);
+
             return project;
         }
-
         public async Task<Project> UpdateProjectAsync(Project project)
         {
             project.ModificationDate = DateTime.Now;
