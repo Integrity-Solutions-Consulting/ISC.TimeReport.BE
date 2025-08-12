@@ -3,6 +3,7 @@ using isc.time.report.be.application.Interfaces.Repository.Clients;
 using isc.time.report.be.application.Interfaces.Repository.InventoryApis;
 using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Persons;
+using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysCustomers;
 using isc.time.report.be.infrastructure.Database;
@@ -134,6 +135,15 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
             client.CreationDate = DateTime.Now;
             client.Status = true;
             client.CreationUser = "SYSTEM";
+
+            var existingClient = await _dbContext.Clients
+                .FirstOrDefaultAsync(p => p.Person.IdentificationNumber == client.Person.IdentificationNumber);
+
+            if (existingClient != null)
+            {
+                throw new InvalidOperationException($"Ya existe un cliente con ese numero de Identificacion '{client.Person.IdentificationNumber}'.");
+            }
+
 
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
