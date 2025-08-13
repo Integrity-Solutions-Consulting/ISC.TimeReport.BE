@@ -270,7 +270,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                     }
 
 
-                    var updated = await inventoryApiRepository.UpdateEmployeeInventoryAsync(inventoryUpdateRequest, employee.Id);
+                    var updated = await inventoryApiRepository.UpdateEmployeeInventoryAsync(inventoryUpdateRequest, employee.Person.IdentificationNumber);
                     if (!updated)
                         throw new ServerFaultException("No se pudo actualizar el empleado en el sistema de inventario.");
 
@@ -318,7 +318,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                 _dbContext.Entry(employee).State = EntityState.Modified;
                 await _dbContext.SaveChangesAsync();
 
-                var success = await inventoryApiRepository.InactivateStatusEmployeeInventoryAsync(employee.Id);
+                var success = await inventoryApiRepository.InactivateStatusEmployeeInventoryAsync(employee.Person.IdentificationNumber);
                 if (!success)
                     throw new ServerFaultException("No se pudo desactivar el empleado en el sistema de inventario.");
 
@@ -365,7 +365,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                 _dbContext.Entry(employee).State = EntityState.Modified;
                 await _dbContext.SaveChangesAsync();
 
-                var success = await inventoryApiRepository.ActivateStatusEmployeeInventoryAsync(employee.Id);
+                var success = await inventoryApiRepository.ActivateStatusEmployeeInventoryAsync(employee.Person.IdentificationNumber);
                 if (!success)
                     throw new ServerFaultException("No se pudo activar el empleado en el sistema de inventario.");
 

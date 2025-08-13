@@ -256,9 +256,9 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
                     Phone = client.Person.Phone ?? "000000000"
                 };
 
-                //var success = await _inventoryApiRepository.UpdateCustomerInventoryAsync(updateRequest, client.Id);
-                //if (!success)
-                //    throw new InvalidOperationException("No se pudo actualizar el cliente en el inventario.");
+                var success = await _inventoryApiRepository.UpdateCustomerInventoryAsync(updateRequest, client.Person.IdentificationNumber);
+                if (!success)
+                    throw new InvalidOperationException("No se pudo actualizar el cliente en el inventario.");
 
                 await transaction.CommitAsync();
                 return existingClient;
@@ -299,9 +299,9 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
 
                 await _dbContext.SaveChangesAsync();
 
-                //var result = await _inventoryApiRepository.InactivateCustomerInventoryAsync(clientId);
-                //if (!result)
-                //    throw new InvalidOperationException("No se pudo desactivar el cliente en inventario.");
+                var result = await _inventoryApiRepository.InactivateCustomerInventoryAsync(client.Person.IdentificationNumber);
+                if (!result)
+                    throw new InvalidOperationException("No se pudo desactivar el cliente en inventario.");
 
                 await transaction.CommitAsync();
                 return client;
@@ -342,9 +342,9 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
 
                 await _dbContext.SaveChangesAsync();
 
-                //var result = await _inventoryApiRepository.ActivateCustomerInventoryAsync(clientId);
-                //if (!result)
-                //    throw new InvalidOperationException("No se pudo activar el cliente en inventario.");
+                var result = await _inventoryApiRepository.ActivateCustomerInventoryAsync(client.Person.IdentificationNumber);
+                if (!result)
+                    throw new InvalidOperationException("No se pudo activar el cliente en inventario.");
 
                 await transaction.CommitAsync();
                 return client;
