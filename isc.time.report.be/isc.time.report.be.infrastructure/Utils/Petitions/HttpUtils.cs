@@ -1,4 +1,5 @@
-﻿using System;
+﻿using isc.time.report.be.domain.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -28,7 +29,18 @@ namespace isc.time.report.be.infrastructure.Utils.Peticiones
                 }
 
                 var response = await httpClient.SendAsync(request);
-                response.EnsureSuccessStatusCode();
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+
+                    Console.WriteLine($"[HTTP ERROR] URL: {url}");
+                    Console.WriteLine($"StatusCode: {response.StatusCode}");
+                    Console.WriteLine($"Response Body: {errorContent}");
+
+                    throw new ServerFaultException(
+                        $"La solicitud HTTP falló. Código: {(int)response.StatusCode} - {response.StatusCode}. Contenido: {errorContent}"
+                    );
+                }
 
                 if (response.Content.Headers.ContentLength == 0)
                 {
