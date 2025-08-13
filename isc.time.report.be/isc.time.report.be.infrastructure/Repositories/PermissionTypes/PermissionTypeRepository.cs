@@ -37,8 +37,7 @@ namespace isc.time.report.be.infrastructure.Repositories.PermissionTypes
              .AnyAsync(pt => pt.TypeCode == entity.TypeCode);
 
             if (exists)
-                throw new ClientFaultException($"Ya existe un PermissionType con el TypeCode '{entity.TypeCode}'.", 400);
-
+                throw new ClientFaultException($"Ya existe un PermissionType con el TypeCode '{entity.TypeCode}'.");
             entity.CreationDate = DateTime.Now;
             entity.CreationUser = "SYSTEM";
             entity.Status = true;
@@ -59,7 +58,7 @@ namespace isc.time.report.be.infrastructure.Repositories.PermissionTypes
         public async Task<PermissionType> InactivatePermissionTypeAsync(int id)
         {
             var entity = await GetPermissionTypeByIdAsync(id);
-            if (entity == null) throw new Exception("No encontrado");
+            if (entity == null) throw new ClientFaultException("No encontrado");
             entity.Status = false;
             entity.ModificationDate = DateTime.Now;
             _context.PermissionTypes.Update(entity);
@@ -70,7 +69,7 @@ namespace isc.time.report.be.infrastructure.Repositories.PermissionTypes
         public async Task<PermissionType> ActivatePermissionTypeAsync(int id)
         {
             var entity = await GetPermissionTypeByIdAsync(id);
-            if (entity == null) throw new Exception("No encontrado");
+            if (entity == null) throw new ClientFaultException("No encontrado");
             entity.Status = true;
             entity.ModificationDate = DateTime.Now;
             _context.PermissionTypes.Update(entity);

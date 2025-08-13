@@ -164,7 +164,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
 
                 var result = await _inventoryApiRepository.CreateCustomerInventoryAsync(inventoryRequest);
                 if (!result)
-                    throw new ServerFaultException("No se pudo registrar el cliente en el inventario.");
+                    throw new InvalidOperationException("No se pudo registrar el cliente en el inventario.");
 
                 await _dbContext.SaveChangesAsync();
                 await transaction.CommitAsync();

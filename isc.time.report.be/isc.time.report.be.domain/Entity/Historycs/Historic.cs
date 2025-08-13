@@ -16,11 +16,11 @@ namespace isc.time.report.be.domain.Entity.Historycs
         public TimeOnly? OldStartTime { get; set; }
         public TimeOnly? OldEndTime { get; set; }
         public string? OldDescription { get; set; }
-        public decimal? OldHours { get; set; }
+        public decimal? OldHours { get; set; } = 0;
         public TimeOnly? NewStartTime { get; set; }
         public TimeOnly? NewEndTime { get; set; }
         public string? NewDescription { get; set; }
-        public decimal? NewHours { get; set; }
+        public decimal? NewHours { get; set; } = 0;
         public string? ChangeReason { get; set; }
         public string ChangedBy { get; set; } = null!;
         public DateTime ChangeDate { get; set; } = DateTime.Now;

@@ -25,8 +25,8 @@ namespace isc.time.report.be.domain.Entity.Projects
         public DateTime? EndDate { get; set; }
         public DateTime? ActualStartDate { get; set; }
         public DateTime? ActualEndDate { get; set; }
-        public decimal? Budget { get; set; }
-        public decimal? Hours { get; set; } = null;
+        public decimal? Budget { get; set; } = 0;
+        public decimal? Hours { get; set; } = 0;
         public List<EmployeeProject> EmployeeProject { get; set; }
     }
 }
