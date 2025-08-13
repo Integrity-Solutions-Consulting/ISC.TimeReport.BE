@@ -215,6 +215,8 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.PositionID).HasColumnName("PositionID");
                 entity.Property(e => e.DepartmentID).HasColumnName("DepartmentID");
                 entity.Property(e => e.WorkModeID).HasColumnName("WorkModeID");
+                entity.Property(e => e.EmployeeCategoryID).HasColumnName("EmployeeCategoryID");
+                entity.Property(e => e.CompanyCatalogID).HasColumnName("CompanyCatalogID");
 
                 entity.Property(e => e.EmployeeCode).HasColumnName("employee_code");
                 entity.Property(e => e.HireDate).HasColumnName("hire_date");
