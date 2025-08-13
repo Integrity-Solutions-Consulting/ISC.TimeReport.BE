@@ -4,6 +4,7 @@ using isc.time.report.be.application.Interfaces.Repository.Permissions;
 using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.application.Interfaces.Service.DailyActivities;
 using isc.time.report.be.domain.Entity.DailyActivities;
+using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.DailyActivities;
 using isc.time.report.be.domain.Models.Response.DailyActivities;
 using System;
@@ -70,6 +71,12 @@ namespace isc.time.report.be.application.Services.DailyActivities
 
             if (enPermiso)
                 throw new InvalidOperationException("No se pueden registrar actividades durante un permiso aprobado.");
+
+            //validar que las horas no sean negativas
+            if (request.HoursQuantity < 0)
+            {
+                throw new ClientFaultException("No se puede ingresar horas negativas");
+            }
 
             // Si todo está correcto, crear la actividad
             var entity = _mapper.Map<DailyActivity>(request);
