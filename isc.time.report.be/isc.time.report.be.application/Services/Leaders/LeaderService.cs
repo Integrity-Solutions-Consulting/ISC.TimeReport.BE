@@ -57,6 +57,18 @@ namespace isc.time.report.be.application.Services.Leaders
 
         public async Task<CreateLeaderResponse> CreateLeaderWithPerson(CreateLeaderWithPersonOBJRequest request)
         {
+            if (request.LeadershipType == null)
+            {
+                throw new ClientFaultException("El tipo de liderazgo no puede ser nulo", 400);
+            }
+
+            if (request.LeadershipType == false)
+            {
+                var random = new Random();
+                var numerosAleatorios = random.Next(100_000_000, 1_000_000_000);
+                request.Person.IdentificationNumber = $"L{numerosAleatorios}";
+            }
+
             var leader = _mapper.Map<Leader>(request);
             var created = await _leaderRepository.CreateLeaderWithPersonAsync(leader);
             return _mapper.Map<CreateLeaderResponse>(created);

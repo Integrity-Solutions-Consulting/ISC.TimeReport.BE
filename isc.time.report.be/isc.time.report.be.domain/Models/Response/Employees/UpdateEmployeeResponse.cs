@@ -16,6 +16,8 @@ namespace isc.time.report.be.domain.Models.Response.Employees
         public UpdatePersonResponse Person { get; set; }
         public int? PositionID { get; set; }
         public int WorkModeID { get; set; }
+        public int EmployeeCategoryID { get; set; }
+        public int CompanyCatalogID { get; set; }
         public string EmployeeCode { get; set; } = null!;
         public DateTime HireDate { get; set; }
         public DateTime? TerminationDate { get; set; }
