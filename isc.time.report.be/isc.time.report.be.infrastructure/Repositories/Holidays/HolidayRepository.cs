@@ -47,7 +47,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Holidays
         public async Task<Holiday> UpdateHolidayAsync (Holiday holiday)
         {
             var existing = await GetHolidayByIdAsync(holiday.Id);
-            if (existing == null) throw new Exception("Feriado no encontrado");
+            if (existing == null) throw new ClientFaultException("Feriado no encontrado");
 
             // Actualiza los campos editables
             existing.HolidayName = holiday.HolidayName;
@@ -71,7 +71,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Holidays
             var holiday = await GetHolidayByIdAsync(id);
 
             if (holiday == null)
-                throw new ClientFaultException($"La festividad con ID {id} no existe.", 404);
+                throw new ClientFaultException($"La festividad con ID {id} no existe.");
 
             holiday.Status = false;
             //para saber quien, desde que ip y cuando lo hizo
@@ -87,7 +87,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Holidays
         {
             var holiday = await GetHolidayByIdAsync(id);
             if (holiday == null)
-                throw new ClientFaultException($"La festividad con ID {id} no existe.", 404);
+                throw new ClientFaultException($"La festividad con ID {id} no existe.");
 
             holiday.Status = true;
             holiday.ModificationDate = DateTime.Now;

@@ -72,7 +72,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
         public async Task<Leader> CreateLeaderWithPersonAsync(Leader leader)
         {
             if (leader.Person == null)
-                throw new ClientFaultException("La entidad Person no puede ser nula.", 400);
+                throw new ClientFaultException("La entidad Person no puede ser nula.");
 
             leader.Person.CreationDate = DateTime.Now;
             leader.Person.Status = true;

@@ -19,7 +19,7 @@ namespace isc.time.report.be.domain.Entity.DailyActivities
         public Project Project { get; set; }
         public int ActivityTypeID { get; set; }
         public ActivityType ActivityType { get; set; }
-        public decimal HoursQuantity { get; set; }
+        public decimal HoursQuantity { get; set; } = 0;
         public DateOnly ActivityDate { get; set; }
         public string ActivityDescription { get; set; } = null!;
         public string? Notes { get; set; }

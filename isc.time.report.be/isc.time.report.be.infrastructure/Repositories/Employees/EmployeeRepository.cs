@@ -76,7 +76,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
         public async Task<Employee> CreateEmployeeWithPersonAsync(Employee employee)
         {
             if (employee.Person == null)
-                throw new ClientFaultException("La entidad Person no puede ser nula.", 400);
+                throw new ClientFaultException("La entidad Person no puede ser nula.");
 
             employee.Person.CreationDate = DateTime.Now;
             employee.Person.Status = true;
@@ -96,14 +96,14 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
         {
 
             if (employee.Person == null)
-                throw new ClientFaultException("La entidad Person no puede ser nula.", 400);
+                throw new ClientFaultException("La entidad Person no puede ser nula.");
 
             var existingEmployee = await _dbContext.Employees
                 .FirstOrDefaultAsync(p => p.Person.IdentificationNumber == employee.Person.IdentificationNumber);
 
             if (existingEmployee != null)
             {
-                throw new ClientFaultException($"Ya existe un empleado con ese Numero de Identificacion '{employee.Person.IdentificationNumber}'.", 409);
+                throw new ClientFaultException($"Ya existe un empleado con ese Numero de Identificacion '{employee.Person.IdentificationNumber}'.");
             }
 
             var invEmployee = new InventoryCreateEmployeeRequest
@@ -143,7 +143,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                     var invEmpInsrt = await inventoryApiRepository.CreateEmployeeInventoryAsync(invEmployee);
 
                     if (invEmpInsrt == null)
-                        throw new ServerFaultException("No se pudo crear el empleado en el sistema de inventario.");
+                        throw new ClientFaultException("No se pudo crear el empleado en el sistema de inventario.");
 
                     await _dbContext.SaveChangesAsync();
 
@@ -175,17 +175,17 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
         public async Task<Employee> UpdateEmployeeWithPersonAsync(Employee employee)
         {
             if (employee == null || employee.Person == null)
-                throw new InvalidOperationException("El empleado o su persona asociada no pueden ser nulos.");
+                throw new ClientFaultException("El empleado o su persona asociada no pueden ser nulos.");
 
             var existingEmployee = await _dbContext.Employees
                 .Include(e => e.Person)
                 .FirstOrDefaultAsync(e => e.Id == employee.Id);
 
             if (existingEmployee == null)
-                throw new InvalidOperationException($"No existe el empleado con ID {employee.Id}");
+                throw new ClientFaultException($"No existe el empleado con ID {employee.Id}");
 
             if (employee.Person.Id != existingEmployee.Person.Id)
-                throw new InvalidOperationException("La persona ingresada no corresponde al empleado.");
+                throw new ClientFaultException("La persona ingresada no corresponde al empleado.");
 
             employee.Person.ModificationDate = DateTime.Now;
             employee.Person.ModificationUser = "SYSTEM";
@@ -205,17 +205,17 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
         public async Task<Employee> UpdateEmployeeWithPersonForInventoryAsync(Employee employee)
         {
             if (employee == null || employee.Person == null)
-                throw new InvalidOperationException("El empleado o su persona asociada no pueden ser nulos.");
+                throw new ClientFaultException("El empleado o su persona asociada no pueden ser nulos.");
 
             var existingEmployee = await _dbContext.Employees
                 .Include(e => e.Person)
                 .FirstOrDefaultAsync(e => e.Id == employee.Id);
 
             if (existingEmployee == null)
-                throw new InvalidOperationException($"No existe el empleado con ID {employee.Id}");
+                throw new ClientFaultException($"No existe el empleado con ID {employee.Id}");
 
             if (employee.Person.Id != existingEmployee.Person.Id)
-                throw new InvalidOperationException("La persona ingresada no corresponde al empleado.");
+                throw new ClientFaultException("La persona ingresada no corresponde al empleado.");
 
             using (var transaction = await _dbContext.Database.BeginTransactionAsync())
             {

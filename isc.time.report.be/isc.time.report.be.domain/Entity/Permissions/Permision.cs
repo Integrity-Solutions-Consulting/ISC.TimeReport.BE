@@ -18,8 +18,8 @@ namespace isc.time.report.be.domain.Entity.Permisions
         public PermissionType PermissionType { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public decimal TotalDays { get; set; }
-        public decimal? TotalHours { get; set; }
+        public decimal TotalDays { get; set; } = 0;
+        public decimal? TotalHours { get; set; } = 0;
         public bool IsPaid { get; set; } = true;
         public string? Description { get; set; }
         public int ApprovalStatusID { get; set; }

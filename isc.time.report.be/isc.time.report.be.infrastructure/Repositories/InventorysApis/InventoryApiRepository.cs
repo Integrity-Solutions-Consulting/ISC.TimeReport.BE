@@ -63,7 +63,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
             var response = await _httpUtils.SendRequest<InventoryLoginResponse>(url, HttpMethod.Post, request);
 
             if (response?.data?.token == null)
-                throw new ServerFaultException("No se pudo obtener el token del servicio de inventario.");
+                throw new ClientFaultException("No se pudo obtener el token del servicio de inventario.");
 
             inventoryToken.Token = response.data.token;
 

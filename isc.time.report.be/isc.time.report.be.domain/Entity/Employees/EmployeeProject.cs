@@ -18,7 +18,7 @@ namespace isc.time.report.be.domain.Entity.Employees
         public DateTime? AssignmentDate { get; set; }
         public DateTime? AssignmentEndDate { get; set; }
         public string? AssignedRole { get; set; }
-        public decimal? CostPerHour { get; set; }
-        public decimal? AllocatedHours { get; set; }
+        public decimal? CostPerHour { get; set; } = 0;
+        public decimal? AllocatedHours { get; set; } = 0;
     }
 }
