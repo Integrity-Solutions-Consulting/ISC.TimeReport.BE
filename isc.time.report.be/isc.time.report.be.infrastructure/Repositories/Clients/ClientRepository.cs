@@ -164,7 +164,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
 
                 var result = await _inventoryApiRepository.CreateCustomerInventoryAsync(inventoryRequest);
                 if (!result)
-                    throw new InvalidOperationException("No se pudo registrar el cliente en el inventario.");
+                    throw new ClientFaultException("No se pudo registrar el cliente en el inventario.");
 
                 await _dbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -290,7 +290,6 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
             var client = await _dbContext.Clients.Include(c => c.Person).FirstOrDefaultAsync(c => c.Id == clientId);
             if (client == null)
                 throw new ClientFaultException($"El cliente con ID {clientId} no existe.");
-
             try
             {
                 client.Status = false;
