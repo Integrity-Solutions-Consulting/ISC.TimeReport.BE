@@ -36,7 +36,9 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
             if (inventoryToken == null)
             {
                 inventoryToken = new InventoryToken();
+                inventoryToken.Token = string.Empty;
                 _dbContext.InventoryTokens.Add(inventoryToken);
+                await _dbContext.SaveChangesAsync();
             }
 
             if (!string.IsNullOrWhiteSpace(inventoryToken.Token))
