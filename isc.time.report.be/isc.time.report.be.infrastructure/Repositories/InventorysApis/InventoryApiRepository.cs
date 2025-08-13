@@ -87,7 +87,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
             return result != null;
         }
 
-        public async Task<bool> UpdateEmployeeInventoryAsync(InventoryUpdateEmployeeRequest request, int id)
+        public async Task<bool> UpdateEmployeeInventoryAsync(InventoryUpdateEmployeeRequest request, string id)
         {
             var token = await LoginInventory();
 
@@ -98,7 +98,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
             return result != null;
         }
 
-        public async Task<bool> InactivateStatusEmployeeInventoryAsync(int id)
+        public async Task<bool> InactivateStatusEmployeeInventoryAsync(string id)
         {
             var token = await LoginInventory();
 
@@ -108,7 +108,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
             return result != null;
         }
 
-        public async Task<bool> ActivateStatusEmployeeInventoryAsync(int id)
+        public async Task<bool> ActivateStatusEmployeeInventoryAsync(string id)
         {
             var token = await LoginInventory();
 
@@ -136,7 +136,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
             return result != null;
         }
 
-        public async Task<bool> UpdateCustomerInventoryAsync(InventoryUpdateCustomerRequest request, int id)
+        public async Task<bool> UpdateCustomerInventoryAsync(InventoryUpdateCustomerRequest request, string id)
         {
             var token = await LoginInventory();
             var url = $"https://api.inventory.integritysolutions.com.ec/api/v1/customers/update/{id}";
@@ -144,7 +144,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
             return result != null;
         }
 
-        public async Task<bool> InactivateCustomerInventoryAsync(int id)
+        public async Task<bool> InactivateCustomerInventoryAsync(string id)
         {
             var token = await LoginInventory();
             var url = $"https://api.inventory.integritysolutions.com.ec/api/v1/customers/inactive/{id}";
@@ -152,7 +152,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
             return result != null;
         }
 
-        public async Task<bool> ActivateCustomerInventoryAsync(int id)
+        public async Task<bool> ActivateCustomerInventoryAsync(string id)
         {
             var token = await LoginInventory();
             var url = $"https://api.inventory.integritysolutions.com.ec/api/v1/customers/activate/{id}";
