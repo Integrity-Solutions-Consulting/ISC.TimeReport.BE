@@ -155,9 +155,9 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
                 // Enviar al inventario
                 var inventoryRequest = new InventoryCreateCustomerRequest
                 {
-                    Name = $"{client.Person.FirstName} {client.Person.LastName}",
+                    Name = client.TradeName ?? "No definido",
                     Address = client.Person.Address ?? "No definido",
-                    Email = client.Person.Email ?? "noreply@example.com",
+                    Email = client.Person.Email ?? "nodefinido@example.com",
                     Phone = client.Person.Phone ?? "000000000",
                     Ruc = client.Person.IdentificationNumber
                 };
