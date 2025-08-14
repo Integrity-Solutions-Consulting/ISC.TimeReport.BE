@@ -44,7 +44,15 @@ namespace isc.time.report.be.infrastructure.Repositories.DailyActivities
             entity.ModificationDate = DateTime.Now;
             entity.ModificationUser = "SYSTEM";
             _context.DailyActivities.Update(entity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine("ERROR: " + ex.InnerException?.Message);
+                throw;
+            }
             return entity;
         }
 
