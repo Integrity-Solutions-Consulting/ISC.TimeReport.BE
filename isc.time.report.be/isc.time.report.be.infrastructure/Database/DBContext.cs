@@ -683,6 +683,38 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
             });
 
+            modelBuilder.Entity<CompanyCatalog>(entity =>
+            {
+                entity.ToTable("CompanyCatalog");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnName("CompanyCatalogID");
+                entity.Property(e => e.CompanyName).HasColumnName("company_name");
+
+                entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.CreationUser).HasColumnName("creation_user");
+                entity.Property(e => e.ModificationUser).HasColumnName("modification_user");
+                entity.Property(e => e.CreationDate).HasColumnName("creation_date");
+                entity.Property(e => e.ModificationDate).HasColumnName("modification_date");
+                entity.Property(e => e.CreationIp).HasColumnName("creation_ip");
+                entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
+            });
+
+            modelBuilder.Entity<EmployeeCategory>(entity =>
+            {
+                entity.ToTable("EmployeeCategory");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnName("EmployeeCategoryID");
+                entity.Property(e => e.CategoryName).HasColumnName("category_name");
+
+                entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.CreationUser).HasColumnName("creation_user");
+                entity.Property(e => e.ModificationUser).HasColumnName("modification_user");
+                entity.Property(e => e.CreationDate).HasColumnName("creation_date");
+                entity.Property(e => e.ModificationDate).HasColumnName("modification_date");
+                entity.Property(e => e.CreationIp).HasColumnName("creation_ip");
+                entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
+            });
+
 
             modelBuilder.Entity<DashboardResumenGeneralDto>().HasNoKey();
             modelBuilder.Entity<DashboardHorasActividadDto>().HasNoKey();
@@ -722,5 +754,7 @@ namespace isc.time.report.be.infrastructure.Database
         public DbSet<ProjectType> ProjectTypes { get; set; }
         public DbSet<WorkMode> WorkModes { get; set; }
         public DbSet<InventoryToken> InventoryTokens { get; set; }
+        public DbSet<CompanyCatalog> CompanyCatalogs { get; set; }
+        public DbSet<EmployeeCategory> EmployeeCategories { get; set; }
     }
 }

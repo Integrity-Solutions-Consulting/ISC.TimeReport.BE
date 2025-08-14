@@ -91,5 +91,19 @@ namespace isc.time.report.be.api.Controllers.v1.Catalogs
             var result = await _catalogService.GetWorkModesAsync();
             return Ok(result);
         }
+
+        [HttpGet("company-catalog")]
+        public async Task<IActionResult> GetCompanyCatalog()
+        {
+            var result = await _catalogService.GetCompanyCatalogAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("employee-category")]
+        public async Task<IActionResult> GetEmployeeCategory()
+        {
+            var result = await _catalogService.GetEmployeeCategoryAsync();
+            return Ok(result);
+        }
     }
 }
