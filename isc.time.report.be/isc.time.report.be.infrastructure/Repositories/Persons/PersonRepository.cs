@@ -37,11 +37,21 @@ namespace isc.time.report.be.infrastructure.Repositories.Persons
 
         public async Task<Person> GetPersonByIDAsync(int personId)
         {
-            return await _dbContext.Persons
+            if (personId <= 0)
+            {
+                throw new ClientFaultException("El ID de la persona es inválido.");
+            }
+
+            var person = await _dbContext.Persons
                 .Include(p => p.Gender)
                 .Include(p => p.Nationality)
                 .Include(p => p.IdentificationType)
                 .FirstOrDefaultAsync(p => p.Id == personId);
+            if (person == null)
+            {
+                throw new ClientFaultException($"No se encontró la persona con ID {personId}.");
+            }
+            return person;
         }
 
         public async Task<Person> CreatePersonAsync(Person person)

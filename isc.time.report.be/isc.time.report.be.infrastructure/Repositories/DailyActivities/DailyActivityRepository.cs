@@ -1,5 +1,6 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.DailyActivities;
 using isc.time.report.be.domain.Entity.DailyActivities;
+using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -21,12 +22,22 @@ namespace isc.time.report.be.infrastructure.Repositories.DailyActivities
 
         public async Task<List<DailyActivity>> GetAllAsync()
         {
-            return await _context.DailyActivities.ToListAsync();
+            var list = await _context.DailyActivities.ToListAsync();
+            if (!list.Any())
+            {
+                throw new ServerFaultException("No se encontraron las Daily Activities");
+            }
+            return list;
         }
 
         public async Task<DailyActivity?> GetByIdAsync(int id)
         {
-            return await _context.DailyActivities.FindAsync(id);
+            if (id <= 0)
+            {
+                throw new ClientFaultException("El ID del Daily no puede ser negativo");
+            }
+            var daily = await _context.DailyActivities.FindAsync(id);
+            return daily;
         }
 
         public async Task<DailyActivity> CreateAsync(DailyActivity entity)

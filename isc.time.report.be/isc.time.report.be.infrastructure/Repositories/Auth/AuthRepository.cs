@@ -4,6 +4,7 @@ using isc.time.report.be.domain.Entity.Modules;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.infrastructure.Database;
 using isc.time.report.be.infrastructure.Utils.Emails;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -128,18 +129,31 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
 
         public async Task<User> GetUserById(int userId)
         {
+            if (userId <= 0)
+            {
+                throw new ClientFaultException("No se puede ingresar ID negativos");
+            }
+
             return await _dbContext.Users.FindAsync(userId);
         }
 
         public async Task<List<Role>> GetAllRols()
         {
-            var rols = await _dbContext.Roles.ToListAsync();
 
+            var rols = await _dbContext.Roles.ToListAsync();
+            if (rols == null || !rols.Any())
+            {
+                throw new ClientFaultException("No se encontraron roles en el sistema.");
+            }
             return rols;
         }
 
         public async Task<List<Module>> GetMenusByUsername(string username)
         {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                throw new ClientFaultException("El nombre de usuario es requerido.");
+            }
             var menus = await _dbContext.Users
                 .Where(u => u.Username == username)
                 .SelectMany(u => u.UserRole) // accedemos a los roles del usuario
@@ -148,12 +162,26 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
                 .Distinct() // evitamos duplicados
                 .ToListAsync();
 
+            if (!menus.Any())
+            {
+                throw new ClientFaultException($"No se encontraron menús para el usuario '{username}'.");
+            }
             return menus;
         }
 
         public async Task<Role?> GetRoleByNameAsync(string name)
         {
-            return await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleName == name);
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                throw new ClientFaultException("El nombre del rol es requerido");
+            }
+            var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleName == name);
+
+            if (role == null)
+            {
+                throw new ClientFaultException($"No se encontro el rol con el nombre {name}");
+            }
+            return role;
         }
 
         public async Task CreateRoleAsync(Role role)
@@ -175,17 +203,27 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
 
         public async Task<List<Role>> GetAllRolesWithModulesAsync()
         {
-            return await _dbContext.Roles
+            var roles =  await _dbContext.Roles
                 .Include(r => r.RoleModule.Where(rm => rm.Status == true))
                     .ThenInclude(rm => rm.Module)
                 .ToListAsync();
+            if (!roles.Any())
+            {
+                throw new ClientFaultException("No se encontraron roles con modulos activos");
+            }
+            return roles;
         }
 
         public async Task<Role?> GetRoleByIdAsync(int id)
         {
+            if (id <= 0)
+            {
+                throw new ClientFaultException("El ID del rol no puede ser negativo");
+            }
             return await _dbContext.Roles
                 .Include(r => r.RoleModule)
                 .FirstOrDefaultAsync(r => r.Id == id);
+            
         }
 
         public async Task UpdateRoleModulesAsync(Role role, List<int> newModuleIds)
@@ -240,6 +278,10 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
 
         public async Task<User?> GetUserWithEmployeeAsync(string username)
         {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                throw new ClientFaultException("Se requiere el empleado para mostrar los usuarios");
+            }
             return await _dbContext.Users
                 .Include(u => u.Employee)
                 .FirstOrDefaultAsync(u => u.Username == username && u.Status == true);

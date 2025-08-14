@@ -52,11 +52,21 @@ namespace isc.time.report.be.infrastructure.Repositories.Permissions
             {
                 query = query.Where(p => p.EmployeeID == employeeId);
             }
-            return await query.ToListAsync();
+            var permissions = await query.ToListAsync();
+
+            //if (!permissions.Any())
+            //{
+            //    throw new ClientFaultException("No se encontraron permisos.");
+            //}
+            return permissions;
         }
 
         public async Task<Permission> GetPermissionByIdAsync(int id)
         {
+            if (id <= 0)
+            {
+                throw new ClientFaultException("El ID no puede ser negativo");
+            }
             var permission = await _dbContext.Permissions
                 .FirstOrDefaultAsync(p => p.Id == id);
 
@@ -68,9 +78,18 @@ namespace isc.time.report.be.infrastructure.Repositories.Permissions
 
         public async Task<List<Permission>> GetPermissionsAprovedByEmployeeIdAsync(int employeeId)
         {
-            return await _dbContext.Permissions
+            if (employeeId <= 0)
+            {
+                throw new ClientFaultException("El ID del empleado es inválido.");
+            }
+            var permissions = await _dbContext.Permissions
                 .Where(p => p.EmployeeID == employeeId && p.ApprovalStatusID == 2)
                 .ToListAsync();
+            if (!permissions.Any())
+            {
+                throw new ServerFaultException($"No se encontraron permisos aprobados para el empleado con ID {employeeId}.");
+            }
+            return permissions;
         }
     }
 }

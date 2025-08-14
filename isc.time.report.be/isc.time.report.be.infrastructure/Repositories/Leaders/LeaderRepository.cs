@@ -1,4 +1,5 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.Leaders;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using isc.time.report.be.application.Interfaces.Repository.Leaders;
 using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Leaders;
 using isc.time.report.be.domain.Entity.Projects;
@@ -51,10 +52,19 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
 
         public async Task<Leader> GetLeaderByIDAsync(int leaderId)
         {
-            return await _dbContext.Leaders
+            if (leaderId <= 0)
+            {
+                throw new ClientFaultException("El ID de la Leader no puede ser negativo");
+            }
+            var leader = await _dbContext.Leaders
                 .Include(e => e.Person)
                 .Include(e => e.Project)
                 .FirstOrDefaultAsync(e => e.Id == leaderId);
+            if (leader == null)
+            {
+                throw new ClientFaultException($"No se encontró un líder con ID {leaderId}.");
+            }
+            return leader;
         }
 
         public async Task<Leader> CreateLeaderAsync(Leader leader)
@@ -156,13 +166,22 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
 
         public async Task<List<Leader>> GetActiveLeadersByProjectIdsAsync(List<int> projectIds)
         {
+            if (projectIds == null || !projectIds.Any())
+            {
+                throw new ServerFaultException("No se proporcionaron IDs de proyectos válidos.");
+            }
             var today = DateOnly.FromDateTime(DateTime.Today);
 
-            return await _dbContext.Leaders
+            var leaders = await _dbContext.Leaders
                 .Include(l => l.Person)
                 .Where(l => projectIds.Contains(l.ProjectID) &&
                             (l.EndDate == null || l.EndDate > today))
                 .ToListAsync();
+            if (!leaders.Any())
+            {
+                throw new ServerFaultException("No se encontraron líderes activos para los proyectos indicados.");
+            }
+            return leaders;
         }
     }
 }

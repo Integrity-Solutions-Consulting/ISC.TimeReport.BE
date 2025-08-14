@@ -1,6 +1,7 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.Permissions;
 using isc.time.report.be.application.Interfaces.Repository.PermissionTypes;
 using isc.time.report.be.domain.Entity.Catalogs;
+using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
@@ -23,12 +24,27 @@ namespace isc.time.report.be.infrastructure.Repositories.PermissionTypes
 
         public async Task<List<PermissionType>> GetAllPermissionTypeAsync()
         {
-            return await _context.PermissionTypes.ToListAsync();
+            var list = await _context.PermissionTypes.ToListAsync();
+            if (!list.Any())
+            {
+                throw new ServerFaultException("No se encontraron PermissionType");
+            }
+            return list;
         }
 
         public async Task<PermissionType?> GetPermissionTypeByIdAsync(int id)
         {
-            return await _context.PermissionTypes.FindAsync(id);
+            if (id <= 0)
+            {
+                throw new ClientFaultException("El ID es inválido.");
+            }
+            var permissionsType = await _context.PermissionTypes.FindAsync(id);
+            if (permissionsType == null)
+            {
+                throw new ClientFaultException($"No se encontró el tipo de permiso con ID {id}.");
+            }
+
+            return permissionsType;
         }
 
         public async Task<PermissionType> CreatePermissionTypeAsync(PermissionType entity)

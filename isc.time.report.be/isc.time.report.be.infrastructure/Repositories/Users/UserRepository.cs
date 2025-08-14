@@ -1,7 +1,9 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.Auth;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using isc.time.report.be.application.Interfaces.Repository.Auth;
 using isc.time.report.be.application.Interfaces.Repository.Users;
 using isc.time.report.be.domain.Entity.Auth;
 using isc.time.report.be.domain.Entity.Modules;
+using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +31,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Users
         /// <returns></returns>
         public async Task<User?> GetUserById(int userId)
         {
-            return await _dbContext.Users
+            var user = await _dbContext.Users
                 .Include(u => u.UserRole)
                     .ThenInclude(ur => ur.Role)
                         .ThenInclude(r => r.RoleModule)
@@ -37,6 +39,12 @@ namespace isc.time.report.be.infrastructure.Repositories.Users
                 .Include(u => u.UserModule)
                     .ThenInclude(um => um.Module)
                 .FirstOrDefaultAsync(u => u.Id == userId);
+            if (user is null)
+            {
+                throw new ServerFaultException($"No se encontró un usuario con el ID {userId}.");
+            }
+
+            return user;
         }
 
         public async Task<User> GetUserByUsername(string username)
@@ -53,7 +61,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Users
         /// <returns></returns>
         public async Task<List<User>> GetAllUsers()
         {
-            return await _dbContext.Users
+            var list = await _dbContext.Users
                 .Include(u => u.UserRole)
                     .ThenInclude(ur => ur.Role)
                         .ThenInclude(r => r.RoleModule)
@@ -61,6 +69,11 @@ namespace isc.time.report.be.infrastructure.Repositories.Users
                 .Include(u => u.UserModule)
                     .ThenInclude(um => um.Module)
                 .ToListAsync();
+            if (!list.Any())
+            {
+                throw new ServerFaultException("No se existe ningun usuario en la lista.");
+            }
+            return list;
         }
 
 
@@ -119,9 +132,18 @@ namespace isc.time.report.be.infrastructure.Repositories.Users
 
         public async Task<List<UserRole>> GetUserRolesAsync(int userId)
         {
-            return await _dbContext.UserRoles
+            if (userId <= 0)
+            {
+                throw new ClientFaultException("El ID del usuario no puede ser menor o igual a 0.");
+            }
+            var user = await _dbContext.UserRoles
                 .Where(ur => ur.UserID == userId)
                 .ToListAsync();
+            if (!user.Any())
+            {
+                throw new ServerFaultException($"No se encontraron roles para el usuario con ID {userId}.");
+            }
+            return user;
         }
 
         public async Task SaveUserRolesAsync(List<UserRole> userRoles)
@@ -138,9 +160,18 @@ namespace isc.time.report.be.infrastructure.Repositories.Users
 
         public async Task<List<UserModule>> GetUserModulesAsync(int userId)
         {
-            return await _dbContext.UserModules
+            if (userId <= 0)
+            {
+                throw new ClientFaultException("El ID del usuario no puede ser menor o igual a 0.");
+            }
+            var list = await _dbContext.UserModules
                 .Where(um => um.UserID == userId)
                 .ToListAsync();
+            if (!list.Any())
+            {
+                throw new ServerFaultException($"No se encontraron modulos para el usuario con ID {userId}.");
+            }
+            return list;
         }
 
         public async Task SaveUserModulesAsync(List<UserModule> userModules)
