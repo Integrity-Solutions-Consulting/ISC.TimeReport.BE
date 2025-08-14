@@ -22,20 +22,28 @@ namespace isc.time.report.be.infrastructure.Repositories.Holidays
 
         public async Task<Holiday?> GetHolidayByIdAsync(int id)
         {
-            return await _dbContext.Holidays
-                .FirstOrDefaultAsync(h => h.Id == id /*&& h.Status*/); //Trae el primer feriado con ese ID y que esté activo
+            if (id <= 0)
+            {
+                throw new ClientFaultException("El ID del Holiday no puede ser negativo");
+            }
+            var holiID = await _dbContext.Holidays
+                .FirstOrDefaultAsync(h => h.Id == id);
+            return holiID;
         }
 
         public async Task<List<Holiday>> GetAllHolidayAsync()
         {
-            return await _dbContext.Holidays.ToListAsync();
+            var list = await _dbContext.Holidays.ToListAsync();
+            if (!list.Any())
+            {
+                throw new ServerFaultException("No existen Holidays");
+            }
+            return list;
         }
         public async Task<Holiday> CreateHolidayAsync (Holiday holiday)
         {
-            //se establece la fecha actual, el usaurio que lo creo sino fue creado por ningun usuario sera system por defecto
-            //desde que ip se creo el feriado
+           
             holiday.CreationDate = DateTime.Now;
-            // ?? devuelve un valor predeterminado si el anterior es null
             holiday.CreationUser = holiday.CreationUser ?? "SYSTEM";
             holiday.CreationIp = holiday.CreationIp ?? "0.0.0.0";
 
@@ -49,14 +57,12 @@ namespace isc.time.report.be.infrastructure.Repositories.Holidays
             var existing = await GetHolidayByIdAsync(holiday.Id);
             if (existing == null) throw new ClientFaultException("Feriado no encontrado");
 
-            // Actualiza los campos editables
             existing.HolidayName = holiday.HolidayName;
             existing.HolidayDate = holiday.HolidayDate;
             existing.IsRecurring = holiday.IsRecurring;
             existing.HolidayType = holiday.HolidayType;
             existing.Description = holiday.Description;
 
-            // Auditoría de modificación
             existing.ModificationDate = DateTime.Now;
             existing.ModificationUser = holiday.ModificationUser ?? "SYSTEM"; 
             existing.ModificationIp = holiday.ModificationIp ?? "0.0.0.0";
@@ -74,7 +80,6 @@ namespace isc.time.report.be.infrastructure.Repositories.Holidays
                 throw new ClientFaultException($"La festividad con ID {id} no existe.");
 
             holiday.Status = false;
-            //para saber quien, desde que ip y cuando lo hizo
             holiday.ModificationDate = DateTime.Now;
             holiday.ModificationUser = "SYSTEM";
 

@@ -56,9 +56,15 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
 
         public async Task<Employee> GetEmployeeByIDAsync(int employeeId)
         {
-            return await _dbContext.Employees
+            if(employeeId <= 0)
+            {
+                throw new ClientFaultException("La ID del empleado no puede ser negativa");
+            }
+
+            var employee = await _dbContext.Employees
                 .Include(e => e.Person)
                 .FirstOrDefaultAsync(e => e.Id == employeeId);
+            return employee;
         }
 
         public async Task<Employee> CreateEmployeeAsync(Employee employee)

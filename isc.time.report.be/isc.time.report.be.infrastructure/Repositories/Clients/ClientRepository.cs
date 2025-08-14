@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using isc.time.report.be.application.Interfaces.Repository.Clients;
 using isc.time.report.be.application.Interfaces.Repository.InventoryApis;
 using isc.time.report.be.domain.Entity.Clients;
@@ -87,6 +88,10 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
 
         public async Task<Client> GetClientByIDAsync(int clientId)
         {
+            if (clientId <= 0)
+            {
+                throw new ClientFaultException("El ID del rol no puede ser negativo");
+            }
             return await _dbContext.Clients
                 .Include(c => c.Person)
                 .FirstOrDefaultAsync(c => c.Id == clientId);
@@ -410,12 +415,18 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
 
         public async Task<List<Client>> GetClientsByEmployeeIdAsync(int employeeId)
         {
-            return await _dbContext.EmployeeProjects
+            if (employeeId <= 0)
+            {
+                throw new ClientFaultException("El ID del empleado no puede ser menor a 0.");
+            }
+
+            var clients =  await _dbContext.EmployeeProjects
                 .Where(ep => ep.EmployeeID == employeeId)
                 .Select(ep => ep.Project.Client)
                 .Distinct()
                 .Include(c => c.Person)
                 .ToListAsync();
+            return clients;
         }
     }
 }

@@ -59,7 +59,15 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
 
         public async Task<Project> GetProjectByIDAsync(int projectId)
         {
+            if (projectId <= 0)
+            {
+                throw new ClientFaultException("El ID no puede ser menor a 0");
+            }
             var project = await _dbContext.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
+            if (project == null)
+            {
+                throw new ClientFaultException($"No se encontró el proyecto con ID {projectId}.");
+            }
             return project;
         }
         public async Task<Project> CreateProject(Project project)
@@ -130,9 +138,14 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
 
         public async Task<List<EmployeeProject>> GetByProjectIdAsync(int projectId)
         {
-            return await _dbContext.EmployeeProjects
+            var project = await _dbContext.EmployeeProjects
                 .Where(ep => ep.ProjectID == projectId)
                 .ToListAsync();
+            if (!project.Any())
+            {
+                throw new ServerFaultException("No existen projectos con esa ID");
+            }
+            return project;
         }
 
         public async Task SaveAssignmentsAsync(List<EmployeeProject> employeeProjects)
@@ -175,22 +188,45 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
         }
 
 
-        public async Task<Project?> GetProjectDetailByIDAsync(int projectId)
+        public async Task<Project> GetProjectDetailByIDAsync(int projectId)
         {
-            return await _dbContext.Projects
+            if (projectId <= 0)
+            {
+                throw new ClientFaultException("El ID del proyecto no puede ser menor o igual a 0.");
+            }
+
+            var project = await _dbContext.Projects
                 .Include(p => p.EmployeeProject)
                     .ThenInclude(ep => ep.Employee)
                         .ThenInclude(e => e.Person)
                 .FirstOrDefaultAsync(p => p.Id == projectId);
+
+            if (project == null)
+            {
+                throw new ClientFaultException($"No se encontró el proyecto con ID {projectId}.");
+            }
+
+            return project;
         }
+
 
         public async Task<List<Project>> GetProjectsByEmployeeIdAsync(int employeeId)
         {
-            return await _dbContext.EmployeeProjects
+            if (employeeId <= 0)
+            {
+                throw new ClientFaultException("El ID del empleado no puede ser menor o igual a 0.");
+            }
+
+            var project = await _dbContext.EmployeeProjects
                 .Where(ep => ep.EmployeeID == employeeId)
                 .Select(ep => ep.Project)
                 .Distinct()
                 .ToListAsync();
+            if (!project.Any())
+            {
+                throw new ServerFaultException($"No se encontraron proyectos asignados al empleado con ID {employeeId}.");
+            }
+            return project;
         }
 
     }

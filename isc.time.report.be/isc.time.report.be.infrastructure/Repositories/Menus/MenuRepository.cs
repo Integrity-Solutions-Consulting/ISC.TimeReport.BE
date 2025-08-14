@@ -2,6 +2,7 @@
 using isc.time.report.be.application.Interfaces.Repository.Menus;
 using isc.time.report.be.domain.Entity.Auth;
 using isc.time.report.be.domain.Entity.Modules;
+using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -23,7 +24,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Menus
 
         public async Task<List<Module>> GetAllMenusAsync()
         {
-            return await _dbContext.Modules
+            var modules = await _dbContext.Modules
                 .Where(m => m.Status)
                 .Select(m => new Module
                 {
@@ -32,11 +33,21 @@ namespace isc.time.report.be.infrastructure.Repositories.Menus
                     ModulePath = m.ModulePath
                 })
                 .ToListAsync();
+            if (!modules.Any())
+            {
+                throw new ServerFaultException("No existe ningun modulo");
+            }
+            return modules;
         }
 
         public async Task<List<Module>> GetAllMenusDetailAsync()
         {
-            return await _dbContext.Modules.ToListAsync();
+            var modules = await _dbContext.Modules.ToListAsync();
+            if (!modules.Any())
+            {
+                throw new ServerFaultException("No existe ningun Menus Detail");
+            }
+            return modules;
         }
         /// <summary>
         /// ESTE SI HACE COSAS
@@ -131,17 +142,28 @@ namespace isc.time.report.be.infrastructure.Repositories.Menus
 
         public async Task<List<Module>> GetMenuByRolIdAsync(int rolId)
         {
-
+            if(rolId <= 0)
+            {
+                throw new ClientFaultException("El ID de rol no puede ser negativo");
+            }
             var menus = await _dbContext.RoleModules
                 .Where(mr => mr.RoleID == rolId)
                 .Select(mr => mr.Module)
                 .ToListAsync();
+            if(!menus.Any())
+            {
+                throw new ServerFaultException($"No se encontró un Rol con ID {rolId}.");
+            }
 
             return menus;
         }
 
         public async Task<List<Module>> GetMenusByUserId(int UserId)
         {
+            if (UserId <= 0)
+            {
+                throw new ClientFaultException("El ID del usuario no puede ser negativo");
+            }
             var menus = await _dbContext.Users
                 .Where(u => u.Id == UserId)
                 .SelectMany(u => u.UserRole) // accedemos a los roles del usuario
@@ -149,7 +171,10 @@ namespace isc.time.report.be.infrastructure.Repositories.Menus
                 .Select(mr => mr.Module) // obtenemos el menú
                 .Distinct() // evitamos duplicados
                 .ToListAsync();
-
+            if (!menus.Any())
+            {
+                throw new ServerFaultException($"No se encontró un Usuario con ID {UserId}.");
+            }
             return menus;
         }
 
