@@ -83,5 +83,17 @@ namespace isc.time.report.be.application.Services.Catalogs
             var result = await _catalogRepository.GetWorkModeActivosAsync();
             return _mapper.Map<List<GetWorkModeResponse>>(result);
         }
+
+        public async Task<List<GetCompanyCatalogResponse>> GetCompanyCatalogAsync()
+        {
+            var result = await _catalogRepository.GetCompanyCatalogActivosAsync();
+            return _mapper.Map<List<GetCompanyCatalogResponse>>(result);
+        }
+
+        public async Task<List<GetEmployeeCategoryResponse>> GetEmployeeCategoryAsync()
+        {
+            var result = await _catalogRepository.GetEmployeeCategoryActivosAsync();
+            return _mapper.Map<List<GetEmployeeCategoryResponse>>(result);
+        }
     }
 }

@@ -92,19 +92,91 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
             return employee;
         }
 
+        //public async Task<Employee> CreateEmployeeWithPersonForInventoryAsync(Employee employee)
+        //{
+
+        //    if (employee.Person == null)
+        //        throw new ClientFaultException("La entidad Person no puede ser nula.");
+
+        //    var existingEmployee = await _dbContext.Employees
+        //        .FirstOrDefaultAsync(p => p.Person.IdentificationNumber == employee.Person.IdentificationNumber);
+
+        //    if (existingEmployee != null)
+        //    {
+        //        throw new ClientFaultException($"Ya existe un empleado con ese Numero de Identificacion '{employee.Person.IdentificationNumber}'.");
+        //    }
+
+        //    var invEmployee = new InventoryCreateEmployeeRequest
+        //    {
+        //        idIdentificationType = employee.Person?.IdentificationTypeId ?? 0,
+        //        idGender = employee.Person?.GenderID ?? 0,
+        //        idPosition = employee.PositionID ?? 0,
+        //        idWorkMode = employee.WorkModeID,
+        //        idNationality = employee.Person?.NationalityId ?? 0,
+        //        firstName = employee.Person?.FirstName,
+        //        lastName = employee.Person?.LastName,
+        //        identification = employee.Person?.IdentificationNumber,
+        //        phone = employee.Person?.Phone,
+        //        email = employee.CorporateEmail,
+        //        address = employee.Person?.Address,
+        //        contractDate = DateOnly.FromDateTime(employee.HireDate ?? DateTime.MinValue),
+        //        contractEndDate = employee.TerminationDate.HasValue
+        //            ? DateOnly.FromDateTime(employee.TerminationDate.Value)
+        //            : null
+        //    };
+
+        //    using (IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync())
+        //    {
+        //        try
+        //        {
+        //            employee.Person.CreationDate = DateTime.Now;
+        //            employee.Person.Status = true;
+        //            employee.Person.CreationUser = "SYSTEM";
+
+        //            employee.CreationDate = DateTime.Now;
+        //            employee.Status = true;
+        //            employee.CreationUser = "SYSTEM";
+
+        //            await _dbContext.Employees.AddAsync(employee);
+
+
+        //            var invEmpInsrt = await inventoryApiRepository.CreateEmployeeInventoryAsync(invEmployee);
+
+        //            if (invEmpInsrt == null)
+        //                throw new ClientFaultException("No se pudo crear el empleado en el sistema de inventario.");
+
+        //            await _dbContext.SaveChangesAsync();
+
+        //            await transaction.CommitAsync();
+
+        //            return employee;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            await transaction.RollbackAsync();
+
+        //            // Esto te mostrará el mensaje real de la base de datos
+        //            var inner = ex.InnerException?.Message ?? ex.Message;
+        //            throw new Exception($"Error al guardar: {inner}", ex);
+        //        }
+
+        //    }
+        //}
+
         public async Task<Employee> CreateEmployeeWithPersonForInventoryAsync(Employee employee)
         {
-
             if (employee.Person == null)
                 throw new ClientFaultException("La entidad Person no puede ser nula.");
 
+            // Verificar duplicados incluyendo la relación Person
             var existingEmployee = await _dbContext.Employees
+                .Include(e => e.Person)
                 .FirstOrDefaultAsync(p => p.Person.IdentificationNumber == employee.Person.IdentificationNumber);
 
             if (existingEmployee != null)
-            {
-                throw new ClientFaultException($"Ya existe un empleado con ese Numero de Identificacion '{employee.Person.IdentificationNumber}'.");
-            }
+                throw new ClientFaultException(
+                    $"Ya existe un empleado con ese Número de Identificación '{employee.Person.IdentificationNumber}'."
+                );
 
             var invEmployee = new InventoryCreateEmployeeRequest
             {
@@ -116,50 +188,44 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                 firstName = employee.Person?.FirstName,
                 lastName = employee.Person?.LastName,
                 identification = employee.Person?.IdentificationNumber,
-                phone = employee.Person?.Phone,
+                phone = employee.Person.Phone,
                 email = employee.CorporateEmail,
-                address = employee.Person?.Address,
-                contractDate = DateOnly.FromDateTime(employee.HireDate ?? DateTime.MinValue),
+                address = employee.Person.Address,
+                contractDate = employee.HireDate.HasValue
+                    ? DateOnly.FromDateTime(employee.HireDate.Value)
+                    : throw new ClientFaultException("La fecha de contratación es obligatoria."),
                 contractEndDate = employee.TerminationDate.HasValue
                     ? DateOnly.FromDateTime(employee.TerminationDate.Value)
                     : null
             };
 
-            using (IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync())
+            // Transacción local para asegurar consistencia
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            try
             {
-                try
-                {
-                    employee.Person.CreationDate = DateTime.Now;
-                    employee.Person.Status = true;
-                    employee.Person.CreationUser = "SYSTEM";
+                employee.Person.CreationDate = DateTime.Now;
+                employee.Person.Status = true;
+                employee.Person.CreationUser = "SYSTEM";
 
-                    employee.CreationDate = DateTime.Now;
-                    employee.Status = true;
-                    employee.CreationUser = "SYSTEM";
+                employee.CreationDate = DateTime.Now;
+                employee.Status = true;
+                employee.CreationUser = "SYSTEM";
 
-                    await _dbContext.Employees.AddAsync(employee);
+                await _dbContext.Employees.AddAsync(employee);
+                await _dbContext.SaveChangesAsync(); // Inserción local
 
+                // Llamada a API externa
+                var invEmpInsert = await inventoryApiRepository.CreateEmployeeInventoryAsync(invEmployee);
+                if (invEmpInsert == null)
+                    throw new ClientFaultException("No se pudo crear el empleado en el sistema de inventario.");
 
-                    var invEmpInsrt = await inventoryApiRepository.CreateEmployeeInventoryAsync(invEmployee);
-
-                    if (invEmpInsrt == null)
-                        throw new ClientFaultException("No se pudo crear el empleado en el sistema de inventario.");
-
-                    await _dbContext.SaveChangesAsync();
-
-                    await transaction.CommitAsync();
-
-                    return employee;
-                }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync();
-
-                    // Esto te mostrará el mensaje real de la base de datos
-                    var inner = ex.InnerException?.Message ?? ex.Message;
-                    throw new Exception($"Error al guardar: {inner}", ex);
-                }
-
+                await transaction.CommitAsync();
+                return employee;
+            }
+            catch
+            {
+                await transaction.RollbackAsync(); // Revierte la inserción local
+                throw;
             }
         }
 

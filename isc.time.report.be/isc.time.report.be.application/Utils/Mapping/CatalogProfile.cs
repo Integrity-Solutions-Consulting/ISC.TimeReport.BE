@@ -45,6 +45,12 @@ namespace isc.time.report.be.application.Utils.Mapping
 
             CreateMap<WorkMode, GetWorkModeResponse>();
             CreateMap<GetWorkModeResponse, WorkMode>();
+
+            CreateMap<CompanyCatalog, GetCompanyCatalogResponse>();
+            CreateMap<GetCompanyCatalogResponse, CompanyCatalog>();
+
+            CreateMap<EmployeeCategory, GetEmployeeCategoryResponse>();
+            CreateMap<GetEmployeeCategoryResponse, EmployeeCategory>();
         }
     }
 }

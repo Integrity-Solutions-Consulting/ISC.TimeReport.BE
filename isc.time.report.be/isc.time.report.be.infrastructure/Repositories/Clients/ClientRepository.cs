@@ -124,10 +124,73 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
             return client;
         }
 
+        //public async Task<Client> CreateClientWithPersonForInventoryAsync(Client client)
+        //{
+        //    if (client.Person == null)
+        //        throw new ClientFaultException("La entidad Person no puede ser nula.");
+
+        //    client.Person.CreationDate = DateTime.Now;
+        //    client.Person.Status = true;
+        //    client.Person.CreationUser = "SYSTEM";
+
+        //    client.CreationDate = DateTime.Now;
+        //    client.Status = true;
+        //    client.CreationUser = "SYSTEM";
+
+        //    var existingClient = await _dbContext.Clients
+        //        .FirstOrDefaultAsync(p => p.Person.IdentificationNumber == client.Person.IdentificationNumber);
+
+        //    if (existingClient != null)
+        //    {
+        //        throw new ClientFaultException($"Ya existe un cliente con ese numero de Identificacion '{client.Person.IdentificationNumber}'.");
+        //    }
+
+
+        //    using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+        //    try
+        //    {
+        //        await _dbContext.Clients.AddAsync(client);
+
+        //        // Enviar al inventario
+        //        var inventoryRequest = new InventoryCreateCustomerRequest
+        //        {
+        //            Name = client.TradeName ?? "No definido",
+        //            Address = client.Person.Address ?? "No definido",
+        //            Email = client.Person.Email ?? "nodefinido@example.com",
+        //            Phone = client.Person.Phone ?? "000000000",
+        //            Ruc = client.Person.IdentificationNumber
+        //        };
+
+        //        var result = await _inventoryApiRepository.CreateCustomerInventoryAsync(inventoryRequest);
+        //        if (!result)
+        //            throw new ClientFaultException("No se pudo registrar el cliente en el inventario.");
+
+        //        await _dbContext.SaveChangesAsync();
+        //        await transaction.CommitAsync();
+        //        return client;
+        //    }
+        //    catch
+        //    {
+        //        await transaction.RollbackAsync();
+        //        throw;
+        //    }
+        //}
+
         public async Task<Client> CreateClientWithPersonForInventoryAsync(Client client)
         {
             if (client.Person == null)
                 throw new ClientFaultException("La entidad Person no puede ser nula.");
+
+            // Validación duplicados
+            var existingClient = await _dbContext.Clients
+                .Include(c => c.Person)
+                .FirstOrDefaultAsync(c => c.Person.IdentificationNumber == client.Person.IdentificationNumber);
+
+            if (existingClient != null)
+                throw new ClientFaultException(
+                    $"Ya existe un cliente con ese número de identificación '{client.Person.IdentificationNumber}'."
+                );
 
             client.Person.CreationDate = DateTime.Now;
             client.Person.Status = true;
@@ -137,22 +200,13 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
             client.Status = true;
             client.CreationUser = "SYSTEM";
 
-            var existingClient = await _dbContext.Clients
-                .FirstOrDefaultAsync(p => p.Person.IdentificationNumber == client.Person.IdentificationNumber);
-
-            if (existingClient != null)
-            {
-                throw new ClientFaultException($"Ya existe un cliente con ese numero de Identificacion '{client.Person.IdentificationNumber}'.");
-            }
-
-
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
-
             try
             {
                 await _dbContext.Clients.AddAsync(client);
+                await _dbContext.SaveChangesAsync(); // Inserción local
 
-                // Enviar al inventario
+                // Enviar a inventario
                 var inventoryRequest = new InventoryCreateCustomerRequest
                 {
                     Name = client.TradeName ?? "No definido",
@@ -166,13 +220,12 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
                 if (!result)
                     throw new ClientFaultException("No se pudo registrar el cliente en el inventario.");
 
-                await _dbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
                 return client;
             }
             catch
             {
-                await transaction.RollbackAsync();
+                await transaction.RollbackAsync(); // Revierte la inserción local si falla API
                 throw;
             }
         }

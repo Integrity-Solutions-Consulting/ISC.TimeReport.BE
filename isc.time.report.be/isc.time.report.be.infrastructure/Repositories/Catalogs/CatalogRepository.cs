@@ -86,5 +86,17 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
                 .Where(e => e.Status)
                 .ToListAsync();
         }
+        public async Task<List<CompanyCatalog>> GetCompanyCatalogActivosAsync()
+        {
+            return await _dbContext.CompanyCatalogs
+                .Where(e => e.Status)
+                .ToListAsync();
+        }
+        public async Task<List<EmployeeCategory>> GetEmployeeCategoryActivosAsync()
+        {
+            return await _dbContext.EmployeeCategories
+                .Where(e => e.Status)
+                .ToListAsync();
+        }
     }
 }
