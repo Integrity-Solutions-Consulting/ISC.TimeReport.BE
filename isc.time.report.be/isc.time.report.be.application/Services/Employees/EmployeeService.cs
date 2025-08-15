@@ -77,6 +77,13 @@ namespace isc.time.report.be.application.Services.Employees
 
         public async Task<UpdateEmployeeResponse> UpdateEmployeeWithPerson(int employeeId, UpdateEmployeeWithPersonOBJRequest request)
         {
+
+            //ESTO HAY QUE CAMBIARLO CUANDO ARREGLEN EL FRONT
+            if (request.Person.GenderID == 0)
+            {
+                request.Person.GenderID = 1;
+            }
+
             var employee = await _employeeRepository.GetEmployeeByIDAsync(employeeId);
             if (employee == null)
                 throw new ClientFaultException("No existe el empleado", 401);
