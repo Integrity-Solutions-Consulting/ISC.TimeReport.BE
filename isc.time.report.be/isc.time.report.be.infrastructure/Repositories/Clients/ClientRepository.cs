@@ -307,11 +307,12 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
                 await _dbContext.SaveChangesAsync();
 
                 var updateRequest = new InventoryUpdateCustomerRequest
-                {
-                    Name = $"{client.Person.FirstName} {client.Person.LastName}",
-                    Address = client.Person.Address ?? "No definido",
-                    Email = client.Person.Email ?? "noreply@example.com",
-                    Phone = client.Person.Phone ?? "000000000"
+                 {
+                    name = $"{client.Person.FirstName} {client.Person.LastName}",
+                    address = client.Person.Address ?? "No definido",
+                    email = client.Person.Email ?? "noreply@example.com",
+                    phone = client.Person.Phone ?? "000000000",
+                    ruc = client.Person.IdentificationNumber ?? "000000000"
                 };
 
                 var success = await _inventoryApiRepository.UpdateCustomerInventoryAsync(updateRequest, client.Person.IdentificationNumber);
