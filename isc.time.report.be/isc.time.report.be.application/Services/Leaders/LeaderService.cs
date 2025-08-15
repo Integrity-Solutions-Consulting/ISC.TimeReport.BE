@@ -92,6 +92,8 @@ namespace isc.time.report.be.application.Services.Leaders
             if (leader == null)
                 throw new ClientFaultException("No existe el líder", 401);
 
+            request.Person.IdentificationNumber = leader.Person.IdentificationNumber;
+
             _mapper.Map(request, leader);
             var updated = await _leaderRepository.UpdateLeaderWithPersonAsync(leader);
             updated = await _leaderRepository.GetLeaderByIDAsync(updated.Id);
