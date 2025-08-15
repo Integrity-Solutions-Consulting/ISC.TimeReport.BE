@@ -91,7 +91,11 @@ namespace isc.time.report.be.application.Services.DailyActivities
             if (entity == null) throw new Exception("Actividad no encontrada");
 
             _mapper.Map(request, entity);
-            entity.EmployeeID = employeeId;
+
+            if (entity.EmployeeID != employeeId)
+            {
+                throw new ClientFaultException("El ID del Daily no pertenece al empleado");
+            }
 
             var result = await _repository.UpdateAsync(entity);
             return _mapper.Map<UpdateDailyActivityResponse>(result);
