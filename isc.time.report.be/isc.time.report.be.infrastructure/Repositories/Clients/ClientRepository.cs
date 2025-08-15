@@ -308,7 +308,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
 
                 var updateRequest = new InventoryUpdateCustomerRequest
                  {
-                    name = $"{client.Person.FirstName} {client.Person.LastName}",
+                    name = client.TradeName ?? "No definido",
                     address = client.Person.Address ?? "No definido",
                     email = client.Person.Email ?? "noreply@example.com",
                     phone = client.Person.Phone ?? "000000000",
