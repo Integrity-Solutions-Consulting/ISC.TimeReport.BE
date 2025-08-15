@@ -92,8 +92,19 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
             leader.Status = true;
             leader.CreationUser = "SYSTEM";
 
-            await _dbContext.Leaders.AddAsync(leader);
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                await _dbContext.Leaders.AddAsync(leader);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                var innerMessage = ex.InnerException?.Message ?? ex.Message;
+
+                Console.WriteLine($"Error al guardar en base de datos: {innerMessage}");
+
+                throw new Exception($"Error al guardar los datos: {innerMessage}", ex);
+            }
 
             return leader;
         }
