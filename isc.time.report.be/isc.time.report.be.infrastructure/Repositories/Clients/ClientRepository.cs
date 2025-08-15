@@ -284,40 +284,55 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
 
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
-            var existingClient = await _dbContext.Clients
-                .Include(c => c.Person)
-                .FirstOrDefaultAsync(c => c.Id == client.Id);
-
-            if (existingClient == null)
-                throw new ClientFaultException($"No existe el cliente con ID {client.Id}");
-
-            if (client.Person.Id != existingClient.Person.Id)
-                throw new ClientFaultException("La persona ingresada no corresponde al cliente.");
-
             try
             {
-                client.Person.ModificationDate = DateTime.Now;
-                client.Person.ModificationUser = "SYSTEM";
-                _dbContext.Entry(existingClient.Person).CurrentValues.SetValues(client.Person);
+                var existingClient = await _dbContext.Clients
+                    .Include(c => c.Person)
+                    .FirstOrDefaultAsync(c => c.Id == client.Id);
 
-                client.ModificationDate = DateTime.Now;
-                client.ModificationUser = "SYSTEM";
-                _dbContext.Entry(existingClient).CurrentValues.SetValues(client);
+                if (existingClient == null)
+                    throw new ClientFaultException($"No existe el cliente con ID {client.Id}");
+
+                if (client.Person.Id != existingClient.Person.Id)
+                    throw new ClientFaultException("La persona ingresada no corresponde al cliente.");
+
+                existingClient.Person.IdentificationNumber = client.Person.IdentificationNumber;
+                existingClient.Person.PersonType = client.Person.PersonType;
+                existingClient.Person.FirstName = client.Person.FirstName;
+                existingClient.Person.LastName = client.Person.LastName;
+                existingClient.Person.BirthDate = client.Person.BirthDate;
+                existingClient.Person.Email = client.Person.Email;
+                existingClient.Person.Phone = client.Person.Phone;
+                existingClient.Person.Address = client.Person.Address;
+                existingClient.Person.GenderID = client.Person.GenderID;
+                existingClient.Person.NationalityId = client.Person.NationalityId;
+                existingClient.Person.IdentificationTypeId = client.Person.IdentificationTypeId;
+                existingClient.Person.ModificationDate = DateTime.Now;
+                existingClient.Person.ModificationUser = "SYSTEM";
+
+                existingClient.TradeName = client.TradeName;
+                existingClient.LegalName = client.LegalName;
+                existingClient.Company = client.Company;
+                existingClient.ModificationDate = DateTime.Now;
+                existingClient.ModificationUser = "SYSTEM";
+
+                _dbContext.Entry(existingClient.Person).State = EntityState.Modified;
+                _dbContext.Entry(existingClient).State = EntityState.Modified;
 
                 await _dbContext.SaveChangesAsync();
 
                 var updateRequest = new InventoryUpdateCustomerRequest
-                 {
-                    name = client.TradeName ?? "No definido",
-                    address = client.Person.Address ?? "No definido",
-                    email = client.Person.Email ?? "noreply@example.com",
-                    phone = client.Person.Phone ?? "000000000",
-                    ruc = client.Person.IdentificationNumber ?? "000000000"
+                {
+                    name = existingClient.TradeName ?? "No definido",
+                    address = existingClient.Person.Address ?? "No definido",
+                    email = existingClient.Person.Email ?? "noreply@example.com",
+                    phone = existingClient.Person.Phone ?? "000000000",
+                    ruc = existingClient.Person.IdentificationNumber ?? "000000000"
                 };
 
-                var success = await _inventoryApiRepository.UpdateCustomerInventoryAsync(updateRequest, client.Person.IdentificationNumber);
+                var success = await _inventoryApiRepository.UpdateCustomerInventoryAsync(updateRequest, existingClient.Person.IdentificationNumber);
                 if (!success)
-                    throw new InvalidOperationException("No se pudo actualizar el cliente en el inventario.");
+                    throw new ClientFaultException("No se pudo actualizar el cliente en el inventario.");
 
                 await transaction.CommitAsync();
                 return existingClient;

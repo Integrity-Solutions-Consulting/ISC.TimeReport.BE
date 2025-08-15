@@ -87,6 +87,11 @@ namespace isc.time.report.be.application.Services.DailyActivities
 
         public async Task<UpdateDailyActivityResponse> UpdateAsync(int id, UpdateDailyActivityRequest request, int employeeId)
         {
+            if (request.HoursQuantity == 0 || request.HoursQuantity == null)
+            {
+                throw new ClientFaultException("Las horas ingresadas no pueden ser 0");
+            }
+
             var entity = await _repository.GetByIdAsync(id);
             if (entity == null) throw new Exception("Actividad no encontrada");
 

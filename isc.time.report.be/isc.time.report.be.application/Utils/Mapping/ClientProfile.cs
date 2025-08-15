@@ -23,8 +23,11 @@ namespace isc.time.report.be.application.Utils.Mapping
             CreateMap<Client, UpdateClientWithPersonIDRequest>();
             CreateMap<UpdateClientWithPersonIDRequest, Client>();
 
-            CreateMap<Client, UpdateClientWithPersonOBJRequest>();
-            CreateMap<UpdateClientWithPersonOBJRequest, Client>();
+            CreateMap<Client, UpdateClientWithPersonOBJRequest>()
+                .ForMember(dest => dest.Person, opt => opt.MapFrom(src => src.Person));
+
+            CreateMap<UpdateClientWithPersonOBJRequest, Client>()
+                .ForMember(dest => dest.Person, opt => opt.MapFrom(src => src.Person));
 
 
             CreateMap<Client, CreateClientResponse>();

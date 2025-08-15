@@ -279,84 +279,97 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
             if (employee == null || employee.Person == null)
                 throw new ServerFaultException("El empleado o su persona asociada no pueden ser nulos.");
 
-            var existingEmployee = await _dbContext.Employees
-                .Include(e => e.Person)
-                .FirstOrDefaultAsync(e => e.Id == employee.Id);
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
-            if (existingEmployee == null)
-                throw new ServerFaultException($"No existe el empleado con ID {employee.Id}");
-
-            if (employee.Person.Id != existingEmployee.Person.Id)
-                throw new ServerFaultException("La persona ingresada no corresponde al empleado.");
-
-            using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+            try
             {
-                try
+                var existingEmployee = await _dbContext.Employees
+                    .Include(e => e.Person)
+                    .FirstOrDefaultAsync(e => e.Id == employee.Id);
+
+                if (existingEmployee == null)
+                    throw new ServerFaultException($"No existe el empleado con ID {employee.Id}");
+
+                if (employee.Person.Id != existingEmployee.Person.Id)
+                    throw new ServerFaultException("La persona ingresada no corresponde al empleado.");
+
+                existingEmployee.Person.IdentificationNumber = employee.Person.IdentificationNumber;
+                existingEmployee.Person.PersonType = employee.Person.PersonType;
+                existingEmployee.Person.FirstName = employee.Person.FirstName;
+                existingEmployee.Person.LastName = employee.Person.LastName;
+                existingEmployee.Person.BirthDate = employee.Person.BirthDate;
+                existingEmployee.Person.Email = employee.Person.Email;
+                existingEmployee.Person.Phone = employee.Person.Phone;
+                existingEmployee.Person.Address = employee.Person.Address;
+                existingEmployee.Person.GenderID = employee.Person.GenderID;
+                existingEmployee.Person.NationalityId = employee.Person.NationalityId;
+                existingEmployee.Person.IdentificationTypeId = employee.Person.IdentificationTypeId;
+                existingEmployee.Person.ModificationDate = DateTime.Now;
+                existingEmployee.Person.ModificationUser = "SYSTEM";
+
+                existingEmployee.PositionID = employee.PositionID;
+                existingEmployee.WorkModeID = employee.WorkModeID;
+                existingEmployee.EmployeeCategoryID = employee.EmployeeCategoryID;
+                existingEmployee.CompanyCatalogID = employee.CompanyCatalogID;
+                existingEmployee.EmployeeCode = employee.EmployeeCode;
+                existingEmployee.HireDate = employee.HireDate;
+                existingEmployee.TerminationDate = employee.TerminationDate;
+                existingEmployee.ContractType = employee.ContractType;
+                existingEmployee.CorporateEmail = employee.CorporateEmail;
+                existingEmployee.Salary = employee.Salary;
+                existingEmployee.ModificationDate = DateTime.Now;
+                existingEmployee.ModificationUser = "SYSTEM";
+
+                _dbContext.Entry(existingEmployee.Person).State = EntityState.Modified;
+                _dbContext.Entry(existingEmployee).State = EntityState.Modified;
+
+                await _dbContext.SaveChangesAsync();
+
+                var inventoryUpdateRequest = new InventoryUpdateEmployeeRequest
                 {
-                    employee.Person.ModificationDate = DateTime.Now;
-                    employee.Person.ModificationUser = "SYSTEM";
-                    _dbContext.Entry(existingEmployee.Person).CurrentValues.SetValues(employee.Person);
-                    _dbContext.Entry(existingEmployee.Person).State = EntityState.Modified;
+                    idIdentificationType = employee.Person.IdentificationTypeId ?? 0,
+                    idGender = employee.Person.GenderID ?? 0,
+                    idPosition = employee.PositionID ?? 0,
+                    idWorkMode = employee.WorkModeID,
+                    idNationality = employee.Person.NationalityId ?? 0,
+                    firstName = employee.Person.FirstName,
+                    lastName = employee.Person.LastName,
+                    identification = employee.Person.IdentificationNumber,
+                    phone = employee.Person.Phone,
+                    email = employee.CorporateEmail,
+                    address = employee.Person.Address,
+                    contractDate = employee.HireDate.HasValue
+                        ? DateOnly.FromDateTime(employee.HireDate.Value)
+                        : DateOnly.MinValue,
+                    contractEndDate = employee.TerminationDate.HasValue
+                        ? DateOnly.FromDateTime(employee.TerminationDate.Value)
+                        : null
+                };
 
-                    employee.ModificationDate = DateTime.Now;
-                    employee.ModificationUser = "SYSTEM";
-                    _dbContext.Entry(existingEmployee).CurrentValues.SetValues(employee);
-                    _dbContext.Entry(existingEmployee).State = EntityState.Modified;
+                var updated = await inventoryApiRepository.UpdateEmployeeInventoryAsync(inventoryUpdateRequest, employee.Person.IdentificationNumber);
+                if (!updated)
+                    throw new ServerFaultException("No se pudo actualizar el empleado en el sistema de inventario.");
 
-                    var inventoryUpdateRequest = new InventoryUpdateEmployeeRequest
-                    {
-                        idIdentificationType = employee.Person.IdentificationTypeId ?? 0,
-                        idGender = employee.Person.GenderID ?? 0,
-                        idPosition = employee.PositionID ?? 0,
-                        idWorkMode = employee.WorkModeID,
-                        idNationality = employee.Person.NationalityId ?? 0,
-                        firstName = employee.Person.FirstName,
-                        lastName = employee.Person.LastName,
-                        identification = employee.Person.IdentificationNumber,
-                        phone = employee.Person.Phone,
-                        email = employee.CorporateEmail,
-                        address = employee.Person.Address,
-                        contractDate = DateOnly.FromDateTime(employee.HireDate ?? DateTime.MinValue),
-                        contractEndDate = employee.TerminationDate.HasValue
-                            ? DateOnly.FromDateTime(employee.TerminationDate.Value)
-                            : null
-                    };
-                    try
-                    {
-                        await _dbContext.SaveChangesAsync();
-                    }
-                    catch (DbUpdateException ex)
-                    {
-                        // Error de concurrencia (alguien más modificó los mismos datos)
-                        throw new ApplicationException("Conflicto de concurrencia al intentar guardar. Refresca los datos e intenta nuevamente.", ex);
-                    }
-                    catch (ValidationException ex)
-                    {
-                        // Error de validación en el modelo (si usas DataAnnotations u otros validadores)
-                        throw new ApplicationException("Error de validación en los datos enviados.", ex);
-                    }
-                    catch (Exception ex)
-                    {
-                        // Cualquier otro error inesperado
-                        throw new ApplicationException("Error inesperado al guardar los cambios en la base de datos.", ex);
-                    }
-
-
-                    var updated = await inventoryApiRepository.UpdateEmployeeInventoryAsync(inventoryUpdateRequest, employee.Person.IdentificationNumber);
-                    if (!updated)
-                        throw new ServerFaultException("No se pudo actualizar el empleado en el sistema de inventario.");
-
-                    await transaction.CommitAsync();
-
-                    return existingEmployee;
-                }
-                catch
-                {
-                    await transaction.RollbackAsync();
-                    throw;
-                }
+                await transaction.CommitAsync();
+                return existingEmployee;
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                await transaction.RollbackAsync();
+                throw new ApplicationException("Conflicto de concurrencia al intentar guardar. Refresca los datos e intenta nuevamente.", ex);
+            }
+            catch (ValidationException ex)
+            {
+                await transaction.RollbackAsync();
+                throw new ApplicationException("Error de validación en los datos enviados.", ex);
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
             }
         }
+
         public async Task<Employee> InactivateEmployeeAsync(int employeeId)
         {
             var employee = await _dbContext.Employees.Include(e => e.Person).FirstOrDefaultAsync(e => e.Id == employeeId);
