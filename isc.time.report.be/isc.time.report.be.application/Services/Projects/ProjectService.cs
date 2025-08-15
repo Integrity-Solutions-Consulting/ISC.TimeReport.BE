@@ -158,7 +158,7 @@ namespace isc.time.report.be.application.Services.Projects
                 }
             }
 
-            var existing = await projectRepository.GetByProjectIdAsync(request.ProjectID);
+            var existing = await projectRepository.GetByProjectEmployeeIDAsync(request.ProjectID);
             var now = DateTime.UtcNow;
             var finalList = new List<EmployeeProject>();
 
