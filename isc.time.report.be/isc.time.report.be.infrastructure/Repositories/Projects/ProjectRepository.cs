@@ -136,15 +136,15 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
             return project;
         }
 
-        public async Task<List<EmployeeProject>> GetByProjectIdAsync(int projectId)
+        public async Task<List<EmployeeProject>> GetByProjectEmployeeIDAsync(int projectId)
         {
             var project = await _dbContext.EmployeeProjects
                 .Where(ep => ep.ProjectID == projectId)
                 .ToListAsync();
-            if (!project.Any())
-            {
-                throw new ServerFaultException("No existen projectos con esa ID");
-            }
+            //if (!project.Any())
+            //{
+            //    throw new ServerFaultException("No existen projectos con esa ID");
+            //}
             return project;
         }
 
