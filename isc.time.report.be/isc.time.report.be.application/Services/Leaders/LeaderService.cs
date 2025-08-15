@@ -57,6 +57,13 @@ namespace isc.time.report.be.application.Services.Leaders
 
         public async Task<CreateLeaderResponse> CreateLeaderWithPerson(CreateLeaderWithPersonOBJRequest request)
         {
+
+            //ESTO HAY QUE CAMBIARLO CUANDO EL FRONTEND AREGLE LO DE NATIONALITY
+            if (request.Person.NationalityId == null || request.Person.NationalityId == 0)
+            {
+                request.Person.NationalityId = 5;
+            }
+
             if (request.LeadershipType == null)
             {
                 throw new ClientFaultException("El tipo de liderazgo no puede ser nulo", 400);
@@ -67,6 +74,11 @@ namespace isc.time.report.be.application.Services.Leaders
                 var random = new Random();
                 var numerosAleatorios = random.Next(100_000_000, 1_000_000_000);
                 request.Person.IdentificationNumber = $"L{numerosAleatorios}";
+            }
+
+            if (request.LeadershipType == true && string.IsNullOrEmpty(request.Person.IdentificationNumber))
+            {
+                throw new ClientFaultException("El numero de cedula de un lider interno no puede ser null o estar vacio", 400);
             }
 
             var leader = _mapper.Map<Leader>(request);
@@ -91,8 +103,10 @@ namespace isc.time.report.be.application.Services.Leaders
             var leader = await _leaderRepository.GetLeaderByIDAsync(leaderId);
             if (leader == null)
                 throw new ClientFaultException("No existe el líder", 401);
-
-            request.Person.IdentificationNumber = leader.Person.IdentificationNumber;
+            if (request.LeadershipType == false)
+            {
+                request.Person.IdentificationNumber = leader.Person.IdentificationNumber;
+            }
 
             _mapper.Map(request, leader);
             var updated = await _leaderRepository.UpdateLeaderWithPersonAsync(leader);
