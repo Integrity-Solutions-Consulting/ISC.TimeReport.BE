@@ -85,10 +85,10 @@ namespace isc.time.report.be.infrastructure.Repositories.Permissions
             var permissions = await _dbContext.Permissions
                 .Where(p => p.EmployeeID == employeeId && p.ApprovalStatusID == 2)
                 .ToListAsync();
-            if (!permissions.Any())
-            {
-                throw new ServerFaultException($"No se encontraron permisos aprobados para el empleado con ID {employeeId}.");
-            }
+            //if (!permissions.Any())
+            //{
+            //    throw new ServerFaultException($"No se encontraron permisos aprobados para el empleado con ID {employeeId}.");
+            //}
             return permissions;
         }
     }
