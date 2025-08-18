@@ -134,7 +134,7 @@ namespace isc.time.report.be.application.Services.Auth
                 <html lang='es'>
                 <head>
                     <meta charset='UTF-8'>
-                    <title>Recuperación de contraseña</title>
+                    <title>Recepcion de credenciales</title>
                     <style>
                         body {{ margin: 0; padding: 0; background-color: #f2f2f2; font-family: 'Raleway', sans-serif; color: #0d0d0d; }}
                         .container {{ width: 100%; padding: 30px 0; display: flex; justify-content: center; align-items: center; }}
@@ -156,6 +156,7 @@ namespace isc.time.report.be.application.Services.Auth
                 <p><strong>Usuario:</strong> {registerRequest.Username}</p>
                 <p><strong>Contraseña temporal:</strong> {generatedPassword}</p>
                 <p>Por seguridad, deberás cambiar la contraseña al iniciar sesión.</p>
+                    <a href='https://app.timereport.integritysolutions.com.ec' class='button'>Ir a la Página Principal</a>
                         </div>
                     </div>
                 </body>
