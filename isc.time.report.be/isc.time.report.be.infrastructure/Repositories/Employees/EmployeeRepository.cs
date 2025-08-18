@@ -274,7 +274,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
             return existingEmployee;
         }
 
-        public async Task<Employee> UpdateEmployeeWithPersonForInventoryAsync(Employee employee)
+        public async Task<Employee> UpdateEmployeeWithPersonForInventoryAsync(string Identification, Employee employee)
         {
             if (employee == null || employee.Person == null)
                 throw new ServerFaultException("El empleado o su persona asociada no pueden ser nulos.");
@@ -346,7 +346,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                         : null
                 };
 
-                var updated = await inventoryApiRepository.UpdateEmployeeInventoryAsync(inventoryUpdateRequest, employee.Person.IdentificationNumber);
+                var updated = await inventoryApiRepository.UpdateEmployeeInventoryAsync(inventoryUpdateRequest, Identification);
                 if (!updated)
                     throw new ServerFaultException("No se pudo actualizar el empleado en el sistema de inventario.");
 
