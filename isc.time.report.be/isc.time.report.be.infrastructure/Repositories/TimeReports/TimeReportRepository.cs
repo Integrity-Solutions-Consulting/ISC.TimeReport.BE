@@ -87,7 +87,7 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
         public async Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteAsync()
         {
             var list = await _dbContext.Set<DashboardRecursosPendientesDto>().FromSqlRaw("EXEC dbo.sp_RecursosTimeReportPendiente").ToListAsync();
-            if (list.Any())
+            if (!list.Any())
             {
                 throw new ServerFaultException("No se encontraron recursos pendientes para el Time Report");
             }
