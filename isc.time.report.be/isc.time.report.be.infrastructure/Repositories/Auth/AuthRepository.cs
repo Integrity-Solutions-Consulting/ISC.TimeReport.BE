@@ -171,7 +171,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
 
         public async Task<Role?> GetRoleByNameAsync(string name)
         {
-            if (!string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ClientFaultException("El nombre del rol es requerido");
             }
