@@ -2,6 +2,7 @@
 using isc.time.report.be.application.Interfaces.Repository.Employees;
 using isc.time.report.be.application.Interfaces.Repository.Persons;
 using isc.time.report.be.application.Interfaces.Service.Employees;
+using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
@@ -77,6 +78,10 @@ namespace isc.time.report.be.application.Services.Employees
 
         public async Task<UpdateEmployeeResponse> UpdateEmployeeWithPerson(int employeeId, UpdateEmployeeWithPersonOBJRequest request)
         {
+            if (string.IsNullOrEmpty(request.Person.IdentificationNumber))
+            {
+                throw new ClientFaultException("No existe el cliente", 401);
+            }
 
             //ESTO HAY QUE CAMBIARLO CUANDO ARREGLEN EL FRONT
             if (request.Person.GenderID == 0)
@@ -88,8 +93,10 @@ namespace isc.time.report.be.application.Services.Employees
             if (employee == null)
                 throw new ClientFaultException("No existe el empleado", 401);
 
+            var identification = employee.Person.IdentificationNumber;
+
             _mapper.Map(request, employee);
-            var updated = await _employeeRepository.UpdateEmployeeWithPersonForInventoryAsync(employee);
+            var updated = await _employeeRepository.UpdateEmployeeWithPersonForInventoryAsync(identification, employee);
             updated = await _employeeRepository.GetEmployeeByIDAsync(employee.Id);
             return _mapper.Map<UpdateEmployeeResponse>(updated);
         }
