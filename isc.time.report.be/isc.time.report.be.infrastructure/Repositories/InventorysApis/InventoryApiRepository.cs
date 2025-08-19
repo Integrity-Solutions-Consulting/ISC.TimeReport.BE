@@ -57,7 +57,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
 
             var request = new InventoryLoginDto
             {
-                email = "admin@integrity.com",
+                email = "kerly.jimenez@integritysolutions.com.ec",
                 password = "Password2@"
             };
 
