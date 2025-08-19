@@ -3,7 +3,7 @@ name: ISC.TimeReport.FE-DEV-CI/CD
 on:
   pull_request:
     branches:
-      - pruebas
+      - develop
     types:
       - closed
   workflow_dispatch:
