@@ -1,15 +1,46 @@
-﻿using System;
+﻿using isc.time.report.be.application.Interfaces.Repository.InventoryApis;
+using isc.time.report.be.application.Interfaces.Service.Auth;
+using isc.time.report.be.application.Interfaces.Service.Catalogs;
+using isc.time.report.be.application.Interfaces.Service.Clients;
+using isc.time.report.be.application.Interfaces.Service.DailyActivities;
+using isc.time.report.be.application.Interfaces.Service.Dashboards;
+using isc.time.report.be.application.Interfaces.Service.Employees;
+using isc.time.report.be.application.Interfaces.Service.Holidays;
+using isc.time.report.be.application.Interfaces.Service.InventoryApis;
+using isc.time.report.be.application.Interfaces.Service.Leaders;
+using isc.time.report.be.application.Interfaces.Service.Menus;
+using isc.time.report.be.application.Interfaces.Service.Permissions;
+using isc.time.report.be.application.Interfaces.Service.PermissionTypes;
+using isc.time.report.be.application.Interfaces.Service.Persons;
+using isc.time.report.be.application.Interfaces.Service.Projects;
+using isc.time.report.be.application.Interfaces.Service.TimeReports;
+using isc.time.report.be.application.Interfaces.Service.Users;
+using isc.time.report.be.application.Services;
+using isc.time.report.be.application.Services.Auth;
+using isc.time.report.be.application.Services.Catalogs;
+using isc.time.report.be.application.Services.Clients;
+using isc.time.report.be.application.Services.DailyActivities;
+using isc.time.report.be.application.Services.Dashboards;
+using isc.time.report.be.application.Services.Employees;
+using isc.time.report.be.application.Services.Holidays;
+using isc.time.report.be.application.Services.InventoryApis;
+using isc.time.report.be.application.Services.Leaders;
+using isc.time.report.be.application.Services.Menus;
+using isc.time.report.be.application.Services.Permissions;
+using isc.time.report.be.application.Services.PermissionTypes;
+using isc.time.report.be.application.Services.Persons;
+using isc.time.report.be.application.Services.Projects;
+using isc.time.report.be.application.Services.TimeReports;
+using isc.time.report.be.application.Services.Users;
+using isc.time.report.be.application.Utils.Auth;
+using isc.time.report.be.domain.Entity.Emails;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using isc.time.report.be.application.Interfaces.Service.Auth;
-using isc.time.report.be.application.Interfaces.Service.Customers;
-using isc.time.report.be.application.Services.Auth;
-using isc.time.report.be.application.Services.Customer;
-using isc.time.report.be.application.Utils.Auth;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace isc.time.report.be.application.IOC
 {
@@ -22,7 +53,25 @@ namespace isc.time.report.be.application.IOC
             services.AddSingleton<JWTUtils>();
 
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IEmployeeService, EmployeeService>();
+            services.AddScoped<ILeaderService, LeaderService>();
+            services.AddScoped<IPersonService, PersonService>();
+            services.AddScoped<IUserServices, UserServices>();
+            services.AddScoped<IMenuService, MenuService>();
+            services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<IClientService, ClientService>();
+            services.AddScoped<IPermissionService, PermissionService>();
+            services.AddScoped<IPermissionTypeService, PermissionTypeService>();
+            services.AddScoped<IDailyActivityService,DailyActivityService>();
+            services.AddScoped<ITimeReportService, TimeReportService>();
+            services.AddScoped<ICatalogService, CatalogService>();
+            services.AddScoped<IDashboardService, DashboardService>();
+            services.AddScoped<IInventoryApiService, InventoryApiService>();
+            services.AddScoped<IHolidayService, HolidayServices>();
+
+
+            services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+
 
             return services;
         }

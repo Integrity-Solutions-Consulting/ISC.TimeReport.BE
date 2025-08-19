@@ -1,4 +1,7 @@
-﻿using System;
+﻿using isc.time.report.be.domain.Entity.Auth;
+using isc.time.report.be.domain.Models.Response.Menus;
+using isc.time.report.be.domain.Models.Response.Users;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,11 +11,12 @@ namespace isc.time.report.be.domain.Models.Response.Auth
 {
     public class LoginResponse
     {
-        public string Username { get; set; }
-        public string Names { get; set; }
-        public string Surnames { get; set; }
-        public string Email { get; set; }
-        public string Token { get; set; }
-
+        public int UserID { get; set; }
+        public int EmployeeID { get; set; }
+        public string TOKEN { get; set; }
+        public bool MustChangePassword { get; set; }
+        public List<RoleResponse> Roles { get; set; }
+        public List<ModuleResponse> Modules { get; set; }
     }
+
 }

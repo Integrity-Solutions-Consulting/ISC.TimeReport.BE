@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "isc.time.report.be.domain",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "isc.time.report.be.infrastructure", "isc.time.report.be.infrastructure\isc.time.report.be.infrastructure.csproj", "{C181BC66-0271-40A1-AA00-A98147C90826}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "isc.time.report.be.tests", "isc.time.report.be.tests\isc.time.report.be.tests.csproj", "{505137DD-06C5-4F96-A698-7DAF31BC1791}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{C181BC66-0271-40A1-AA00-A98147C90826}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C181BC66-0271-40A1-AA00-A98147C90826}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C181BC66-0271-40A1-AA00-A98147C90826}.Release|Any CPU.Build.0 = Release|Any CPU
+		{505137DD-06C5-4F96-A698-7DAF31BC1791}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{505137DD-06C5-4F96-A698-7DAF31BC1791}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{505137DD-06C5-4F96-A698-7DAF31BC1791}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{505137DD-06C5-4F96-A698-7DAF31BC1791}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
