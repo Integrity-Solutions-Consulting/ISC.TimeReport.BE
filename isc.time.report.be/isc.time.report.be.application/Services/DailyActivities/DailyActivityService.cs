@@ -49,8 +49,8 @@ namespace isc.time.report.be.application.Services.DailyActivities
             var activityDate = request.ActivityDate;
             var dayOfWeek = activityDate.DayOfWeek;
 
-            if (dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday)
-                throw new InvalidOperationException("No se pueden registrar actividades los sábados o domingos.");
+            //if (dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday)
+            //    throw new InvalidOperationException("No se pueden registrar actividades los sábados o domingos.");
 
             // Validar si la fecha es feriado
             var holidays = await _timeReportRepository.GetActiveHolidaysByMonthAndYearAsync(activityDate.Month, activityDate.Year);
