@@ -106,6 +106,7 @@ namespace isc.time.report.be.application.Services.Projects
 
             projectGet.ClientID = projectParaUpdate.ClientID;
             projectGet.ProjectStatusID = projectParaUpdate.ProjectStatusID;
+            projectGet.ProjectTypeID = projectParaUpdate.ProjectTypeID;
             projectGet.Code = projectParaUpdate.Code;
             projectGet.Name = projectParaUpdate.Name;
             projectGet.Description = projectParaUpdate.Description;
