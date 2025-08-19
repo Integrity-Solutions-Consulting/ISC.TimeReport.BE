@@ -185,8 +185,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
 
             var leaders = await _dbContext.Leaders
                 .Include(l => l.Person)
-                .Where(l => projectIds.Contains(l.ProjectID) &&
-                            (l.EndDate == null || l.EndDate > today))
+                .Where(l => projectIds.Contains(l.ProjectID))
                 .ToListAsync();
             if (!leaders.Any())
             {
