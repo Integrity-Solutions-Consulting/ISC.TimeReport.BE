@@ -92,13 +92,20 @@ namespace isc.time.report.be.application.Services.Clients
 
         public async Task<UpdateClientResponse> UpdateClientWithPerson(int clientId, UpdateClientWithPersonOBJRequest request)
         {
+            if (string.IsNullOrEmpty(request.Person.IdentificationNumber))
+            {
+                throw new ClientFaultException("El Numero de Identificacion no puede ser nulo o estar vacio", 401);
+            }
+
             var client = await _clientRepository.GetClientByIDAsync(clientId);
             if (client == null)
                 throw new ClientFaultException("No existe el cliente", 401);
 
+            var identification = client.Person.IdentificationNumber;
+
             _mapper.Map(request, client);
 
-            var updated = await _clientRepository.UpdateClientWithPersonForInventoryAsync(client);
+            var updated = await _clientRepository.UpdateClientWithPersonForInventoryAsync(identification, client);
             updated = await _clientRepository.GetClientByIDAsync(updated.Id);
             return _mapper.Map<UpdateClientResponse>(updated);
         }

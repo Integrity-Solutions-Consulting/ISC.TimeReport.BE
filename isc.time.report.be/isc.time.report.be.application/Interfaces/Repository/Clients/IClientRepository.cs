@@ -19,7 +19,7 @@ namespace isc.time.report.be.application.Interfaces.Repository.Clients
         Task<Client> CreateClientWithPersonForInventoryAsync(Client client);
         Task<Client> UpdateClientAsync(Client client);
         Task<Client> UpdateClientWithPersonAsync(Client client);
-        Task<Client> UpdateClientWithPersonForInventoryAsync(Client client);
+        Task<Client> UpdateClientWithPersonForInventoryAsync(string identification, Client client);
         Task<Client> InactivateClientAsync(int clientId);
         Task<Client> InactivateClientForInventoryAsync(int clientId);
         Task<Client> ActivateClientAsync(int clientId);

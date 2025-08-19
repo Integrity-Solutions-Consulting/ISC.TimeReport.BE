@@ -17,7 +17,7 @@ namespace isc.time.report.be.application.Interfaces.Repository.Employees
         Task<Employee> CreateEmployeeWithPersonForInventoryAsync(Employee employee);
         Task<Employee> UpdateEmployeeAsync(Employee employee);
         Task<Employee> UpdateEmployeeWithPersonAsync(Employee employee);
-        Task<Employee> UpdateEmployeeWithPersonForInventoryAsync(Employee employee);
+        Task<Employee> UpdateEmployeeWithPersonForInventoryAsync(string Identification, Employee employee);
         Task<Employee> InactivateEmployeeAsync(int employeeId);
         Task<Employee> InactivateEmployeeForInventoryAsync(int employeeId);
         Task<Employee> ActivateEmployeeAsync(int employeeId);
