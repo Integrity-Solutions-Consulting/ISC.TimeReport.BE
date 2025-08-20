@@ -1,4 +1,5 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.InventoryApis;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using isc.time.report.be.application.Interfaces.Repository.InventoryApis;
 using isc.time.report.be.domain.Entity.Catalogs;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysCustomers;
@@ -9,6 +10,7 @@ using isc.time.report.be.infrastructure.Database;
 using isc.time.report.be.infrastructure.Utils;
 using isc.time.report.be.infrastructure.Utils.Peticiones;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,11 +24,13 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
         private readonly HttpUtils _httpUtils;
         private readonly DBContext _dbContext;
         private readonly JWTInventoryUtils _jwtInventoryUtils;
-        public InventoryApiRepository(HttpUtils httpUtils, DBContext dBContext, JWTInventoryUtils jWTInventoryUtils)
+        private readonly IConfiguration _configuration;
+        public InventoryApiRepository(HttpUtils httpUtils, DBContext dBContext, JWTInventoryUtils jWTInventoryUtils, IConfiguration configuration)
         {
             _httpUtils = httpUtils;
             _dbContext = dBContext;
             _jwtInventoryUtils = jWTInventoryUtils;
+            _configuration = configuration;
         }
 
         public async Task<string> LoginInventory()
@@ -61,8 +65,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
                 password = "Password2@"
             };
 
-            var url = "https://auth.inventory.integritysolutions.com.ec/api/v1/auth/login";
-            var response = await _httpUtils.SendRequest<InventoryLoginResponse>(url, HttpMethod.Post, request);
+            var response = await _httpUtils.SendRequest<InventoryLoginResponse>($"{_configuration["Infrastructure:InventoryAuthUrlBase"]}/api/v1/auth/login", HttpMethod.Post, request);
 
             if (response?.data?.token == null)
                 throw new ClientFaultException("No se pudo obtener el token del servicio de inventario.");
@@ -80,58 +83,49 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
         {
             var token = await LoginInventory();
 
-            var url = "https://api.inventory.integritysolutions.com.ec/api/v1/employee/save";
+            var response = await _httpUtils.SendRequest<object>($"{_configuration["Infrastructure:InventoryAPIUrlBase"]}/api/v1/employee/save", HttpMethod.Post, request, token);
 
-            var result = await _httpUtils.SendRequest<object>(url, HttpMethod.Post, request, token);
-
-            return result != null;
+            return response != null;
         }
 
         public async Task<bool> UpdateEmployeeInventoryAsync(InventoryUpdateEmployeeRequest request, string id)
         {
             var token = await LoginInventory();
 
-            var url = $"https://api.inventory.integritysolutions.com.ec/api/v1/employee/update/{id}";
+            var response = await _httpUtils.SendRequest<object>($"{_configuration["Infrastructure:InventoryAPIUrlBase"]}/api/v1/employee/update/{id}", HttpMethod.Put, request, token);
 
-            var result = await _httpUtils.SendRequest<object>(url, HttpMethod.Put, request, token);
-
-            return result != null;
+            return response != null;
         }
 
         public async Task<bool> InactivateStatusEmployeeInventoryAsync(string id)
         {
             var token = await LoginInventory();
 
-            var url = $"https://api.inventory.integritysolutions.com.ec/api/v1/employee/inactive/{id}";
+            var response = await _httpUtils.SendRequest<object>($"{_configuration["Infrastructure:InventoryAPIUrlBase"]}/api/v1/employee/inactive/{id}", HttpMethod.Delete, null, token);
 
-            var result = await _httpUtils.SendRequest<object>(url, HttpMethod.Delete, null, token);
-            return result != null;
+            return response != null;
         }
 
         public async Task<bool> ActivateStatusEmployeeInventoryAsync(string id)
         {
             var token = await LoginInventory();
 
-            var url = $"https://api.inventory.integritysolutions.com.ec/api/v1/employee/activate/{id}";
-
-            var result = await _httpUtils.SendRequest<object>(url, HttpMethod.Put, null, token);
-            return result != null;
+            var response = await _httpUtils.SendRequest<object>($"{_configuration["Infrastructure:InventoryAPIUrlBase"]}/api/v1/employee/activate/{id}", HttpMethod.Put, null, token);
+            return response != null;
         }
 
         public async Task<SupplierResponseDto> GetInventoryProviders()
         {
             var token = await LoginInventory();
 
-            var url = $"https://api.inventory.integritysolutions.com.ec/api/v1/supplier/supplierType/2";
+            var response = await _httpUtils.SendRequest<SupplierResponseDto>($"{_configuration["Infrastructure:InventoryAPIUrlBase"]}/api/v1/supplier/supplierType/2", HttpMethod.Get, null, token);
 
-            var result = await _httpUtils.SendRequest<SupplierResponseDto>(url, HttpMethod.Get, null, token);
-
-            return result;
+            return response ;
         }
         public async Task<bool> CreateCustomerInventoryAsync(InventoryCreateCustomerRequest request)
         {
             var token = await LoginInventory();
-            var url = "https://api.inventory.integritysolutions.com.ec/api/v1/customers/save";
+            var url = $"{_configuration["Infrastructure:InventoryAPIUrlBase"]}/api/v1/customers/save";
             var result = await _httpUtils.SendRequest<object>(url, HttpMethod.Post, request, token);
             return result != null;
         }
@@ -139,7 +133,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
         public async Task<bool> UpdateCustomerInventoryAsync(InventoryUpdateCustomerRequest request, string id)
         {
             var token = await LoginInventory();
-            var url = $"https://api.inventory.integritysolutions.com.ec/api/v1/customers/update/{id}";
+            var url = $"{_configuration["Infrastructure:InventoryAPIUrlBase"]}/api/v1/customers/update/{id}";
             var result = await _httpUtils.SendRequest<object>(url, HttpMethod.Put, request, token);
             return result != null;
         }
@@ -147,7 +141,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
         public async Task<bool> InactivateCustomerInventoryAsync(string id)
         {
             var token = await LoginInventory();
-            var url = $"https://api.inventory.integritysolutions.com.ec/api/v1/customers/inactive/{id}";
+            var url = $"{_configuration["Infrastructure:InventoryAPIUrlBase"]}/api/v1/customers/inactive/{id}";
             var result = await _httpUtils.SendRequest<object>(url, HttpMethod.Delete, null, token);
             return result != null;
         }
@@ -155,7 +149,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
         public async Task<bool> ActivateCustomerInventoryAsync(string id)
         {
             var token = await LoginInventory();
-            var url = $"https://api.inventory.integritysolutions.com.ec/api/v1/customers/activate/{id}";
+            var url = $"{_configuration["Infrastructure:InventoryAPIUrlBase"]}/api/v1/customers/activate/{id}";
             var result = await _httpUtils.SendRequest<object>(url, HttpMethod.Patch, null, token);
             return result != null;
         }

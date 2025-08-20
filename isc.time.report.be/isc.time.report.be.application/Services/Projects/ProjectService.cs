@@ -264,9 +264,9 @@ namespace isc.time.report.be.application.Services.Projects
                         Id = e.Id,
                         PersonID = e.PersonID,
                         EmployeeCode = e.EmployeeCode,
-                        IdentificationNumber = e.Person?.IdentificationNumber,
-                        FirstName = e.Person?.FirstName,
-                        LastName = e.Person?.LastName,
+                        IdentificationNumber = e.Person.IdentificationNumber,
+                        FirstName = e.Person.FirstName,
+                        LastName = e.Person.LastName,
                         Status = e.Status
                     }).ToList()
             };

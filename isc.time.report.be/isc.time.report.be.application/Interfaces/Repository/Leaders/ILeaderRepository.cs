@@ -1,4 +1,5 @@
 ﻿using isc.time.report.be.domain.Entity.Leaders;
+using isc.time.report.be.domain.Entity.Persons;
 using isc.time.report.be.domain.Entity.Shared;
 using System;
 using System.Collections.Generic;
@@ -19,5 +20,9 @@ namespace isc.time.report.be.application.Interfaces.Repository.Leaders
         Task<Leader> InactivateLeaderAsync(int leaderId);
         Task<Leader> ActivateLeaderAsync(int leaderId);
         Task<List<Leader>> GetActiveLeadersByProjectIdsAsync(List<int> projectIds);
+        Task<List<Leader>> GetAllLeaderProjectByPersonIdAsync();
+        Task<List<Leader>> GetLeaderProjectByIdAsync(int personId);
+        Task<Person> GetLeadershipByPersonId(int personid);
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using isc.time.report.be.domain.Entity.Shared;
+﻿using isc.time.report.be.domain.Entity.Leaders;
+using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Models.Request.Leaders;
 using isc.time.report.be.domain.Models.Response.Leaders;
 using isc.time.report.be.domain.Models.Response.Leaders;
@@ -20,5 +21,7 @@ namespace isc.time.report.be.application.Interfaces.Service.Leaders
         Task<UpdateLeaderResponse> UpdateLeaderWithPerson(int leaderId, UpdateLeaderWithPersonOBJRequest request);
         Task<ActivateInactivateLeaderResponse> InactivateLeader(int leaderId);
         Task<ActivateInactivateLeaderResponse> ActivateLeader(int leaderId);
+        Task<List<GetAllLeaderProjectByPersonIdResponse>> GetAllLeadersRegisterGrouped();
+        Task<GetAllLeaderProjectByPersonIdResponse?> GetLeadershipByPersonId(int personId);
     }
 }
