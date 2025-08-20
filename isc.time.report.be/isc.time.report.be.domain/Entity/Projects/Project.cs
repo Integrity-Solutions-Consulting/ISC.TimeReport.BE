@@ -1,6 +1,7 @@
 ﻿using isc.time.report.be.domain.Entity.Catalogs;
 using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Employees;
+using isc.time.report.be.domain.Entity.Leaders;
 using isc.time.report.be.domain.Entity.Shared;
 using System;
 using System.Collections.Generic;
@@ -28,5 +29,6 @@ namespace isc.time.report.be.domain.Entity.Projects
         public decimal? Budget { get; set; } = 0;
         public decimal? Hours { get; set; } = 0;
         public List<EmployeeProject> EmployeeProject { get; set; }
+        public List<Leader> Leader { get; set; }
     }
 }

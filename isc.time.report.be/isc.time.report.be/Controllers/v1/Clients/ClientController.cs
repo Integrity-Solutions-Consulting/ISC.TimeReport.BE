@@ -21,7 +21,7 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
             _clientService = clientService;
         }
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpGet("GetAllClients")]
         public async Task<ActionResult<SuccessResponse<PagedResult<GetClientsDetailsResponse>>>> GetAllClients(
             [FromQuery] PaginationParams paginationParams,
@@ -31,7 +31,7 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador,Gerente,Lider,Colaborador")]
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
         [HttpGet("GetMyClients")]
         public async Task<ActionResult<SuccessResponse<PagedResult<GetClientsDetailsResponse>>>> GetClientsAssignedToEmployee(
             [FromQuery] PaginationParams paginationParams,
@@ -42,7 +42,7 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpGet("GetClientByID/{id}")]
         public async Task<ActionResult<SuccessResponse<GetClientsDetailsResponse>>> GetClientById(int id)
         {
@@ -50,7 +50,7 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpPost("CreateClientWithPersonID")]
         public async Task<ActionResult<SuccessResponse<CreateClientResponse>>> CreateClientWithPersonID([FromBody] CreateClientWithPersonIDRequest request)
         {
@@ -58,7 +58,7 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpPost("CreateClientWithPerson")]
         public async Task<ActionResult<SuccessResponse<CreateClientResponse>>> CreateClientWithPerson([FromBody] CreateClientWithPersonOBJRequest request)
         {
@@ -66,7 +66,7 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpPut("UpdateClientWithPersonID/{id}")]
         public async Task<ActionResult<SuccessResponse<UpdateClientResponse>>> UpdateClientWithPersonID(int id, [FromBody] UpdateClientWithPersonIDRequest request)
         {
@@ -74,7 +74,7 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpPut("UpdateClientWithPerson/{id}")]
         public async Task<ActionResult<SuccessResponse<UpdateClientResponse>>> UpdateClientWithPerson(int id, [FromBody] UpdateClientWithPersonOBJRequest request)
         {
@@ -82,7 +82,7 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpDelete("InactiveClientByID/{id}")]
         public async Task<ActionResult<SuccessResponse<ActiveInactiveClientResponse>>> InactivateClient(int id)
         {
@@ -90,7 +90,7 @@ namespace isc.time.report.be.api.Controllers.v1.Clients
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpDelete("ActiveClientByID/{id}")]
         public async Task<ActionResult<SuccessResponse<ActiveInactiveClientResponse>>> ActivateClient(int id)
         {

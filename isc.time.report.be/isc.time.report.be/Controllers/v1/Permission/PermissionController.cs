@@ -18,7 +18,7 @@ namespace isc.time.report.be.api.Controllers.v1.Permission
             _service = service;
         }
 
-        [Authorize(Roles = "Administrador,Gerente,Lider,Colaborador")]
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
         [HttpPost("RequestPermission")]
         public async Task<ActionResult<CreatePermissionResponse>> RequestPermission([FromBody] CreatePermissionRequest request)
         {
@@ -27,7 +27,7 @@ namespace isc.time.report.be.api.Controllers.v1.Permission
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpPost("ApprovePermission")]
         public async Task<ActionResult<GetPermissionResponse>> ApprovePermission([FromBody] PermissionAproveRequest request)
         {
@@ -35,7 +35,7 @@ namespace isc.time.report.be.api.Controllers.v1.Permission
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador,Gerente,Lider,Colaborador")]
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
         [HttpGet("GetAllPermissions")]
         public async Task<ActionResult<List<GetPermissionResponse>>> GetAllPermissions()
         {
