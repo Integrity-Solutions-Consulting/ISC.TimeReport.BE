@@ -7,6 +7,7 @@ using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.infrastructure.Database;
 using isc.time.report.be.infrastructure.Utils.Pagination;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,13 +25,23 @@ namespace isc.time.report.be.infrastructure.Repositories.Persons
             _dbContext = dbContext;
         }
 
-        public async Task<PagedResult<Person>> GetAllPersonsPaginatedAsync(PaginationParams paginationParams)
+        public async Task<PagedResult<Person>> GetAllPersonsPaginatedAsync(PaginationParams paginationParams, string? search)
         {
             var query = _dbContext.Persons
                 .Include(p => p.Gender)
                 .Include(p => p.Nationality)
                 .Include(p => p.IdentificationType)
                 .AsQueryable();
+            if (!string.IsNullOrEmpty(search))
+            {
+                string normalizedSearch = search.Trim().ToLower();
+
+                query = query.Where(e =>
+                (e.FirstName != null && e.FirstName.ToLower().Contains(normalizedSearch)) ||
+                (e.LastName != null && e.LastName.ToLower().Contains(normalizedSearch)) ||
+                (e.IdentificationNumber != null && e.IdentificationNumber.ToLower().Contains(normalizedSearch)));
+
+            }
 
             return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
         }

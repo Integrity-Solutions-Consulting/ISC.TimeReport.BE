@@ -20,7 +20,7 @@ namespace isc.time.report.be.api.Controllers.v1.PermissionTypes
             _service = service;
         }
 
-        [Authorize(Roles = "Administrador,Gerente")]
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
         [HttpGet("GetAllPermissionTypes")]
         public async Task<ActionResult<SuccessResponse<List<GetPermissionTypeResponse>>>> GetAll()
         {
@@ -28,7 +28,7 @@ namespace isc.time.report.be.api.Controllers.v1.PermissionTypes
             return Ok(new SuccessResponse<List<GetPermissionTypeResponse>>(200, "Tipos de permiso obtenidos correctamente", result));
         }
 
-        [Authorize(Roles = "Administrador,Gerente")]
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
         [HttpGet("GetPermissionTypeByID/{id}")]
         public async Task<ActionResult<SuccessResponse<GetPermissionTypeResponse>>> GetById(int id)
         {

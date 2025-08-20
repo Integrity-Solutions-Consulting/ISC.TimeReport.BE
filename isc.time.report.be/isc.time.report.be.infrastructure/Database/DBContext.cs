@@ -377,8 +377,8 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.CreationIp).HasColumnName("creation_ip");
                 entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
 
-                entity.HasOne(e => e.Person).WithMany().HasForeignKey(e => e.PersonID);
-                entity.HasOne(e => e.Project).WithMany().HasForeignKey(e => e.ProjectID);
+                entity.HasOne(e => e.Person).WithMany(e => e.Leader).HasForeignKey(e => e.PersonID);
+                entity.HasOne(e => e.Project).WithMany(e => e.Leader).HasForeignKey(e => e.ProjectID);
             });
 
             modelBuilder.Entity<PermissionType>(entity =>

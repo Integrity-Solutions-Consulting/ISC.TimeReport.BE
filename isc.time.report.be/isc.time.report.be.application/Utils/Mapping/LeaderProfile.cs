@@ -40,6 +40,7 @@ namespace isc.time.report.be.application.Utils.Mapping
             CreateMap<Leader, UpdateLeaderResponse>();
             CreateMap<UpdateLeaderResponse, Leader>();
 
+
         }
     }
 }

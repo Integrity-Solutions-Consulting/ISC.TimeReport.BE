@@ -16,6 +16,7 @@ namespace isc.time.report.be.api.Controllers.v1.TimeReports
             _timeReportService = timeReportService;
         }
 
+        [Authorize (Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpGet("export-excel")]
         public async Task<IActionResult> ExportToExcel([FromQuery] int employeeId, [FromQuery] int clientId, [FromQuery] int year, [FromQuery] int month, [FromQuery] bool fullMonth)
         {
@@ -27,6 +28,7 @@ namespace isc.time.report.be.api.Controllers.v1.TimeReports
             return File(fileBytes, contentType, fileName);
         }
 
+        [Authorize (Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpGet("recursos-pendientes")] public async Task<IActionResult> GetRecursosPendientes()
         {
             var result = await _timeReportService.GetRecursosTimeReportPendienteAsync();

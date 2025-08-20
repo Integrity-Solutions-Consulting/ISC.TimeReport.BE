@@ -7,6 +7,7 @@ using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.Leaders;
 using isc.time.report.be.domain.Models.Response.Leaders;
 using isc.time.report.be.domain.Models.Response.Persons;
+using isc.time.report.be.domain.Models.Response.Projects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -125,5 +126,105 @@ namespace isc.time.report.be.application.Services.Leaders
             var activated = await _leaderRepository.ActivateLeaderAsync(leaderId);
             return _mapper.Map<ActivateInactivateLeaderResponse>(activated);
         }
+
+
+        public async Task<List<GetAllLeaderProjectByPersonIdResponse>> GetAllLeadersRegisterGrouped()
+        {
+            var leaders = await _leaderRepository.GetAllLeaderProjectByPersonIdAsync();
+
+            var response = leaders
+                .GroupBy(l => l.PersonID)
+                .Select(g =>
+                {
+                    var firstLeader = g.First();
+                    return new GetAllLeaderProjectByPersonIdResponse
+                    {
+                        Person = firstLeader.Person != null ? new GetPersonResponse
+                        {
+                            Id = firstLeader.Person.Id,
+                            IdentificationNumber = firstLeader.Person.IdentificationNumber,
+                            GenderId = (int)firstLeader.Person.GenderID,
+                            NationalityId = (int)firstLeader.Person.NationalityId,
+                            IdentificationTypeId = (int)firstLeader.Person.IdentificationTypeId,
+                            FirstName = firstLeader.Person.FirstName,
+                            LastName = firstLeader.Person.LastName,
+                            Email = firstLeader.Person.Email,
+                            Phone = firstLeader.Person.Phone,
+                            Address = firstLeader.Person.Address,
+                            Status = firstLeader.Person.Status
+                        } : null,
+                        LeaderMiddle = g.Select(l => new LeaderData
+                        {
+                            Id = l.ProjectID,
+                            Responsibility = l.Responsibilities,
+                            LeadershipType = l.LeadershipType,
+                            StartDate = l.StartDate,
+                            EndDate = l.EndDate,
+                            Status = l.Status
+                        }).ToList()
+                    };
+                })
+                .ToList();
+
+            return response;
+        }
+
+        public async Task AssignPersonToProject(AssignPersonToProjectRequest request)
+        {
+            var existing = await _leaderRepository.GetAllLeaderProjectByPersonIdAsync();
+            var now = DateTime.UtcNow;
+            var finalList = new List<Leader>();
+
+            foreach (var dto in request.PersonProjectMiddle)
+            {
+                var match = existing.FirstOrDefault(l => l.ProjectID == dto.ProjectID);
+            }
+
+
+
+        }
+
+        public async Task<GetAllLeaderProjectByPersonIdResponse?> GetLeadershipByPersonId(int personId)
+        {
+            var leadership = await _leaderRepository.GetLeadershipByPersonId(personId);
+
+            if (leadership == null)
+                return null;
+
+                    var response = new GetAllLeaderProjectByPersonIdResponse
+                    {
+                        Person = leadership != null ? new GetPersonResponse
+                        {
+                            Id = leadership.Id,
+                            IdentificationNumber = leadership.IdentificationNumber,
+                            GenderId = (int)leadership.GenderID,
+                            NationalityId = (int)leadership.NationalityId,
+                            IdentificationTypeId = (int)leadership.IdentificationTypeId,
+                            FirstName = leadership.FirstName,
+                            LastName = leadership.LastName,
+                            Email = leadership.Email,
+                            Phone = leadership.Phone,
+                            Address = leadership.Address,
+                            Status = leadership.Status
+                        } : null,
+                        LeaderMiddle = leadership.Leader.Select(l => new LeaderData
+                        {
+                            Id = l.ProjectID,
+                            Responsibility = l.Responsibilities,
+                            LeadershipType = l.LeadershipType,
+                            StartDate = l.StartDate,
+                            EndDate = l.EndDate,
+                            Status = l.Status,
+                            Projectos = l.Project != null ? new GetAllProjectsResponse
+                            {
+                                Id = l.Project.Id,
+                                Name = l.Project.Name
+                            } : null
+                        }).ToList()
+                    };
+
+            return response;
+        }
+
     }
 }

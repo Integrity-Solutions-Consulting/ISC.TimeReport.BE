@@ -41,6 +41,22 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
         }
 
         [Authorize(Roles = "Administrador,Gerente")]
+        [HttpGet("get-leadership-by-person-id")]
+        public async Task<ActionResult<SuccessResponse<GetAllLeaderProjectByPersonIdResponse>>> GetLeadershipByPerson(int id)
+        {
+            var result = await _leaderService.GetLeadershipByPersonId(id);
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Administrador,Gerente")]
+        [HttpGet("get-all-leaders-grouped")]
+        public async Task<ActionResult<SuccessResponse<List<GetAllLeaderProjectByPersonIdResponse>>>> GetAllLeadersGrouped()
+        {
+            var result = await _leaderService.GetAllLeadersRegisterGrouped();
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Administrador,Gerente")]
         [HttpPost("CreateLeaderWithPersonID")]
         public async Task<ActionResult<SuccessResponse<CreateLeaderResponse>>> CreateLeaderWithPersonID([FromBody] CreateLeaderWithPersonIDRequest request)
         {
@@ -87,5 +103,6 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             var result = await _leaderService.ActivateLeader(id);
             return Ok(result);
         }
+
     }
 }
