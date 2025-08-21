@@ -139,10 +139,10 @@ namespace isc.time.report.be.infrastructure.Repositories.Users
             var user = await _dbContext.UserRoles
                 .Where(ur => ur.UserID == userId)
                 .ToListAsync();
-            if (!user.Any())
-            {
-                throw new ServerFaultException($"No se encontraron roles para el usuario con ID {userId}.");
-            }
+            //if (!user.Any())
+            //{
+            //    throw new ServerFaultException($"No se encontraron roles para el usuario con ID {userId}.");
+            //}
             return user;
         }
 
