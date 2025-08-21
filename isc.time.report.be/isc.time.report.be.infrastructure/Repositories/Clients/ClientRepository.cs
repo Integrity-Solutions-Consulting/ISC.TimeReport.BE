@@ -277,7 +277,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
             return existingClient;
         }
 
-        public async Task<Client> UpdateClientWithPersonForInventoryAsync(Client client)
+        public async Task<Client> UpdateClientWithPersonForInventoryAsync(string identification, Client client)
         {
             if (client == null || client.Person == null)
                 throw new ClientFaultException("El cliente o su persona asociada no pueden ser nulos.");
@@ -330,7 +330,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
                     ruc = existingClient.Person.IdentificationNumber ?? "000000000"
                 };
 
-                var success = await _inventoryApiRepository.UpdateCustomerInventoryAsync(updateRequest, existingClient.Person.IdentificationNumber);
+                var success = await _inventoryApiRepository.UpdateCustomerInventoryAsync(updateRequest, identification);
                 if (!success)
                     throw new ClientFaultException("No se pudo actualizar el cliente en el inventario.");
 

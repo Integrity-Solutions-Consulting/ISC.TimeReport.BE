@@ -177,10 +177,10 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
             }
             var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleName == name);
 
-            if (role == null)
-            {
-                throw new ClientFaultException($"No se encontro el rol con el nombre {name}");
-            }
+            //if (role == null)
+            //{
+            //    throw new ClientFaultException($"No se encontro el rol con el nombre {name}");
+            //}
             return role;
         }
 
