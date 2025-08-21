@@ -58,15 +58,12 @@ namespace isc.time.report.be.infrastructure.Repositories.Menus
         {
             return await _dbContext.Users
                 .Where(u => u.Id == userId)
-                .Include(u => u.UserRole) // Incluye la tabla intermedia UserRole
-                    .ThenInclude(ur => ur.Role) // Luego incluye el Role
-                        .ThenInclude(r => r.RoleModule) // Luego incluye la tabla intermedia MenuRole
-                            .ThenInclude(mr => mr.Module) // Finalmente incluye el Modules
-                .SelectMany(u => u.UserRole) // Accede a los roles del usuario
-                .Select(ur => ur.Role)      // Obtiene el objeto Role
-                .SelectMany(r => r.RoleModule) // Accede a los MenuRoles de ese rol
-                .Select(mr => mr.Module)      // Obtiene el objeto Modules
-                .Distinct()                 // ¡Importante para evitar menús duplicados!
+                .SelectMany(u => u.UserRole
+                    .Where(ur => ur.Status) // ✅ solo roles activos
+                    .SelectMany(ur => ur.Role.RoleModule
+                        .Where(rm => rm.Status) // ✅ solo relaciones Role-Module activas
+                        .Select(rm => rm.Module)))
+                .Distinct() // evitar duplicados
                 .Select(m => new Module
                 {
                     Id = m.Id,
