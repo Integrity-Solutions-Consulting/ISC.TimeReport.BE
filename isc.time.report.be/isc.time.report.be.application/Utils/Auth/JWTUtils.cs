@@ -37,11 +37,15 @@ namespace isc.time.report.be.application.Utils.Auth
             };
 
             // Roles
+            // Roles
             if (user.UserRole != null)
             {
-                foreach (var ur in user.UserRole)
+                foreach (var ur in user.UserRole.Where(ur => ur.Status))
                 {
-                    claims.Add(new Claim(ClaimTypes.Role, ur.Role.RoleName));
+                    if (ur.Role != null && !string.IsNullOrEmpty(ur.Role.RoleName))
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, ur.Role.RoleName));
+                    }
                 }
             }
 
