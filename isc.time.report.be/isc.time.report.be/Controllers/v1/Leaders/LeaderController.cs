@@ -22,7 +22,7 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             _leaderService = leaderService;
         }
 
-        [Authorize(Roles = "Administrador,Gerente")]
+        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpGet("GetAllLeaders")]
         public async Task<ActionResult<SuccessResponse<PagedResult<GetLeaderDetailsResponse>>>> GetAllLeaders(
             [FromQuery] PaginationParams paginationParams,
@@ -32,7 +32,7 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador,Gerente")]
+        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpGet("GetLeaderByID/{id}")]
         public async Task<ActionResult<SuccessResponse<GetLeaderDetailsResponse>>> GetLeaderById(int id)
         {
@@ -40,7 +40,7 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador,Gerente")]
+        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpGet("get-leadership-by-person-id")]
         public async Task<ActionResult<SuccessResponse<GetAllLeaderProjectByPersonIdResponse>>> GetLeadershipByPerson(int id)
         {
@@ -48,7 +48,7 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador,Gerente")]
+        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpGet("get-all-leaders-grouped")]
         public async Task<ActionResult<SuccessResponse<List<GetAllLeaderProjectByPersonIdResponse>>>> GetAllLeadersGrouped()
         {
@@ -56,7 +56,7 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador,Gerente")]
+        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpPost("CreateLeaderWithPersonID")]
         public async Task<ActionResult<SuccessResponse<CreateLeaderResponse>>> CreateLeaderWithPersonID([FromBody] CreateLeaderWithPersonIDRequest request)
         {
@@ -64,7 +64,7 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador,Gerente")]
+        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpPost("CreateLeaderWithPerson")]
         public async Task<ActionResult<SuccessResponse<CreateLeaderResponse>>> CreateLeaderWithPerson([FromBody] CreateLeaderWithPersonOBJRequest request)
         {
@@ -72,7 +72,7 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador,Gerente")]
+        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpPut("UpdateLeaderWithPersonID/{id}")]
         public async Task<ActionResult<SuccessResponse<UpdateLeaderResponse>>> UpdateLeaderWithPersonID(int id, [FromBody] UpdateLeaderWithPersonIDRequest request)
         {
@@ -80,7 +80,7 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador,Gerente")]
+        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpPut("UpdateLeaderWithPerson/{id}")]
         public async Task<ActionResult<SuccessResponse<UpdateLeaderResponse>>> UpdateLeaderWithPerson(int id, [FromBody] UpdateLeaderWithPersonOBJRequest request)
         {
@@ -88,7 +88,7 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador,Gerente")]
+        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpDelete("InactivateLeaderByID/{id}")]
         public async Task<ActionResult<SuccessResponse<ActivateInactivateLeaderResponse>>> InactivateLeader(int id)
         {
@@ -96,7 +96,7 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador,Gerente")]
+        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpDelete("ActivateLeaderByID/{id}")]
         public async Task<ActionResult<SuccessResponse<ActivateInactivateLeaderResponse>>> ActivateLeader(int id)
         {
