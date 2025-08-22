@@ -186,6 +186,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
 
             var invEmployee = new InventoryCreateEmployeeRequest
             {
+                Id = employee.Id,
                 idIdentificationType = employee.Person?.IdentificationTypeId ?? 0,
                 idGender = employee.Person?.GenderID ?? 0,
                 idPosition = employee.PositionID ?? 0,
