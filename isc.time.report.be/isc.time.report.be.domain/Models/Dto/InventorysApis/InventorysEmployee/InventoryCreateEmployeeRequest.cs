@@ -8,6 +8,7 @@ namespace isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysEmployee
 {
     public class InventoryCreateEmployeeRequest
     {
+        public int Id { get; set; }
         public int idIdentificationType { get; set; }
         public int idGender { get; set; }
         public int idPosition { get; set; }
