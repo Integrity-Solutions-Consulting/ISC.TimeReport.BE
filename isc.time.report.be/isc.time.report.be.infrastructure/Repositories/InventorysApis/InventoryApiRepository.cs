@@ -136,6 +136,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
             var url = $"{_configuration["Infrastructure:InventoryAPIUrlBase"]}/api/v1/customers/update/{id}";
             var result = await _httpUtils.SendRequest<object>(url, HttpMethod.Put, request, token);
             return result != null;
+
         }
 
         public async Task<bool> InactivateCustomerInventoryAsync(string id)

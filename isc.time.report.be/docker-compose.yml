@@ -20,6 +20,8 @@ services:
       - EmailSettings__SenderEmail=siaft@siaft.net
       - EmailSettings__Username=siaft@siaft.net
       - EmailSettings__Password=Vrocoli23_
+      - Infrastructure__InventoryAPIUrlBase=https://api.inventory.integritysolutions.com.ec
+      - Infrastructure__InventoryAuthUrlBase=https://auth.inventory.integritysolutions.com.ec
     depends_on:
       - sqlserver
     networks:
