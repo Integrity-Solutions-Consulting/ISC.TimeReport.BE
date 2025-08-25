@@ -24,6 +24,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
         {
             var activities = await _dbContext.ActivityTypes
                 .Where(e => e.Status)
+                .OrderBy(e => e.Name)
                 .ToListAsync();
 
             if (!activities.Any())
@@ -36,6 +37,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
         {
             var approval =  await _dbContext.ApprovalStatus
                 .Where(e => e.Status)
+                .OrderBy(e => e.StatusName)
                 .ToListAsync();
             
             if (!approval.Any())
@@ -49,6 +51,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
         {
             var department = await _dbContext.Departments
                 .Where(e => e.Status)
+                .OrderBy(e => e.DepartamentName)
                 .ToListAsync();
             if (!department.Any())
             {
@@ -60,6 +63,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
         {
             var gender = await _dbContext.Genders
                 .Where(e => e.Status)
+                .OrderBy(e => e.GenderName)
                 .ToListAsync();
 
             if (!gender.Any())
@@ -72,6 +76,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
         {
             var identification = await _dbContext.IdentificationTypes
                 .Where(e => e.Status)
+                .OrderBy(e => e.Description)
                 .ToListAsync();
 
             if (!identification.Any())
@@ -85,6 +90,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
         {
             var nationalities =  await _dbContext.Nationality
                 .Where(e => e.Status)
+                .OrderBy(e => e.Description)
                 .ToListAsync();
             if (!nationalities.Any())
             {
@@ -96,6 +102,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
         {
             var permission = await _dbContext.PermissionTypes
                 .Where(e => e.Status)
+                .OrderBy(e => e.TypeName)
                 .ToListAsync();
             if (!permission.Any())
             {
@@ -107,6 +114,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
         {
             var position = await _dbContext.Positions
                 .Where(e => e.Status)
+                .OrderBy(e => e.PositionName)
                 .ToListAsync();
             if (!position.Any())
             {
@@ -118,6 +126,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
         {
             var projectStatus = await _dbContext.ProjectStatus
                 .Where(e => e.Status)
+                .OrderBy(e => e.StatusName)
                 .ToListAsync();
             if (!projectStatus.Any())
             {
@@ -130,6 +139,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
         {
             var projectType = await _dbContext.ProjectTypes
                 .Where(e => e.Status)
+                .OrderBy(e => e.TypeName)
                 .ToListAsync();
             if (!projectType.Any())
             {
@@ -141,6 +151,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
         {
             var workMode = await _dbContext.WorkModes
                 .Where(e => e.Status)
+                .OrderBy(e => e.Name)
                 .ToListAsync();
             if (!workMode.Any())
             {
@@ -152,12 +163,14 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
         {
             return await _dbContext.CompanyCatalogs
                 .Where(e => e.Status)
+                .OrderBy(e => e.CompanyName)
                 .ToListAsync();
         }
         public async Task<List<EmployeeCategory>> GetEmployeeCategoryActivosAsync()
         {
             return await _dbContext.EmployeeCategories
                 .Where(e => e.Status)
+                .OrderBy(e => e.CategoryName)
                 .ToListAsync();
         }
     }

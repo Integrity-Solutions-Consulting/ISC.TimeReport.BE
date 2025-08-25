@@ -171,18 +171,65 @@ namespace isc.time.report.be.application.Services.Leaders
 
         public async Task AssignPersonToProject(AssignPersonToProjectRequest request)
         {
-            var existing = await _leaderRepository.GetAllLeaderProjectByPersonIdAsync();
+            // Traemos todos los Leader actuales para esa persona
+            var existing = await _leaderRepository.GetLeaderProjectByIdAsync(request.PersonID);
             var now = DateTime.UtcNow;
             var finalList = new List<Leader>();
 
             foreach (var dto in request.PersonProjectMiddle)
             {
                 var match = existing.FirstOrDefault(l => l.ProjectID == dto.ProjectID);
+
+                if (match == null)
+                {
+                    // No existe → creamos un nuevo Leader
+                    var leader = new Leader
+                    {
+                        PersonID = request.PersonID,
+                        ProjectID = dto.ProjectID,
+                        LeadershipType = dto.LeadershipType,
+                        Responsibilities = dto.Responsibilities,
+                        StartDate = dto.StartDate,
+                        Status = true,
+                        CreationUser = "SYSTEM",
+                        CreationIp = "0.0.0.0",
+                        CreationDate = now
+                    };
+
+                    finalList.Add(leader);
+                }
+                else
+                {
+                    // Ya existe → opcional, puedes actualizar atributos si cambian
+                    match.LeadershipType = dto.LeadershipType;
+                    match.Responsibilities = dto.Responsibilities;
+                    match.ModificationUser = "SYSTEM";
+                    match.ModificationIp = "0.0.0.0";
+                    match.ModificationDate = now;
+                    match.Status = true;
+
+                    finalList.Add(match);
+                }
             }
 
+            // (Opcional) desactivar proyectos que ya no estén en la request
+            var requestProjectIds = request.PersonProjectMiddle.Select(p => p.ProjectID).ToList();
+            var toDisable = existing.Where(l => !requestProjectIds.Contains(l.ProjectID)).ToList();
 
+            foreach (var leader in toDisable)
+            {
+                leader.Status = false;
+                leader.EndDate = DateOnly.FromDateTime(DateTime.UtcNow);
+                leader.ModificationUser = "SYSTEM";
+                leader.ModificationIp = "0.0.0.0";
+                leader.ModificationDate = now;
+                finalList.Add(leader);
+            }
 
+            // Guardamos cambios
+            await _leaderRepository.SaveLeadersAsync(finalList);
         }
+
 
         public async Task<GetAllLeaderProjectByPersonIdResponse?> GetLeadershipByPersonId(int personId)
         {
