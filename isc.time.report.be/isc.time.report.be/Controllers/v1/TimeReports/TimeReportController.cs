@@ -29,9 +29,9 @@ namespace isc.time.report.be.api.Controllers.v1.TimeReports
         }
 
         [Authorize (Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
-        [HttpGet("recursos-pendientes")] public async Task<IActionResult> GetRecursosPendientes()
+        [HttpGet("recursos-pendientes")] public async Task<IActionResult> GetRecursosPendientes(int? month = null, int? year = null)
         {
-            var result = await _timeReportService.GetRecursosTimeReportPendienteAsync();
+            var result = await _timeReportService.GetRecursosTimeReportPendienteAsync(month, year);
             return Ok(result);
         }
     }
