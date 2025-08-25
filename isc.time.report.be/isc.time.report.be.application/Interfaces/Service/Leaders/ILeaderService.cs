@@ -22,6 +22,7 @@ namespace isc.time.report.be.application.Interfaces.Service.Leaders
         Task<ActivateInactivateLeaderResponse> InactivateLeader(int leaderId);
         Task<ActivateInactivateLeaderResponse> ActivateLeader(int leaderId);
         Task<List<GetAllLeaderProjectByPersonIdResponse>> GetAllLeadersRegisterGrouped();
+        Task AssignPersonToProject(AssignPersonToProjectRequest request);
         Task<GetAllLeaderProjectByPersonIdResponse?> GetLeadershipByPersonId(int personId);
     }
 }

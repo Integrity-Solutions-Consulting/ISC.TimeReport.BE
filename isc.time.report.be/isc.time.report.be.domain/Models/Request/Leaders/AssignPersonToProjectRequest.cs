@@ -15,7 +15,6 @@ namespace isc.time.report.be.domain.Models.Request.Leaders
     }
     public class PersonProjectMiddleRequest
     {
-        public int Id { get; set; }
         public int ProjectID { get; set; }
         public bool LeadershipType { get; set; } = true;
         public DateOnly StartDate { get; set; }

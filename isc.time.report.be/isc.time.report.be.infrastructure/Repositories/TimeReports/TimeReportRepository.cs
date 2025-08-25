@@ -6,6 +6,7 @@ using isc.time.report.be.domain.Entity.Holidays;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Response.Dashboards;
 using isc.time.report.be.infrastructure.Database;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -84,15 +85,25 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
             return holiday;
         }
 
-        public async Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteAsync()
+        public async Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteAsync(int? month = null, int? year = null)
         {
-            var list = await _dbContext.Set<DashboardRecursosPendientesDto>().FromSqlRaw("EXEC dbo.sp_RecursosTimeReportPendiente").ToListAsync();
-            if (!list.Any())
-            {
-                throw new ServerFaultException("No se encontraron recursos pendientes para el Time Report");
-            }
-            return list;
-        }
+                var parameters = new[]
+                {
+                    new SqlParameter("@Mes", month ?? (object)DBNull.Value),
+                    new SqlParameter("@Anio", year ?? (object)DBNull.Value)
+                };
 
-    }
+                var list = await _dbContext.Set<DashboardRecursosPendientesDto>()
+                    .FromSqlRaw("EXEC dbo.sp_RecursosTimeReportPendiente @Mes, @Anio", parameters)
+                    .ToListAsync();
+
+                if (!list.Any())
+                {
+                    throw new ServerFaultException("No se encontraron recursos pendientes para el Time Report");
+                }
+
+                return list;
+            }
+
+        }
 }
