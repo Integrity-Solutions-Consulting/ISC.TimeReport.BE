@@ -1088,9 +1088,9 @@ namespace isc.time.report.be.application.Services.TimeReports
             drawingsPart.WorksheetDrawing.Save();
         }
 
-        public async Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteAsync()
+        public async Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteAsync(int? month = null, int? year = null)
         {
-            return await timeReportRepository.GetRecursosTimeReportPendienteAsync();
+            return await timeReportRepository.GetRecursosTimeReportPendienteAsync(month, year);
         }
 
     }
