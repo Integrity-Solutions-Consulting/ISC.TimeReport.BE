@@ -89,6 +89,15 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
         }
 
         [Authorize(Roles = "Administrador,Gerente,Lider")]
+        [HttpPost("assign-leader-to-project")]
+        public async Task<ActionResult> AssignedLeaderToProject ([FromBody] AssignPersonToProjectRequest request)
+        {
+            await _leaderService.AssignPersonToProject(request);
+            return Ok(new { message = "Lideres asignados correctamente."});
+
+        }
+
+        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpDelete("InactivateLeaderByID/{id}")]
         public async Task<ActionResult<SuccessResponse<ActivateInactivateLeaderResponse>>> InactivateLeader(int id)
         {

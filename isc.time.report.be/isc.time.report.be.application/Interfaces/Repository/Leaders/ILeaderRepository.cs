@@ -23,6 +23,7 @@ namespace isc.time.report.be.application.Interfaces.Repository.Leaders
         Task<List<Leader>> GetAllLeaderProjectByPersonIdAsync();
         Task<List<Leader>> GetLeaderProjectByIdAsync(int personId);
         Task<Person> GetLeadershipByPersonId(int personid);
+        Task SaveLeadersAsync(List<Leader> leaders);
 
     }
 }

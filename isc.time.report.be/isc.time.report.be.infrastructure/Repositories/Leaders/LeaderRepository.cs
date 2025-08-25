@@ -209,6 +209,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
         {
 
             var list = await _dbContext.Leaders
+               .Include(l => l.Project)
                .Where(le => le.PersonID == personId)
 
                .ToListAsync();
@@ -228,5 +229,17 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
 
         }
 
+        public async Task SaveLeadersAsync(List<Leader> leaders)
+        {
+            foreach (var leader in leaders)
+            {
+                if (leader.Id == 0)
+                    await _dbContext.Leaders.AddAsync(leader);
+                else
+                    _dbContext.Leaders.Update(leader);
+            }
+            await _dbContext.SaveChangesAsync();
+        }
     }
+
 }
