@@ -70,6 +70,7 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
                     && a.Status
                     && a.ActivityDate >= startDate
                     && a.ActivityDate <= endDate)
+                .OrderBy(a => a.ActivityDate)
                 .ToListAsync();
             return activity;
         }
