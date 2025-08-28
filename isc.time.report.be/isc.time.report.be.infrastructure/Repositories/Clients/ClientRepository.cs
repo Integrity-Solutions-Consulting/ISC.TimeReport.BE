@@ -49,8 +49,13 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
                         (c.Person.IdentificationNumber != null && c.Person.IdentificationNumber.ToLower().Contains(normalizedSearch)) ||
                         (c.Person.Email != null && c.Person.Email.ToLower().Contains(normalizedSearch)) ||
                         (c.Person.LastName != null && c.Person.LastName.ToLower().Contains(normalizedSearch))
-                    )));
+                    )));                       
             }
+
+            query = query.OrderBy(p => p.Status ? 0 : 1)
+                .ThenBy(p => p.TradeName);
+
+
 
             return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
         }
@@ -58,7 +63,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
         {
             // Obtenemos IDs de los clientes relacionados a proyectos asignados al empleado
             var clientIds = await _dbContext.EmployeeProjects
-                .Where(ep => ep.EmployeeID == employeeId && ep.Project.Status == true)
+                .Where(ep => ep.EmployeeID == employeeId && ep.Project.Status == true && ep.Status == true)
                 .Select(ep => ep.Project.ClientID)
                 .Distinct()
                 .ToListAsync();
@@ -445,6 +450,14 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
                 .Include(c => c.Person)
                 .ToListAsync();
             return clients;
+        }
+
+        public async Task<Person?> ValidateUNIQUEIdentificationNumberAsync(string identificationNumber)
+        {
+            var person = await _dbContext.Persons
+                .FirstOrDefaultAsync(c => c.IdentificationNumber == identificationNumber);
+
+            return person;
         }
     }
 }

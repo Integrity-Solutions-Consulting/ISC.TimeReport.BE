@@ -25,6 +25,7 @@ namespace isc.time.report.be.application.Interfaces.Repository.Clients
         Task<Client> ActivateClientAsync(int clientId);
         Task<Client> ActivateClientForInventoryAsync(int clientId);
         Task<List<Client>> GetClientsByEmployeeIdAsync(int employeeId);
+        Task<Person?> ValidateUNIQUEIdentificationNumberAsync(string identificationNumber);
 
     }
 }

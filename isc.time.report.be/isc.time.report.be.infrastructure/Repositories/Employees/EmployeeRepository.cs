@@ -51,6 +51,9 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                     )));
             }
 
+            query = query.OrderBy(p => p.Status ? 0 : 1)
+            .ThenBy(p => p.Person.FirstName);
+
             return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
         }
 
@@ -226,6 +229,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                 if (invEmpInsert == null)
                     throw new ClientFaultException("No se pudo crear el empleado en el sistema de inventario.");
 
+               
                 await transaction.CommitAsync();
                 return employee;
             }
