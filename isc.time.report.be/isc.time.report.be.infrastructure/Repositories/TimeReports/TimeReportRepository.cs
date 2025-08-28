@@ -86,16 +86,17 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
             return holiday;
         }
 
-        public async Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteAsync(int? month = null, int? year = null)
+        public async Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteAsync(int? month = null, int? year = null, bool mesCompleto = false)
         {
                 var parameters = new[]
                 {
                     new SqlParameter("@Mes", month ?? (object)DBNull.Value),
-                    new SqlParameter("@Anio", year ?? (object)DBNull.Value)
+                    new SqlParameter("@Anio", year ?? (object)DBNull.Value),
+                    new SqlParameter("@MesCompleto", mesCompleto ? 1 : 0)
                 };
 
                 var list = await _dbContext.Set<DashboardRecursosPendientesDto>()
-                    .FromSqlRaw("EXEC dbo.sp_RecursosTimeReportPendiente @Mes, @Anio", parameters)
+                    .FromSqlRaw("EXEC dbo.sp_RecursosTimeReportPendiente @Mes, @Anio, @MesCompleto", parameters)
                     .ToListAsync();
 
                 if (!list.Any())
