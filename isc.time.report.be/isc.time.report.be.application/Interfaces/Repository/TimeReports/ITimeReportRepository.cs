@@ -16,6 +16,6 @@ namespace isc.time.report.be.application.Interfaces.Repository.TimeReports
 
         Task<List<DailyActivity>> GetActivitiesByEmployeeAndProjectsAsync( int employeeId, List<int> projectIds, int year, int month, bool fullMonth);
         Task<List<Holiday>> GetActiveHolidaysByMonthAndYearAsync(int month, int year);
-        Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteAsync(int? month = null, int? year = null);
+        Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteAsync(int? month = null, int? year = null, bool mesCompleto = false);
     }
 }
