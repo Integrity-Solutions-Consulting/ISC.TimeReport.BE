@@ -21,5 +21,6 @@ namespace isc.time.report.be.application.Interfaces.Service.Clients
         Task<ActiveInactiveClientResponse> InactivateClient(int clientId);
         Task<ActiveInactiveClientResponse> ActivateClient(int clientId);
         Task<List<GetClientsByEmployeeIDResponse>> GetClientsByEmployeeIdAsync(int employeeId);
+        Task ValidateRepeatIdentificationNumberAsync(string identificationNumber);
     }
 }

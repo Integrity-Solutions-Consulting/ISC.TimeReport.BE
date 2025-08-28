@@ -7,8 +7,10 @@ using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.Clients;
 using isc.time.report.be.domain.Models.Response.Clients;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -73,6 +75,8 @@ namespace isc.time.report.be.application.Services.Clients
 
         public async Task<CreateClientResponse> CreateClientWithPerson(CreateClientWithPersonOBJRequest request)
         {
+            await ValidateRepeatIdentificationNumberAsync(request.Person.IdentificationNumber);
+
             var client = _mapper.Map<Client>(request);
             var created = await _clientRepository.CreateClientWithPersonForInventoryAsync(client);
             return _mapper.Map<CreateClientResponse>(created);
@@ -81,6 +85,7 @@ namespace isc.time.report.be.application.Services.Clients
         public async Task<UpdateClientResponse> UpdateClient(int clientId, UpdateClientWithPersonIDRequest request)
         {
             var client = await _clientRepository.GetClientByIDAsync(clientId);
+
             if (client == null)
                 throw new ClientFaultException("No existe el cliente", 401);
 
@@ -126,6 +131,21 @@ namespace isc.time.report.be.application.Services.Clients
         {
             var clients = await _clientRepository.GetClientsByEmployeeIdAsync(employeeId);
             return _mapper.Map<List<GetClientsByEmployeeIDResponse>>(clients);
+        }
+
+        public async Task ValidateRepeatIdentificationNumberAsync(string identificationNumber)
+        {
+            if (identificationNumber == null)
+            {
+                throw new ClientFaultException("Debe ingresar el Numero de Identificacion", 400);
+            }
+
+            var person = await _clientRepository.ValidateUNIQUEIdentificationNumberAsync(identificationNumber);
+
+            if (person != null)
+                throw new ClientFaultException(
+                    $"Ya existe un Registro con numero de cedula '{identificationNumber}'.", 409
+                );
         }
     }
 }

@@ -78,7 +78,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
 
                 await _dbContext.Users.AddAsync(user);
                 await _dbContext.SaveChangesAsync();
-
+                
                 await _emailUtils.SendEmailAsync(destinatarioCorreo, "Credenciales de acceso", htmlCorreo);
 
                 await transaction.CommitAsync();
