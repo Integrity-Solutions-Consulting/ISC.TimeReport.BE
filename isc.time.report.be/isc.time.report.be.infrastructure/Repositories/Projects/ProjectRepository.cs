@@ -18,8 +18,8 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
     {
         private readonly DBContext _dbContext;
 
-        public ProjectRepository(DBContext dbContext) 
-        { 
+        public ProjectRepository(DBContext dbContext)
+        {
             _dbContext = dbContext;
         }
 
@@ -231,6 +231,16 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
             }
             return project;
         }
+
+            public async Task<List<int>> GetProjectToEmployeeAsync(int employeeId)
+            {
+                var projects = await _dbContext.EmployeeProjects
+                    .Where(ep => ep.EmployeeID == employeeId)
+                    .Select(ep => ep.ProjectID)
+                    .ToListAsync();
+
+                return projects;
+            }
 
     }
 }
