@@ -5,6 +5,7 @@ using isc.time.report.be.application.Interfaces.Repository.Clients;
 using isc.time.report.be.application.Interfaces.Repository.Employees;
 using isc.time.report.be.application.Interfaces.Repository.Leaders;
 using isc.time.report.be.application.Interfaces.Repository.Permissions;
+using isc.time.report.be.application.Interfaces.Repository.Projects;
 using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.application.Interfaces.Service.TimeReports;
 using isc.time.report.be.domain.Entity.DailyActivities;
@@ -28,13 +29,15 @@ namespace isc.time.report.be.application.Services.TimeReports
         private readonly ITimeReportRepository timeReportRepository;
         private readonly ILeaderRepository leaderRepository;
         private readonly IPermissionRepository permissionRepository;
-        public TimeReportService(IClientRepository clientRepository, IEmployeeRepository employeeRepository, ITimeReportRepository timeReportRepository, ILeaderRepository leaderRepository, IPermissionRepository permissionRepository)
+        private readonly IProjectRepository projectRepository;
+        public TimeReportService(IClientRepository clientRepository, IEmployeeRepository employeeRepository, ITimeReportRepository timeReportRepository, ILeaderRepository leaderRepository, IPermissionRepository permissionRepository, IProjectRepository projectRepository)
         {
             this.clientRepository = clientRepository;
             this.employeeRepository = employeeRepository;
             this.timeReportRepository = timeReportRepository;
             this.leaderRepository = leaderRepository;
             this.permissionRepository = permissionRepository;
+            this.projectRepository = projectRepository;
         }
 
         public async Task<byte[]> GenerateExcelReportAsync(int employeeId, int clientId, int year, int month, bool fullMonth)
@@ -56,6 +59,7 @@ namespace isc.time.report.be.application.Services.TimeReports
                 })
                 .ToList();
 
+            var primerLiderNombre = reportData.Activities.FirstOrDefault()?.LeaderName;
 
             using var stream = new MemoryStream();
 
@@ -396,7 +400,7 @@ namespace isc.time.report.be.application.Services.TimeReports
                 for (int i = 5; i < 9; i++) // E a H
                     sigRow2.Append(CreateCell(""));
 
-                sigRow2.Append(CreateCell("Revisado y Aprobado por:",9)); // I
+                sigRow2.Append(CreateCell($"Revisado y Aprobado por: {primerLiderNombre}", 9)); // I
                 for (int i = 10; i <= 21; i++)
                     sigRow2.Append(CreateCell("", 9));
 
@@ -409,7 +413,16 @@ namespace isc.time.report.be.application.Services.TimeReports
                 // === FILA 3: RPS RISK PROCESS SOLUTIONS S.A. (solo B-D) ===
                 var sigRow3 = new Row { RowIndex = extraStartRow + 2 };
                 sigRow3.Append(CreateCell(""));     // A
-                sigRow3.Append(CreateCell("RPS RISK PROCESS SOLUTIONS S.A.", 10)); // B
+
+                if (reportData.EmployeeCompany == true)
+                {
+                    sigRow3.Append(CreateCell("INTEGRITY SOLUTIONS.", 10)); // B
+                }
+                else
+                {
+                    sigRow3.Append(CreateCell("RPS RISK PROCESS SOLUTIONS S.A.", 10)); // B
+                }
+
                 sigRow3.Append(CreateCell(""));     // C
                 sigRow3.Append(CreateCell(""));     // D
 
@@ -976,7 +989,13 @@ namespace isc.time.report.be.application.Services.TimeReports
             if (client == null)
                 throw new Exception("Cliente no encontrado.");
 
-            var projectIds = await timeReportRepository.GetProjectIdsForEmployeeByClientAsync(employeeId, clientId);
+            //ESTO DE AQUI ES COMO SI VA A IR     var projectIds = await timeReportRepository.GetProjectIdsForEmployeeByClientAsync(employeeId, clientId);
+
+            //ESTO HAY QUE CAMBIARLO EN UN FUTURO PORQUE N DEBERIA DE SER ASI PERO HCIIERO  UQ ELO HAGAMOS ASI YA PUES ASI GTOCA
+
+            var projectIds = await projectRepository.GetProjectToEmployeeAsync(employeeId);
+
+
             if (projectIds == null || !projectIds.Any())
             {
                 return new TimeReportDataFillDto
@@ -1018,7 +1037,8 @@ namespace isc.time.report.be.application.Services.TimeReports
                 LastName = employee.Person.LastName,
                 TradeName = client.TradeName ?? string.Empty,
                 Company = client.Company,
-                Activities = activityDtos
+                Activities = activityDtos,
+                EmployeeCompany = employee.ContractType
             };
         }
         private void InsertImageToWorksheet(DrawingsPart drawingsPart, WorksheetPart worksheetPart, string imagePath)
