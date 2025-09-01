@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using isc.time.report.be.domain.Entity.Leaders;
 using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Models.Request.Projects;
+using isc.time.report.be.domain.Models.Response.Persons;
 using isc.time.report.be.domain.Models.Response.Projects;
 using System;
 using System.Collections.Generic;
@@ -27,8 +29,14 @@ namespace isc.time.report.be.application.Utils.Mapping
             CreateMap<Project, CreateProjectResponse>();
             CreateMap<CreateProjectResponse, Project>();
 
-            CreateMap<Project, GetAllProjectsResponse>();
-            CreateMap<GetAllProjectsResponse, Project>();
+
+
+            CreateMap<Project, GetAllProjectsResponse>()
+            .ForMember(dest => dest.Lider, opt => opt.MapFrom(src => src.Leader));
+
+            CreateMap<GetAllProjectsResponse, Project>()
+            .ForMember(dest => dest.Leader, opt => opt.MapFrom(src => src.Lider));
+
 
             CreateMap<Project, GetProjectByIDResponse>();
             CreateMap<GetProjectByIDResponse, Project>();

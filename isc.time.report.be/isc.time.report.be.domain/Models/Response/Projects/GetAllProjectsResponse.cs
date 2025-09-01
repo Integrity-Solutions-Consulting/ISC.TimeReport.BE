@@ -1,5 +1,6 @@
 ﻿using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Projects;
+using isc.time.report.be.domain.Models.Response.Persons;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,5 +25,12 @@ namespace isc.time.report.be.domain.Models.Response.Projects
         public decimal? Budget { get; set; }
         public decimal Hours { get; set; }
         public bool? Status { get; set; }
+        public List<Lider>? Lider { get; set; }
+    }
+
+    public class Lider
+    {
+        public int Id { get; set; }
+        public GetPersonResponse GetPersonResponse { get; set; }
     }
 }

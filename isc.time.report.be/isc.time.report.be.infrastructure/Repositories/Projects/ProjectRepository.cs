@@ -25,7 +25,10 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
 
         public async Task<PagedResult<Project>> GetAllProjectsPaginatedAsync(PaginationParams paginationParams, string? search)
         {
-            var query = _dbContext.Projects.AsQueryable();
+            var query = _dbContext.Projects
+                .Include(p => p.Leader)                
+                    .ThenInclude(l => l.Person)       
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -37,10 +40,11 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
             }
 
             query = query.OrderBy(p => p.Status ? 0 : 1)
-             .ThenBy(p => p.Name);
+                         .ThenBy(p => p.Name);
 
             return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
         }
+
         public async Task<PagedResult<Project>> GetAssignedProjectsForEmployeeAsync(PaginationParams paginationParams, string? search, int employeeId)
         {
             var query = _dbContext.Projects
