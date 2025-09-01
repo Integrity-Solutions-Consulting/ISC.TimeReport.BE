@@ -71,6 +71,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Menus
                     ModulePath = m.ModulePath,
                     Icon = m.Icon,
                     DisplayOrder = m.DisplayOrder,
+                    Submodule = m.Submodule,
                 })
                 .ToListAsync();
         }

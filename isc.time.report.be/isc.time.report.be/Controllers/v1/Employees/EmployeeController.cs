@@ -21,6 +21,7 @@ namespace isc.time.report.be.api.Controllers.v1.Employees
             _employeeService = employeeService;
         }
 
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpGet("GetAllEmployees")]
         public async Task<ActionResult<SuccessResponse<PagedResult<GetEmployeeDetailsResponse>>>> GetAllEmployees(
             [FromQuery] PaginationParams paginationParams,
@@ -30,6 +31,7 @@ namespace isc.time.report.be.api.Controllers.v1.Employees
             return Ok(result);
         }
 
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpGet("GetEmployeeByID/{id}")]
         public async Task<ActionResult<SuccessResponse<GetEmployeeDetailsResponse>>> GetEmployeeById(int id)
         {

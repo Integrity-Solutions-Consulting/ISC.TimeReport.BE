@@ -10,6 +10,7 @@ using isc.time.report.be.application.Interfaces.Service.TimeReports;
 using isc.time.report.be.domain.Entity.DailyActivities;
 using isc.time.report.be.domain.Models.Dto.TimeReports;
 using isc.time.report.be.domain.Models.Response.Dashboards;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -39,10 +40,14 @@ namespace isc.time.report.be.application.Services.TimeReports
 
         public async Task<byte[]> GenerateExcelReportAsync(int employeeId, int clientId, int year, int month, bool fullMonth)
         {
-
+            
             // Obtener datos reales
             var reportData = await GetTimeReportDataFillAsync(employeeId, clientId, year, month, fullMonth);
 
+            if (reportData.Activities == null || reportData.Activities.Count == 0)
+            {
+                throw new InvalidOperationException("No se puede generar el reporte: no hay actividades registradas.");
+            }
             var holidays = await timeReportRepository.GetActiveHolidaysByMonthAndYearAsync(month, year);
 
             var permissions = await permissionRepository.GetPermissionsAprovedByEmployeeIdAsync(employeeId);
