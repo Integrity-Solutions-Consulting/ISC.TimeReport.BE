@@ -18,14 +18,17 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
     {
         private readonly DBContext _dbContext;
 
-        public ProjectRepository(DBContext dbContext) 
-        { 
+        public ProjectRepository(DBContext dbContext)
+        {
             _dbContext = dbContext;
         }
 
         public async Task<PagedResult<Project>> GetAllProjectsPaginatedAsync(PaginationParams paginationParams, string? search)
         {
-            var query = _dbContext.Projects.AsQueryable();
+            var query = _dbContext.Projects
+                .Include(p => p.Leader)                
+                    .ThenInclude(l => l.Person)       
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -37,10 +40,11 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
             }
 
             query = query.OrderBy(p => p.Status ? 0 : 1)
-             .ThenBy(p => p.Name);
+                         .ThenBy(p => p.Name);
 
             return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
         }
+
         public async Task<PagedResult<Project>> GetAssignedProjectsForEmployeeAsync(PaginationParams paginationParams, string? search, int employeeId)
         {
             var query = _dbContext.Projects
@@ -231,6 +235,16 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
             }
             return project;
         }
+
+            public async Task<List<int>> GetProjectToEmployeeAsync(int employeeId)
+            {
+                var projects = await _dbContext.EmployeeProjects
+                    .Where(ep => ep.EmployeeID == employeeId)
+                    .Select(ep => ep.ProjectID)
+                    .ToListAsync();
+
+                return projects;
+            }
 
     }
 }

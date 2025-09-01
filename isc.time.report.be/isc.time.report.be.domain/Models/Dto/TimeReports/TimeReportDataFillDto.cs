@@ -18,6 +18,7 @@ namespace isc.time.report.be.domain.Models.Dto.TimeReports
         public string LastName { get; set; }
         public string TradeName { get; set; }
         public string? Company { get; set; }
+        public bool? EmployeeCompany { get; set; }
 
 
         public List<TimeReportActivityDto> Activities { get; set; }
