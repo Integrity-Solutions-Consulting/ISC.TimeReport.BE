@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Office.CustomUI;
 using isc.time.report.be.application.Interfaces.Repository.Auth;
 using isc.time.report.be.application.Interfaces.Repository.Menus;
 using isc.time.report.be.application.Interfaces.Repository.Projects;
@@ -38,6 +39,8 @@ namespace isc.time.report.be.application.Services.Projects
             var result = await projectRepository.GetAllProjectsPaginatedAsync(paginationParams, search);
 
             var responseItems = _mapper.Map<List<GetAllProjectsResponse>>(result.Items);
+
+            //foreach (var project in result) 
 
             return new PagedResult<GetAllProjectsResponse>
             {
