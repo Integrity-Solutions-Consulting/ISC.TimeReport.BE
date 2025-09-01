@@ -59,8 +59,8 @@ namespace isc.time.report.be.application.Services.DailyActivities
                 (h.IsRecurring && h.HolidayDate.Day == activityDate.Day && h.HolidayDate.Month == activityDate.Month) ||
                 (!h.IsRecurring && h.HolidayDate == activityDate));
 
-            if (esFeriado)
-                throw new InvalidOperationException("No se pueden registrar actividades en dias feriados.");
+            //if (esFeriado)
+            //    throw new InvalidOperationException("No se pueden registrar actividades en dias feriados.");
 
             // Validar si la fecha está cubierta por un permiso aprobado
             var permisos = await _permissionRepository.GetPermissionsAprovedByEmployeeIdAsync(employeeId);
