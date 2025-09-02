@@ -419,28 +419,34 @@ namespace isc.time.report.be.application.Services.TimeReports
                 var sigRow3 = new Row { RowIndex = extraStartRow + 2 };
                 sigRow3.Append(CreateCell(""));     // A
 
-                if (reportData.EmployeeCompany == true)
+                if (reportData.Company == "ISC" )
                 {
                     sigRow3.Append(CreateCell("INTEGRITY SOLUTIONS.", 10)); // B
                 }
-                else
+                else 
                 {
                     sigRow3.Append(CreateCell("RPS RISK PROCESS SOLUTIONS S.A.", 10)); // B
                 }
 
                 sigRow3.Append(CreateCell(""));     // C
                 sigRow3.Append(CreateCell(""));     // D
+                                                    // E-H vacías
+                for (int i = 5; i < 9; i++)
+                    sigRow3.Append(CreateCell(""));
 
-                // Completamos hasta U con celdas vacías
-                for (int i = 5; i <= 21; i++)
+                // I-U: Empresa con concatenación
+                string empresaTexto = "Empresa: " + reportData.TradeName;
+                sigRow3.Append(CreateCell(empresaTexto, 10));
+
+                // Rellenar hasta la columna U
+                for (int i = 10; i <= 21; i++)
                     sigRow3.Append(CreateCell(""));
 
                 sheetData.Append(sigRow3);
 
-                // Merge corregido solo en columnas B-D
+                // Merge para B-D y I-U
                 mergeCells.Append(new MergeCell { Reference = $"B{extraStartRow + 2}:D{extraStartRow + 2}" });
-
-
+                mergeCells.Append(new MergeCell { Reference = $"I{extraStartRow + 2}:U{extraStartRow + 2}" });
 
 
 
