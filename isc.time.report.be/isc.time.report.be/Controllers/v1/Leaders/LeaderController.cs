@@ -64,7 +64,7 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador,Gerente,Lider")]
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpPost("CreateLeaderWithPerson")]
         public async Task<ActionResult<SuccessResponse<CreateLeaderResponse>>> CreateLeaderWithPerson([FromBody] CreateLeaderWithPersonOBJRequest request)
         {

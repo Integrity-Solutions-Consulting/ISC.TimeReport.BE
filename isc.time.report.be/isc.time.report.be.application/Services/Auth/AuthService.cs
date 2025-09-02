@@ -70,6 +70,8 @@ namespace isc.time.report.be.application.Services.Auth
 
             var accessibleBaseModule = await menuRepository.GetAllModulesByUserID(user.Id);
 
+
+
             await authRepository.UpdateUserLastLoginByID(user.Id);
 
             var userRoles = user.UserRole?.Select(ur => ur.Role)
@@ -361,5 +363,47 @@ namespace isc.time.report.be.application.Services.Auth
 
             await userRepository.UpdateUser(user);
         }
+
+        //public async Task<List<ModuleResponse>> OrderModulesAssign(List<ModuleResponse> modules)
+        //{
+
+        //    var FinalList = new List<ModuleResponse>();
+
+        //    foreach (var module in modules)
+        //    {
+        //        if (module.Submodule != null)
+        //        {
+
+
+
+
+
+
+
+        //        }
+        //        else
+        //        {
+        //            FinalList.Add(module);
+        //        }
+
+
+
+        //    }
+
+
+
+
+
+
+
+
+
+
+        //}
+
+
+
+
+
     }
 }

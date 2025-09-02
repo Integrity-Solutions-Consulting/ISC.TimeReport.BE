@@ -11,6 +11,7 @@ using isc.time.report.be.application.Interfaces.Service.TimeReports;
 using isc.time.report.be.domain.Entity.DailyActivities;
 using isc.time.report.be.domain.Models.Dto.TimeReports;
 using isc.time.report.be.domain.Models.Response.Dashboards;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -42,10 +43,14 @@ namespace isc.time.report.be.application.Services.TimeReports
 
         public async Task<byte[]> GenerateExcelReportAsync(int employeeId, int clientId, int year, int month, bool fullMonth)
         {
-
+            
             // Obtener datos reales
             var reportData = await GetTimeReportDataFillAsync(employeeId, clientId, year, month, fullMonth);
 
+            if (reportData.Activities == null || reportData.Activities.Count == 0)
+            {
+                throw new InvalidOperationException("No se puede generar el reporte: no hay actividades registradas.");
+            }
             var holidays = await timeReportRepository.GetActiveHolidaysByMonthAndYearAsync(month, year);
 
             var permissions = await permissionRepository.GetPermissionsAprovedByEmployeeIdAsync(employeeId);
@@ -414,28 +419,34 @@ namespace isc.time.report.be.application.Services.TimeReports
                 var sigRow3 = new Row { RowIndex = extraStartRow + 2 };
                 sigRow3.Append(CreateCell(""));     // A
 
-                if (reportData.EmployeeCompany == true)
+                if (reportData.Company == "ISC" )
                 {
                     sigRow3.Append(CreateCell("INTEGRITY SOLUTIONS.", 10)); // B
                 }
-                else
+                else 
                 {
                     sigRow3.Append(CreateCell("RPS RISK PROCESS SOLUTIONS S.A.", 10)); // B
                 }
 
                 sigRow3.Append(CreateCell(""));     // C
                 sigRow3.Append(CreateCell(""));     // D
+                                                    // E-H vacías
+                for (int i = 5; i < 9; i++)
+                    sigRow3.Append(CreateCell(""));
 
-                // Completamos hasta U con celdas vacías
-                for (int i = 5; i <= 21; i++)
+                // I-U: Empresa con concatenación
+                string empresaTexto = "Empresa: " + reportData.TradeName;
+                sigRow3.Append(CreateCell(empresaTexto, 10));
+
+                // Rellenar hasta la columna U
+                for (int i = 10; i <= 21; i++)
                     sigRow3.Append(CreateCell(""));
 
                 sheetData.Append(sigRow3);
 
-                // Merge corregido solo en columnas B-D
+                // Merge para B-D y I-U
                 mergeCells.Append(new MergeCell { Reference = $"B{extraStartRow + 2}:D{extraStartRow + 2}" });
-
-
+                mergeCells.Append(new MergeCell { Reference = $"I{extraStartRow + 2}:U{extraStartRow + 2}" });
 
 
 

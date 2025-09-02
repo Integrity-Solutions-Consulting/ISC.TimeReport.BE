@@ -15,5 +15,6 @@ namespace isc.time.report.be.domain.Models.Response.Users
         public int? DisplayOrder { get; set; }
         public int Submodule { get; set; }
         public bool Status { get; set; }
+        public List<ModuleResponse>? Modules { get; set; }
     }
 }
