@@ -421,7 +421,7 @@ namespace isc.time.report.be.application.Services.TimeReports
 
                 if (reportData.Company == "ISC" )
                 {
-                    sigRow3.Append(CreateCell("INTEGRITY SOLUTIONS.", 10)); // B
+                    sigRow3.Append(CreateCell("ISC INTEGRITY SOLUTIONS & CONSULTING CIA. LTDA.", 10)); // B
                 }
                 else 
                 {
