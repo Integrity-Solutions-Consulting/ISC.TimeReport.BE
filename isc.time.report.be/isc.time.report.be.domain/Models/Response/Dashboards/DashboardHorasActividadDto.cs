@@ -16,7 +16,7 @@ namespace isc.time.report.be.domain.Models.Response.Dashboards
        string Departamento,
        string ProyectosAsignados,
        string ClientesAsociados,
-       string ClienteIDs,
+       int ClienteIDs,
        string LideresTecnicos,
        decimal HorasRegistradasPeriodo,
        int TotalDiasHabilesPeriodo,
