@@ -30,5 +30,8 @@ namespace isc.time.report.be.domain.Entity.Projects
         public decimal? Hours { get; set; } = 0;
         public List<EmployeeProject> EmployeeProject { get; set; }
         public List<Leader> Leader { get; set; }
+        public DateTime? WaitingStartDate { get; set; }
+        public DateTime? WaitingEndDate { get; set; }
+        public string? Observation { get; set; }
     }
 }

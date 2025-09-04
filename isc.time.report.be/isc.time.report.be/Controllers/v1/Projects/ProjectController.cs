@@ -126,5 +126,17 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
             var list = await _projectService.GetProjectsByEmployeeIdAsync(employeeId);
             return Ok(list);
         }
+
+        //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
+        //[HttpGet("export-excel-project")]
+        //public async Task<IActionResult> ExportToExcel([FromQuery] int employeeId, [FromQuery] int clientId, [FromQuery] int year, [FromQuery] int month, [FromQuery] bool fullMonth)
+        //{
+        //    var fileBytes = await _projectService.GenerateExcelReportAsync(employeeId, clientId, year, month, fullMonth);
+
+        //    var fileName = $"TimeReport_{employeeId}_{year}_{month}.xlsm";
+        //    const string contentType = "application/vnd.ms-excel.sheet.macroEnabled.12";
+
+        //    return File(fileBytes, contentType, fileName);
+        //}
     }
 }

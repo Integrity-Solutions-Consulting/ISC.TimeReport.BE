@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using DocumentFormat.OpenXml.Office.CustomUI;
 using isc.time.report.be.application.Interfaces.Repository.Auth;
+using isc.time.report.be.application.Interfaces.Repository.Clients;
+using isc.time.report.be.application.Interfaces.Repository.Leaders;
 using isc.time.report.be.application.Interfaces.Repository.Menus;
+using System.Linq;
 using isc.time.report.be.application.Interfaces.Repository.Projects;
 using isc.time.report.be.application.Interfaces.Service.Projects;
 using isc.time.report.be.application.Utils.Auth;
@@ -10,6 +13,7 @@ using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
+using isc.time.report.be.domain.Models.Dto.Projects;
 using isc.time.report.be.domain.Models.Request.Projects;
 using isc.time.report.be.domain.Models.Response.Auth;
 using isc.time.report.be.domain.Models.Response.Employees;
@@ -21,6 +25,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using isc.time.report.be.domain.Entity.Clients;
 
 namespace isc.time.report.be.application.Services.Projects
 {
@@ -28,10 +33,14 @@ namespace isc.time.report.be.application.Services.Projects
     {
         private readonly IProjectRepository projectRepository;
         private readonly IMapper _mapper;
-        public ProjectService(IProjectRepository projectRepository, IMapper mapper)
+        private readonly IClientRepository _clientRepository;
+        private readonly ILeaderRepository _leaderRepository;
+        public ProjectService(IProjectRepository projectRepository, IMapper mapper, IClientRepository clientRepository, ILeaderRepository leaderRepository)
         {
             this.projectRepository = projectRepository;
             _mapper = mapper;
+            _clientRepository = clientRepository;
+            _leaderRepository = leaderRepository;
         }
 
         public async Task<PagedResult<GetAllProjectsResponse>> GetAllProjectsPaginated(PaginationParams paginationParams, string? search)
@@ -282,5 +291,50 @@ namespace isc.time.report.be.application.Services.Projects
             var projects = await projectRepository.GetProjectsByEmployeeIdAsync(employeeId);
             return _mapper.Map<List<GetProjectsByEmployeeIDResponse>>(projects);
         }
+        //public async Task<List<ProjectExcelDto>> GetProjectsForExcelAsync()
+        //{
+        //    // 1️⃣ Traer todos los proyectos
+        //    var projects = await projectRepository.GetAllProjectsAsync(); //  con await
+        //    if (projects == null || !projects.Any())
+        //        return new List<ProjectExcelDto>();
+
+        //    var projectIds = projects.Select(p => p.Id).ToList();
+
+        //    // 2️ Traer líderes activos por proyecto
+        //    var leaders = await _leaderRepository.GetActiveLeadersByProjectIdsAsync(projectIds);
+
+        //    // 3️ Traer clientes relacionados
+        //    var clientIds = projects.Select(p => p.ClientID).Distinct().ToList();
+        //    var clients = await _clientRepository.GetClientByIDAsync(); //  usa el método que tengas para varios IDs
+
+        //    // 4️ Mapear a DTO listo para Excel
+        //    var result = projects.Select((p, index) =>
+        //    {
+        //        var leader = leaders.FirstOrDefault(l => l.ProjectID == p.Id);
+        //        var client = clients.FirstOrDefault(c => c.ClientID == p.ClientID);
+
+        //        return new ProjectExcelDto
+        //        {
+        //            Nro = index + 1,
+        //            CodigoProyecto = p.Code,
+        //            Proyecto = p.Name,
+        //            Lider = leader != null ? $"{leader.Person.FirstName} {leader.Person.LastName}" : string.Empty,
+        //            Cliente = client?.Person != null
+        //                        ? $"{client.Person.FirstName} {client.Person.LastName}"
+        //                        : string.Empty,
+        //            EstadoProyecto = p.ProjectStatus?.Name ?? string.Empty,
+        //            TipoProyecto = p.ProjectType?.Name ?? string.Empty,
+        //            FechaInicio = p.StartDate,
+        //            FechaFinEstimada = p.EndDate,
+        //            FechaFinReal = p.ActualEndDate,
+        //            Presupuesto = p.Budget,
+        //            Horas = p.Hours,
+        //            Observaciones = p.Observation
+        //        };
+        //    }).ToList();
+
+        //    return result;
+        //}
+
     }
 }

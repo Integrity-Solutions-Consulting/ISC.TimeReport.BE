@@ -23,6 +23,7 @@ namespace isc.time.report.be.application.Interfaces.Repository.Projects
         Task<Project?> GetProjectDetailByIDAsync(int projectId);
         Task<List<Project>> GetProjectsByEmployeeIdAsync(int employeeId);
         Task<List<int>> GetProjectToEmployeeAsync(int employeeId);
+        Task<List<Project>> GetAllProjectsAsync();
 
     }
 }

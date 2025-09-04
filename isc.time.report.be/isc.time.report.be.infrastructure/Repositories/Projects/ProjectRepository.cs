@@ -1,9 +1,15 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.Projects;
+﻿using DocumentFormat.OpenXml.InkML;
+using isc.time.report.be.application.Interfaces.Repository.Clients;
+using isc.time.report.be.application.Interfaces.Repository.Leaders;
+using isc.time.report.be.application.Interfaces.Repository.Projects;
 using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
+using isc.time.report.be.domain.Models.Dto.Projects;
 using isc.time.report.be.infrastructure.Database;
+using isc.time.report.be.infrastructure.Repositories.Clients;
+using isc.time.report.be.infrastructure.Repositories.Leaders;
 using isc.time.report.be.infrastructure.Utils.Pagination;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -21,13 +27,14 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
         public ProjectRepository(DBContext dbContext)
         {
             _dbContext = dbContext;
+        ;
         }
 
         public async Task<PagedResult<Project>> GetAllProjectsPaginatedAsync(PaginationParams paginationParams, string? search)
         {
             var query = _dbContext.Projects
-                .Include(p => p.Leader)                
-                    .ThenInclude(l => l.Person)       
+                .Include(p => p.Leader)
+                    .ThenInclude(l => l.Person)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
@@ -236,15 +243,29 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
             return project;
         }
 
-            public async Task<List<int>> GetProjectToEmployeeAsync(int employeeId)
-            {
-                var projects = await _dbContext.EmployeeProjects
-                    .Where(ep => ep.EmployeeID == employeeId)
-                    .Select(ep => ep.ProjectID)
-                    .ToListAsync();
+        public async Task<List<int>> GetProjectToEmployeeAsync(int employeeId)
+        {
+            var projects = await _dbContext.EmployeeProjects
+                .Where(ep => ep.EmployeeID == employeeId)
+                .Select(ep => ep.ProjectID)
+                .ToListAsync();
 
-                return projects;
-            }
+            return projects;
+        }
+
+        public async Task<List<Project>> GetAllProjectsAsync()
+        {
+            return await _dbContext.Projects
+                .Include(p => p.Leader)
+                    .ThenInclude(l => l.Person)
+                .Include(p => p.Client)
+                    .ThenInclude(c => c.Person)
+                .Include(p => p.ProjectStatus)
+                .Include(p => p.ProjectType)
+                .OrderBy(p => p.Status ? 0 : 1)
+                .ThenBy(p => p.Name)
+                .ToListAsync();
+        }
 
     }
 }
