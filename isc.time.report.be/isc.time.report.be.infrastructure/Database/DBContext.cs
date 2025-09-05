@@ -191,6 +191,9 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.ActualEndDate).HasColumnName("actual_end_date");
                 entity.Property(e => e.Budget).HasColumnName("budget");
                 entity.Property(e => e.Hours).HasColumnName("hours");
+                entity.Property(e => e.WaitingStartDate).HasColumnName("waiting_start_date");
+                entity.Property(e => e.WaitingEndDate).HasColumnName("waiting_end_date");
+                entity.Property(e => e.Observation).HasColumnName("observation");
 
                 entity.Property(e => e.Status).HasColumnName("status");
                 entity.Property(e => e.CreationUser).HasColumnName("creation_user");

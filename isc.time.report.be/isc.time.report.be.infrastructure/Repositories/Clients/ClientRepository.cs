@@ -459,5 +459,18 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
 
             return person;
         }
+        public async Task<List<Client>> GetListOfClientsByIdsAsync(List<int> clientIds)
+        {
+            if (clientIds == null || !clientIds.Any())
+            {
+                throw new ClientFaultException("La lista de IDs de clientes no puede estar vacía");
+            }
+
+            return await _dbContext.Clients
+                .Include(c => c.Person)
+                .Where(c => clientIds.Contains(c.Id))
+                .ToListAsync();
+        }
+
     }
 }

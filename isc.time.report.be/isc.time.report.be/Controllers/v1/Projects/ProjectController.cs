@@ -126,5 +126,42 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
             var list = await _projectService.GetProjectsByEmployeeIdAsync(employeeId);
             return Ok(list);
         }
+
+        //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
+        //[HttpGet("export-excel-project")]
+        //public async Task<IActionResult> ExportToExcel([FromQuery] int employeeId, [FromQuery] int clientId, [FromQuery] int year, [FromQuery] int month, [FromQuery] bool fullMonth)
+        //{
+        //    var fileBytes = await _projectService.GenerateExcelReportAsync(employeeId, clientId, year, month, fullMonth);
+
+        //    var fileName = $"TimeReport_{employeeId}_{year}_{month}.xlsm";
+        //    const string contentType = "application/vnd.ms-excel.sheet.macroEnabled.12";
+
+        //    return File(fileBytes, contentType, fileName);
+        //}
+
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
+        [HttpGet("get-data-projects-excel")]
+        public async Task<ActionResult<SuccessResponse<List<CreateDtoToExcelProject>>>> GetDataProjectExcel()
+        {
+            var list = await _projectService.GetProjectsForExcelAsync();
+            return Ok(list);
+        }
+
+        //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
+        [HttpGet("export-projects-excel")]
+        public async Task<IActionResult> ExportProjectsToExcel()
+        {
+            // 1️⃣ Llamamos a tu ProjectService
+            var fileBytes = await _projectService.GenerateProjectsExcelAsync();
+
+            // 2️⃣ Definimos nombre dinámico con fecha
+            var fileName = $"Projects_{DateTime.Now:yyyyMMdd_HHmm}.xlsx";
+            const string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+            // 3️⃣ Retornamos archivo
+            return File(fileBytes, contentType, fileName);
+        }
+
+
     }
 }

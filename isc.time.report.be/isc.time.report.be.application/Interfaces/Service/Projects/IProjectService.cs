@@ -22,5 +22,7 @@ namespace isc.time.report.be.application.Interfaces.Service.Projects
         Task AssignEmployeesToProject(AssignEmployeesToProjectRequest request);
         Task<GetProjectDetailByIDResponse?> GetProjectDetailByID(int projectID);
         Task<List<GetProjectsByEmployeeIDResponse>> GetProjectsByEmployeeIdAsync(int employeeId);
+        Task<List<CreateDtoToExcelProject>> GetProjectsForExcelAsync();
+        Task<byte[]> GenerateProjectsExcelAsync();
     }
 }
