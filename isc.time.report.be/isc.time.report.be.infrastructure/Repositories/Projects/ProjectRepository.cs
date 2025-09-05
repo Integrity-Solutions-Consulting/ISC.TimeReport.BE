@@ -6,7 +6,6 @@ using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
-using isc.time.report.be.domain.Models.Dto.Projects;
 using isc.time.report.be.infrastructure.Database;
 using isc.time.report.be.infrastructure.Repositories.Clients;
 using isc.time.report.be.infrastructure.Repositories.Leaders;
@@ -256,10 +255,10 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
         public async Task<List<Project>> GetAllProjectsAsync()
         {
             return await _dbContext.Projects
-                .Include(p => p.Leader)
-                    .ThenInclude(l => l.Person)
                 .Include(p => p.Client)
                     .ThenInclude(c => c.Person)
+                .Include(p => p.Leader)
+                    .ThenInclude(l => l.Person)
                 .Include(p => p.ProjectStatus)
                 .Include(p => p.ProjectType)
                 .OrderBy(p => p.Status ? 0 : 1)

@@ -1,31 +1,36 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Office.CustomUI;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 using isc.time.report.be.application.Interfaces.Repository.Auth;
 using isc.time.report.be.application.Interfaces.Repository.Clients;
 using isc.time.report.be.application.Interfaces.Repository.Leaders;
 using isc.time.report.be.application.Interfaces.Repository.Menus;
-using System.Linq;
 using isc.time.report.be.application.Interfaces.Repository.Projects;
 using isc.time.report.be.application.Interfaces.Service.Projects;
 using isc.time.report.be.application.Utils.Auth;
 using isc.time.report.be.domain.Entity.Auth;
+using isc.time.report.be.domain.Entity.Catalogs;
+using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
-using isc.time.report.be.domain.Models.Dto.Projects;
 using isc.time.report.be.domain.Models.Request.Projects;
 using isc.time.report.be.domain.Models.Response.Auth;
 using isc.time.report.be.domain.Models.Response.Employees;
+using isc.time.report.be.domain.Models.Response.Leaders;
+using isc.time.report.be.domain.Models.Response.Persons;
 using isc.time.report.be.domain.Models.Response.Projects;
 using isc.time.report.be.domain.Models.Response.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using isc.time.report.be.domain.Entity.Clients;
 
 namespace isc.time.report.be.application.Services.Projects
 {
@@ -97,7 +102,7 @@ namespace isc.time.report.be.application.Services.Projects
         {
 
 
-            var projectNew = await projectRepository.CreateProject( _mapper.Map<Project>(projectRequest));               
+            var projectNew = await projectRepository.CreateProject(_mapper.Map<Project>(projectRequest));
 
             if (projectNew.StartDate > projectNew.EndDate)
             {
@@ -106,7 +111,7 @@ namespace isc.time.report.be.application.Services.Projects
 
             return _mapper.Map<CreateProjectResponse>(projectNew);
         }
-        
+
         public async Task<UpdateProjectResponse> UpdateProject(int projectId, UpdateProjectRequest projectParaUpdate)
         {
             var projectGet = await projectRepository.GetProjectByIDAsync(projectId);
@@ -128,6 +133,9 @@ namespace isc.time.report.be.application.Services.Projects
             projectGet.ActualEndDate = projectParaUpdate.ActualEndDate;
             projectGet.Budget = projectParaUpdate.Budget;
             projectGet.Hours = projectParaUpdate.Hours;
+            projectGet.WaitingStartDate = projectParaUpdate.WaitingStartDate;
+            projectGet.ActualEndDate = projectParaUpdate.WaitingEndDate;
+            projectGet.Observation = projectParaUpdate.Observation;
 
             if (projectGet.StartDate > projectGet.EndDate)
             {
@@ -152,7 +160,7 @@ namespace isc.time.report.be.application.Services.Projects
 
             var projectActive = await projectRepository.ActivateProjectAsync(ProjectId);
 
-            return _mapper.Map<ActiveInactiveProjectResponse>( projectActive);
+            return _mapper.Map<ActiveInactiveProjectResponse>(projectActive);
         }
 
         public async Task AssignEmployeesToProject(AssignEmployeesToProjectRequest request)
@@ -254,6 +262,9 @@ namespace isc.time.report.be.application.Services.Projects
                 ActualStartDate = project.ActualStartDate,
                 ActualEndDate = project.ActualEndDate,
                 Budget = project.Budget,
+                WaitingEndDate = project.WaitingEndDate,
+                WaitingStartDate = project.WaitingStartDate,
+                Observation = project.Observation,
 
                 EmployeeProjects = project.EmployeeProject.Select(ep => new GetEmployeeProjectResponse
                 {
@@ -281,7 +292,7 @@ namespace isc.time.report.be.application.Services.Projects
                         LastName = e.Person.LastName,
                         Status = e.Status
                     }).ToList()
-            };
+            };  
 
             return response;
         }
@@ -291,50 +302,175 @@ namespace isc.time.report.be.application.Services.Projects
             var projects = await projectRepository.GetProjectsByEmployeeIdAsync(employeeId);
             return _mapper.Map<List<GetProjectsByEmployeeIDResponse>>(projects);
         }
-        //public async Task<List<ProjectExcelDto>> GetProjectsForExcelAsync()
-        //{
-        //    // 1️⃣ Traer todos los proyectos
-        //    var projects = await projectRepository.GetAllProjectsAsync(); //  con await
-        //    if (projects == null || !projects.Any())
-        //        return new List<ProjectExcelDto>();
+        public async Task<List<CreateDtoToExcelProject>> GetProjectsForExcelAsync()
+        {
+            // 1️ Traer todos los proyectos
+            var projects = await projectRepository.GetAllProjectsAsync();
+            if (projects == null || !projects.Any())
+                return new List<CreateDtoToExcelProject>();
 
-        //    var projectIds = projects.Select(p => p.Id).ToList();
+            var projectIds = projects.Select(p => p.Id).ToList();
 
-        //    // 2️ Traer líderes activos por proyecto
-        //    var leaders = await _leaderRepository.GetActiveLeadersByProjectIdsAsync(projectIds);
+            // 2️ Traer líderes activos por proyecto
+            var leaders = await _leaderRepository.GetActiveLeadersByProjectIdsAsync(projectIds);
 
-        //    // 3️ Traer clientes relacionados
-        //    var clientIds = projects.Select(p => p.ClientID).Distinct().ToList();
-        //    var clients = await _clientRepository.GetClientByIDAsync(); //  usa el método que tengas para varios IDs
+            // 3️ Traer clientes relacionados
+            var clientIds = projects.Select(p => p.ClientID).Distinct().ToList();
+            var clients = await _clientRepository.GetListOfClientsByIdsAsync(clientIds);
 
-        //    // 4️ Mapear a DTO listo para Excel
-        //    var result = projects.Select((p, index) =>
-        //    {
-        //        var leader = leaders.FirstOrDefault(l => l.ProjectID == p.Id);
-        //        var client = clients.FirstOrDefault(c => c.ClientID == p.ClientID);
+            // 4️ Mapear a DTO listo para Excel
+            var result = projects.Select((p, index) =>
+            {
+                var projectLeaders = leaders
+                    .Where(l => l.ProjectID == p.Id)
+                    .Select(l => new LiderData
+                    {
+                        Id = l.Id,
+                        GetPersonResponse = new GetPersonResponse
+                        {
+                            Id = l.Person.Id,
+                            FirstName = l.Person.FirstName,
+                            LastName = l.Person.LastName,
+                            Email = l.Person.Email
+                        }
+                    })
+                    .ToList();
 
-        //        return new ProjectExcelDto
-        //        {
-        //            Nro = index + 1,
-        //            CodigoProyecto = p.Code,
-        //            Proyecto = p.Name,
-        //            Lider = leader != null ? $"{leader.Person.FirstName} {leader.Person.LastName}" : string.Empty,
-        //            Cliente = client?.Person != null
-        //                        ? $"{client.Person.FirstName} {client.Person.LastName}"
-        //                        : string.Empty,
-        //            EstadoProyecto = p.ProjectStatus?.Name ?? string.Empty,
-        //            TipoProyecto = p.ProjectType?.Name ?? string.Empty,
-        //            FechaInicio = p.StartDate,
-        //            FechaFinEstimada = p.EndDate,
-        //            FechaFinReal = p.ActualEndDate,
-        //            Presupuesto = p.Budget,
-        //            Horas = p.Hours,
-        //            Observaciones = p.Observation
-        //        };
-        //    }).ToList();
+                var projectClients = clients
+                    .Where(c => c.Id == p.ClientID)
+                    .Select(c => new ClientData
+                    {
+                        TradeName = c.TradeName
 
-        //    return result;
-        //}
+                    })
+                    .ToList();
 
+                return new CreateDtoToExcelProject
+                {
+                    Id = p.Id,
+                    ClientID = p.ClientID,
+                    ProjectType = new ProjectType { TypeName = p.ProjectType?.TypeName },
+                    ProjectStatus = new ProjectStatus { StatusName = p.ProjectStatus?.StatusName },
+                    Code = p.Code,
+                    Name = p.Name,
+                    Description = p.Description,
+                    StartDate = p.StartDate,
+                    EndDate = p.EndDate,
+                    ActualStartDate = p.ActualStartDate,
+                    ActualEndDate = p.ActualEndDate,
+                    Budget = p.Budget,
+                    Hours = p.Hours,
+                    Status = p.Status,
+                    WaitingStartDate = p.WaitingStartDate,
+                    WaitingEndDate = p.WaitingEndDate,
+                    Observation = p.Observation,
+                    LiderData = projectLeaders,
+                    ClientData = projectClients,
+
+                };
+            }).ToList();
+
+            return result;
+        }
+
+
+
+
+        public async Task<byte[]> GenerateProjectsExcelAsync()
+        {
+            // Obtener los datos listos
+            var projects = await GetProjectsForExcelAsync();
+
+            if (projects == null || !projects.Any())
+                return Array.Empty<byte>();
+
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var spreadsheetDocument = SpreadsheetDocument.Create(memoryStream, SpreadsheetDocumentType.Workbook))
+                {
+                    var workbookPart = spreadsheetDocument.AddWorkbookPart();
+                    workbookPart.Workbook = new Workbook();
+                    var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+                    var sheetData = new SheetData();
+
+                    worksheetPart.Worksheet = new Worksheet(sheetData);
+                    var sheets = spreadsheetDocument.WorkbookPart.Workbook.AppendChild(new Sheets());
+                    var sheet = new Sheet
+                    {
+                        Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart),
+                        SheetId = 1,
+                        Name = "Proyectos"
+                    };
+                    sheets.Append(sheet);
+                    // Fila 1 - Título
+                    //var row1 = new Row { RowIndex = 1, Height = 21, CustomHeight = true };
+                    //row1.Append(CreateCell("REPORTE DE PROYECTOS", 1));
+                    //sheetData.Append(row1);
+
+                    // Cabecera
+                    var headerRow = new Row();
+                    headerRow.Append(
+                        CreateCell("Nro"),
+                        CreateCell("Código Proyecto"),
+                        CreateCell("Proyecto"),
+                        CreateCell("Líder"),
+                        CreateCell("Cliente"),
+                        CreateCell("Estado Proyecto"),
+                        CreateCell("Tipo Proyecto"),
+                        CreateCell("F. Inicio"),
+                        CreateCell("F. Fin Estimada"),
+                        CreateCell("F. Fin Real"),
+                        CreateCell("Presupuesto"),
+                        CreateCell("Horas"),
+                        CreateCell("F. Inicio Espera"),
+                        CreateCell("F. Fin Espera"),
+                        CreateCell("Observaciones")
+                    );
+                    sheetData.AppendChild(headerRow);
+
+                    // Filas con los datos
+                    int nro = 1;
+                    foreach (var item in projects)
+                    {
+                        var row = new Row();
+                        row.Append(
+                            CreateCell(nro.ToString()),
+                            CreateCell(item.Code),
+                            CreateCell(item.Name),
+                            CreateCell(item.LiderData?.FirstOrDefault() != null
+                                        ? $"{item.LiderData.First().GetPersonResponse.FirstName} {item.LiderData.First().GetPersonResponse.LastName}"
+                                        : string.Empty),
+                            CreateCell(item.ClientData?.FirstOrDefault()?.TradeName ?? string.Empty),
+                            CreateCell(item.ProjectType?.TypeName ?? ""),
+                            CreateCell(item.ProjectStatus?.StatusName ?? ""),  // puedes mejorar: traer nombre del estado
+                            CreateCell(item.StartDate?.ToShortDateString() ?? string.Empty),
+                            CreateCell(item.EndDate?.ToShortDateString() ?? string.Empty),
+                            CreateCell(item.ActualEndDate?.ToShortDateString() ?? string.Empty),
+                            CreateCell(item.Budget?.ToString("N2") ?? "0"),
+                            CreateCell(item.Hours.ToString()),
+                            CreateCell(item.WaitingStartDate?.ToShortDateString() ?? string.Empty),
+                            CreateCell(item.WaitingEndDate?.ToShortDateString() ?? string.Empty),
+                            CreateCell(item.Observation ?? string.Empty)
+                        );
+                        sheetData.AppendChild(row);
+                        nro++;
+                    }
+                }
+
+                return memoryStream.ToArray();
+            }
+
+        }
+        private Cell CreateCell(string value, uint styleIndex = 0)
+        {
+            return new Cell
+            {
+                DataType = CellValues.String,
+                CellValue = new CellValue(value ?? ""),
+                StyleIndex = styleIndex
+            };
+        }
     }
+
 }
+
