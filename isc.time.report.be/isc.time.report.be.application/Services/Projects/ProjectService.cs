@@ -393,7 +393,7 @@ namespace isc.time.report.be.application.Services.Projects
                     var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
                     var sheetData = new SheetData();
 
-                    worksheetPart.Worksheet = new Worksheet(sheetData);
+                    worksheetPart.Worksheet = new Worksheet();
                     var sheets = spreadsheetDocument.WorkbookPart.Workbook.AppendChild(new Sheets());
                     var sheet = new Sheet
                     {
@@ -402,29 +402,25 @@ namespace isc.time.report.be.application.Services.Projects
                         Name = "Proyectos"
                     };
                     sheets.Append(sheet);
-                    // Fila 1 - Título
-                    //var row1 = new Row { RowIndex = 1, Height = 21, CustomHeight = true };
-                    //row1.Append(CreateCell("REPORTE DE PROYECTOS", 1));
-                    //sheetData.Append(row1);
 
                     // Cabecera
                     var headerRow = new Row();
                     headerRow.Append(
-                        CreateCell("Nro"),
-                        CreateCell("Código Proyecto"),
-                        CreateCell("Proyecto"),
-                        CreateCell("Líder"),
-                        CreateCell("Cliente"),
-                        CreateCell("Estado Proyecto"),
-                        CreateCell("Tipo Proyecto"),
-                        CreateCell("F. Inicio"),
-                        CreateCell("F. Fin Estimada"),
-                        CreateCell("F. Fin Real"),
-                        CreateCell("Presupuesto"),
-                        CreateCell("Horas"),
-                        CreateCell("F. Inicio Espera"),
-                        CreateCell("F. Fin Espera"),
-                        CreateCell("Observaciones")
+                        CreateCell("NRO"),
+                        CreateCell("CODIGO DEL PROYECTO"),
+                        CreateCell("PROYECTO"),
+                        CreateCell("LIDER"),
+                        CreateCell("CLIENTE"),
+                        CreateCell("ESTADO DEL PROYECTO"),
+                        CreateCell("TIPO DE PROYECTO"),
+                        CreateCell("FECHA DE INICIO"),
+                        CreateCell("FECHA DE FIN ESTIMADA"),
+                        CreateCell("FECHA FIN REAL"),
+                        CreateCell("PRESUPUESTO"),
+                        CreateCell("HORAS"),
+                        CreateCell("FECHA INICIO ESPERA"),
+                        CreateCell("FECHA FIN ESPERA"),
+                        CreateCell("OBSERVACIONES")
                     );
                     sheetData.AppendChild(headerRow);
 
@@ -441,8 +437,8 @@ namespace isc.time.report.be.application.Services.Projects
                                         ? $"{item.LiderData.First().GetPersonResponse.FirstName} {item.LiderData.First().GetPersonResponse.LastName}"
                                         : string.Empty),
                             CreateCell(item.ClientData?.FirstOrDefault()?.TradeName ?? string.Empty),
+                            CreateCell(item.ProjectStatus?.StatusName ?? ""),
                             CreateCell(item.ProjectType?.TypeName ?? ""),
-                            CreateCell(item.ProjectStatus?.StatusName ?? ""),  // puedes mejorar: traer nombre del estado
                             CreateCell(item.StartDate?.ToShortDateString() ?? string.Empty),
                             CreateCell(item.EndDate?.ToShortDateString() ?? string.Empty),
                             CreateCell(item.ActualEndDate?.ToShortDateString() ?? string.Empty),
@@ -455,12 +451,34 @@ namespace isc.time.report.be.application.Services.Projects
                         sheetData.AppendChild(row);
                         nro++;
                     }
+
+                    // Definir anchos de columnas dinámicos
+                    var columns = new Columns();
+                    columns.Append(CreateColumn(2, 2, CalculateColumnWidth(new[] { "Código Proyecto" }.Concat(projects.Select(p => p.Code)))));
+                    columns.Append(CreateColumn(3, 3, CalculateColumnWidth(new[] { "Proyecto" }.Concat(projects.Select(p => p.Name)))));
+                    columns.Append(CreateColumn(4, 4, CalculateColumnWidth(new[] { "Líder" }.Concat(projects.Select(p =>
+                        p.LiderData?.FirstOrDefault() != null
+                            ? $"{p.LiderData.First().GetPersonResponse.FirstName} {p.LiderData.First().GetPersonResponse.LastName}"
+                            : string.Empty
+                    )))));
+                    columns.Append(CreateColumn(5, 5, CalculateColumnWidth(new[] { "Cliente" }.Concat(projects.Select(p => p.ClientData?.FirstOrDefault()?.TradeName ?? "")))));
+                    columns.Append(CreateColumn(6, 6, CalculateColumnWidth(new[] { "Estado Proyecto" }.Concat(projects.Select(p => p.ProjectStatus?.StatusName ?? "")))));
+                    columns.Append(CreateColumn(7, 7, CalculateColumnWidth(new[] { "Tipo Proyecto" }.Concat(projects.Select(p => p.ProjectType?.TypeName ?? "")))));
+                    columns.Append(CreateColumn(8, 20, 22)); // Fechas
+                    columns.Append(CreateColumn(11, 14, 18)); // Presupuesto
+                    columns.Append(CreateColumn(12, 14, 15)); // Horas
+                    columns.Append(CreateColumn(13, 25, 20)); // Fechas Espera
+                    columns.Append(CreateColumn(15, 15, CalculateColumnWidth(new[] { "Observaciones" }.Concat(projects.Select(p => p.Observation ?? "")))));
+
+                    worksheetPart.Worksheet.Append(columns);
+                    worksheetPart.Worksheet.Append(sheetData);
                 }
 
                 return memoryStream.ToArray();
             }
-
         }
+
+        // Helpers
         private Cell CreateCell(string value, uint styleIndex = 0)
         {
             return new Cell
@@ -470,6 +488,29 @@ namespace isc.time.report.be.application.Services.Projects
                 StyleIndex = styleIndex
             };
         }
+
+        private Column CreateColumn(uint min, uint max, double width)
+        {
+            return new Column
+            {
+                Min = min,
+                Max = max,
+                Width = width,
+                CustomWidth = true
+            };
+        }
+
+        private double CalculateColumnWidth(IEnumerable<string> values)
+        {
+            if (!values.Any())
+                return 10;
+
+            int maxLength = values.Max(v => v?.Length ?? 0);
+
+            // Aproximación: cada carácter ~1.2 unidades en Excel
+            return Math.Min(100, maxLength * 1.2);
+        }
+
     }
 
 }
