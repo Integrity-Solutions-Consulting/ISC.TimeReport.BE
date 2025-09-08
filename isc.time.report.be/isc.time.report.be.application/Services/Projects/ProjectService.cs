@@ -378,7 +378,6 @@ namespace isc.time.report.be.application.Services.Projects
 
         public async Task<byte[]> GenerateProjectsExcelAsync()
         {
-            // Obtener los datos listos
             var projects = await GetProjectsForExcelAsync();
 
             if (projects == null || !projects.Any())
@@ -390,70 +389,18 @@ namespace isc.time.report.be.application.Services.Projects
                 {
                     var workbookPart = spreadsheetDocument.AddWorkbookPart();
                     workbookPart.Workbook = new Workbook();
+
+                    // ✅ Agregar estilos al workbook
+                    var stylesPart = workbookPart.AddNewPart<WorkbookStylesPart>();
+                    stylesPart.Stylesheet = CreateStylesheet();
+                    stylesPart.Stylesheet.Save();
+
                     var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-                    var sheetData = new SheetData();
-
                     worksheetPart.Worksheet = new Worksheet();
-                    var sheets = spreadsheetDocument.WorkbookPart.Workbook.AppendChild(new Sheets());
-                    var sheet = new Sheet
-                    {
-                        Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart),
-                        SheetId = 1,
-                        Name = "Proyectos"
-                    };
-                    sheets.Append(sheet);
 
-                    // Cabecera
-                    var headerRow = new Row();
-                    headerRow.Append(
-                        CreateCell("NRO"),
-                        CreateCell("CODIGO DEL PROYECTO"),
-                        CreateCell("PROYECTO"),
-                        CreateCell("LIDER"),
-                        CreateCell("CLIENTE"),
-                        CreateCell("ESTADO DEL PROYECTO"),
-                        CreateCell("TIPO DE PROYECTO"),
-                        CreateCell("FECHA DE INICIO"),
-                        CreateCell("FECHA DE FIN ESTIMADA"),
-                        CreateCell("FECHA FIN REAL"),
-                        CreateCell("PRESUPUESTO"),
-                        CreateCell("HORAS"),
-                        CreateCell("FECHA INICIO ESPERA"),
-                        CreateCell("FECHA FIN ESPERA"),
-                        CreateCell("OBSERVACIONES")
-                    );
-                    sheetData.AppendChild(headerRow);
-
-                    // Filas con los datos
-                    int nro = 1;
-                    foreach (var item in projects)
-                    {
-                        var row = new Row();
-                        row.Append(
-                            CreateCell(nro.ToString()),
-                            CreateCell(item.Code),
-                            CreateCell(item.Name),
-                            CreateCell(item.LiderData?.FirstOrDefault() != null
-                                        ? $"{item.LiderData.First().GetPersonResponse.FirstName} {item.LiderData.First().GetPersonResponse.LastName}"
-                                        : string.Empty),
-                            CreateCell(item.ClientData?.FirstOrDefault()?.TradeName ?? string.Empty),
-                            CreateCell(item.ProjectStatus?.StatusName ?? ""),
-                            CreateCell(item.ProjectType?.TypeName ?? ""),
-                            CreateCell(item.StartDate?.ToShortDateString() ?? string.Empty),
-                            CreateCell(item.EndDate?.ToShortDateString() ?? string.Empty),
-                            CreateCell(item.ActualEndDate?.ToShortDateString() ?? string.Empty),
-                            CreateCell(item.Budget?.ToString("N2") ?? "0"),
-                            CreateCell(item.Hours.ToString()),
-                            CreateCell(item.WaitingStartDate?.ToShortDateString() ?? string.Empty),
-                            CreateCell(item.WaitingEndDate?.ToShortDateString() ?? string.Empty),
-                            CreateCell(item.Observation ?? string.Empty)
-                        );
-                        sheetData.AppendChild(row);
-                        nro++;
-                    }
-
-                    // Definir anchos de columnas dinámicos
+                    // 🔹 Definir anchos de columnas
                     var columns = new Columns();
+                    columns.Append(CreateColumn(1, 1, 6)); // NRO
                     columns.Append(CreateColumn(2, 2, CalculateColumnWidth(new[] { "Código Proyecto" }.Concat(projects.Select(p => p.Code)))));
                     columns.Append(CreateColumn(3, 3, CalculateColumnWidth(new[] { "Proyecto" }.Concat(projects.Select(p => p.Name)))));
                     columns.Append(CreateColumn(4, 4, CalculateColumnWidth(new[] { "Líder" }.Concat(projects.Select(p =>
@@ -464,19 +411,95 @@ namespace isc.time.report.be.application.Services.Projects
                     columns.Append(CreateColumn(5, 5, CalculateColumnWidth(new[] { "Cliente" }.Concat(projects.Select(p => p.ClientData?.FirstOrDefault()?.TradeName ?? "")))));
                     columns.Append(CreateColumn(6, 6, CalculateColumnWidth(new[] { "Estado Proyecto" }.Concat(projects.Select(p => p.ProjectStatus?.StatusName ?? "")))));
                     columns.Append(CreateColumn(7, 7, CalculateColumnWidth(new[] { "Tipo Proyecto" }.Concat(projects.Select(p => p.ProjectType?.TypeName ?? "")))));
-                    columns.Append(CreateColumn(8, 20, 22)); // Fechas
-                    columns.Append(CreateColumn(11, 14, 18)); // Presupuesto
-                    columns.Append(CreateColumn(12, 14, 15)); // Horas
-                    columns.Append(CreateColumn(13, 25, 20)); // Fechas Espera
+                    columns.Append(CreateColumn(8, 8, 20));  // Fecha inicio
+                    columns.Append(CreateColumn(9, 9, 22));  // Fecha fin estimada
+                    columns.Append(CreateColumn(10, 10, 22)); // Fecha fin real
+                    columns.Append(CreateColumn(11, 11, 18)); // Presupuesto
+                    columns.Append(CreateColumn(12, 12, 15)); // Horas
+                    columns.Append(CreateColumn(13, 13, 22)); // Fecha inicio espera
+                    columns.Append(CreateColumn(14, 14, 22)); // Fecha fin espera
                     columns.Append(CreateColumn(15, 15, CalculateColumnWidth(new[] { "Observaciones" }.Concat(projects.Select(p => p.Observation ?? "")))));
 
-                    worksheetPart.Worksheet.Append(columns);
+                    // 🔹 SheetData y fila 1 - título
+                    var sheetData = new SheetData();
+                    worksheetPart.Worksheet.Append(columns); // ⬅ Columnas primero
                     worksheetPart.Worksheet.Append(sheetData);
+
+                    var sheets = workbookPart.Workbook.AppendChild(new Sheets());
+                    var sheet = new Sheet
+                    {
+                        Id = workbookPart.GetIdOfPart(worksheetPart),
+                        SheetId = 1,
+                        Name = "Proyectos"
+                    };
+                    sheets.Append(sheet);
+
+                    // 🔹 MergeCells (después de sheetData pero antes de filas)
+                    var mergeCells = new MergeCells();
+                    worksheetPart.Worksheet.InsertAfter(mergeCells, sheetData);
+                    mergeCells.Append(new MergeCell() { Reference = new StringValue("A1:O1") });
+
+                    var row1 = new Row { RowIndex = 1, Height = 35, CustomHeight = true };
+                    row1.Append(CreateCell("PROYECTOS", styleIndex: 2)); // Estilo 2 = título
+                    sheetData.Append(row1);
+
+                    // 🔹 Cabecera
+                    var headerRow = new Row();
+                    headerRow.Append(
+                        CreateCell("NRO", 1),
+                        CreateCell("CODIGO DEL PROYECTO", 1),
+                        CreateCell("PROYECTO", 1),
+                        CreateCell("LIDER", 1),
+                        CreateCell("CLIENTE", 1),
+                        CreateCell("ESTADO DEL PROYECTO", 1),
+                        CreateCell("TIPO DE PROYECTO", 1),
+                        CreateCell("FECHA DE INICIO", 1),
+                        CreateCell("FECHA DE FIN ESTIMADA", 1),
+                        CreateCell("FECHA FIN REAL", 1),
+                        CreateCell("PRESUPUESTO", 1),
+                        CreateCell("HORAS", 1),
+                        CreateCell("FECHA INICIO ESPERA", 1),
+                        CreateCell("FECHA FIN ESPERA", 1),
+                        CreateCell("OBSERVACIONES", 1)
+                    );
+                    sheetData.AppendChild(headerRow);
+
+                    // 🔹 Filas con los datos
+                    int nro = 1;
+                    foreach (var item in projects)
+                    {
+                        var row = new Row();
+                        row.Append(
+                            CreateCell(nro.ToString(), 3),
+                            CreateCell(item.Code, 3),
+                            CreateCell(item.Name, 3),
+                            CreateCell(item.LiderData?.FirstOrDefault() != null
+                                ? $"{item.LiderData.First().GetPersonResponse.FirstName} {item.LiderData.First().GetPersonResponse.LastName}"
+                                : string.Empty, 3),
+                            CreateCell(item.ClientData?.FirstOrDefault()?.TradeName ?? string.Empty, 3),
+                            CreateCell(item.ProjectStatus?.StatusName ?? "", 3),
+                            CreateCell(item.ProjectType?.TypeName ?? "", 3),
+                            CreateCell(item.StartDate?.ToShortDateString() ?? string.Empty, 3),
+                            CreateCell(item.EndDate?.ToShortDateString() ?? string.Empty, 3),
+                            CreateCell(item.ActualEndDate?.ToShortDateString() ?? string.Empty, 3),
+                            CreateCell(item.Budget?.ToString("N2") ?? "0", 3),
+                            CreateCell(item.Hours.ToString(), 3),
+                            CreateCell(item.WaitingStartDate?.ToShortDateString() ?? string.Empty, 3),
+                            CreateCell(item.WaitingEndDate?.ToShortDateString() ?? string.Empty, 3),
+                            CreateCell(item.Observation ?? string.Empty, 3)
+                        );
+                        sheetData.AppendChild(row);
+                        nro++;
+                    }
                 }
 
                 return memoryStream.ToArray();
             }
         }
+
+
+
+
 
         // Helpers
         private Cell CreateCell(string value, uint styleIndex = 0)
@@ -510,6 +533,102 @@ namespace isc.time.report.be.application.Services.Projects
             // Aproximación: cada carácter ~1.2 unidades en Excel
             return Math.Min(100, maxLength * 1.2);
         }
+        private Stylesheet CreateStylesheet()
+        {
+            return new Stylesheet(
+                new Fonts(
+                    new Font( // 0 - Default Calibri 11
+                        new FontSize { Val = 11 },
+                        new FontName { Val = "Calibri" }
+                    ),
+                    new Font( // 1 - Bold Calibri 11 (cabeceras)
+                        new FontSize { Val = 11 },
+                        new Bold(),
+                        new FontName { Val = "Calibri" }
+                    ),
+                    new Font( // 2 - Título Calibri 25, bold
+                        new FontSize { Val = 25 },
+                        new Bold(),
+                        new FontName { Val = "Calibri" }
+                    )
+                ),
+
+                new Fills(
+                    new Fill(new PatternFill { PatternType = PatternValues.None }), // 0 - Default
+                    new Fill(new PatternFill { PatternType = PatternValues.Gray125 }), // 1 - Default
+                    new Fill(new PatternFill( // 2 - Gris oscuro 25%
+                        new ForegroundColor { Rgb = "FFBFBFBF" })
+                    { PatternType = PatternValues.Solid })
+                ),
+
+                new Borders(
+                    new Border(), // 0 - Sin bordes (para título)
+                    new Border(   // 1 - Bordes completos (para cabeceras y celdas normales)
+                        new LeftBorder { Style = BorderStyleValues.Thin },
+                        new RightBorder { Style = BorderStyleValues.Thin },
+                        new TopBorder { Style = BorderStyleValues.Thin },
+                        new BottomBorder { Style = BorderStyleValues.Thin },
+                        new DiagonalBorder())
+                ),
+
+                new CellFormats(
+                    new CellFormat { FontId = 0, FillId = 0, BorderId = 0 }, // 0 - Default
+
+                    new CellFormat // 1 - Cabeceras
+                    {
+                        FontId = 1,
+                        FillId = 2,
+                        BorderId = 1,
+                        Alignment = new Alignment
+                        {
+                            Horizontal = HorizontalAlignmentValues.Center,
+                            Vertical = VerticalAlignmentValues.Center,
+                            WrapText = true
+                        },
+                        ApplyFont = true,
+                        ApplyFill = true,
+                        ApplyBorder = true,
+                        ApplyAlignment = true
+                    },
+
+                    new CellFormat // 2 - Título grande, centrado, sin bordes
+                    {
+                        FontId = 2,
+                        FillId = 0,
+                        BorderId = 0,
+                        Alignment = new Alignment
+                        {
+                            Horizontal = HorizontalAlignmentValues.Center,
+                            Vertical = VerticalAlignmentValues.Center
+                        },
+                        ApplyFont = true,
+                        ApplyFill = false,
+                        ApplyBorder = false,
+                        ApplyAlignment = true
+                    },
+
+                    new CellFormat // 3 - Celdas normales con bordes Calibri 11
+                    {
+                        FontId = 0,
+                        FillId = 0,
+                        BorderId = 1,
+                        Alignment = new Alignment
+                        {
+                            Horizontal = HorizontalAlignmentValues.Left,
+                            Vertical = VerticalAlignmentValues.Center,
+                            WrapText = true
+                        },
+                        ApplyFont = true,
+                        ApplyFill = false,
+                        ApplyBorder = true,
+                        ApplyAlignment = true
+                    }
+                )
+            );
+        }
+
+
+
 
     }
 
