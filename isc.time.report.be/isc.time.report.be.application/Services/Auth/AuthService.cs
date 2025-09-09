@@ -361,7 +361,7 @@ namespace isc.time.report.be.application.Services.Auth
             user.PasswordHash = passwordUtils.HashPassword(request.NewPassword);
             user.MustChangePassword = false;
 
-            await userRepository.UpdateUser(user);
+            await userRepository.ResetPassword(user);
         }
 
         //public async Task<List<ModuleResponse>> OrderModulesAssign(List<ModuleResponse> modules)
