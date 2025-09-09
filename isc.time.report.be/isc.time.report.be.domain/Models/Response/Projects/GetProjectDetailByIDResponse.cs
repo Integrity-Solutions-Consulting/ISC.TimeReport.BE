@@ -25,6 +25,9 @@ namespace isc.time.report.be.domain.Models.Response.Projects
         public DateTime? ActualEndDate { get; set; }
         public decimal Hours { get; set; }
         public decimal? Budget { get; set; }
+        public DateTime? WaitingStartDate { get; set; }
+        public DateTime? WaitingEndDate { get; set; }
+        public string? Observation { get; set; }
 
         public List<GetEmployeeProjectResponse> EmployeeProjects { get; set; }
         public List<GetEmployeesPersonInfoResponse> EmployeesPersonInfo { get; set; }

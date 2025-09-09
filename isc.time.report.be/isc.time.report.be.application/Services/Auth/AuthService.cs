@@ -333,7 +333,6 @@ namespace isc.time.report.be.application.Services.Auth
 
             await userRepository.UpdateUser(user);
         }
-
         public async Task ChangePasswordWithToken(string token, ChangePasswordRequest request)
         {
             var principal = jwtUtils.ValidateTokenAndGetPrincipal(token);
@@ -355,13 +354,12 @@ namespace isc.time.report.be.application.Services.Auth
 
             if (!passwordUtils.VerifyPassword(request.CurrentPassword, user.PasswordHash))
             {
-                throw new ClientFaultException("Algo ha salido mal", 401);
+                throw new ClientFaultException("La contraseña actual no es válida.", 401);
             }
 
-            user.PasswordHash = passwordUtils.HashPassword(request.NewPassword);
-            user.MustChangePassword = false;
+            string newHash = passwordUtils.HashPassword(request.NewPassword);
 
-            await userRepository.UpdateUser(user);
+            await authRepository.ResetPassword(userId, newHash);
         }
 
         //public async Task<List<ModuleResponse>> OrderModulesAssign(List<ModuleResponse> modules)

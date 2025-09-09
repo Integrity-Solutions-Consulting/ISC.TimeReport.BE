@@ -189,10 +189,10 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
                 .Include(l => l.Person)
                 .Where(l => projectIds.Contains(l.ProjectID))
                 .ToListAsync();
-            if (!leaders.Any())
-            {
-                throw new ServerFaultException("No se encontraron líderes activos para los proyectos indicados.");
-            }
+            //if (!leaders.Any())
+            //{
+            //    throw new ServerFaultException("No se encontraron líderes activos para los proyectos indicados.");
+            //}
             return leaders;
         }
 

@@ -295,6 +295,23 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
 
             await _emailUtils.SendEmailAsync(user.Employee.CorporateEmail, "Recuperación de contraseña", html);
         }
+        public async Task ResetPassword(int userId, string newPasswordHash)
+        {
+            var existingUser = await _dbContext.Users
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (existingUser == null)
+                throw new ClientFaultException("Usuario no encontrado.", 404);
+
+            existingUser.PasswordHash = newPasswordHash;
+            existingUser.MustChangePassword = false;
+
+            _dbContext.Entry(existingUser).Property(u => u.PasswordHash).IsModified = true;
+            _dbContext.Entry(existingUser).Property(u => u.MustChangePassword).IsModified = true;
+
+            await _dbContext.SaveChangesAsync();
+        }
+
 
     }
 }

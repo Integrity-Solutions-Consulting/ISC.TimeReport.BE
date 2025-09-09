@@ -89,6 +89,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Users
             return user;
         }
 
+
         public async Task<bool> DeleteUser(int userId)
         {
             var user = await _dbContext.Users.FindAsync(userId);

@@ -21,5 +21,6 @@ namespace isc.time.report.be.application.Interfaces.Repository.Auth
         Task UpdateRoleModulesAsync(Role role, List<int> newModuleIds);
         Task<User?> GetUserWithEmployeeAsync(string username);
         Task EnviarCorreoRecuperacionPasswordAsync(string username, string html);
+        Task ResetPassword(int userId, string newPasswordHash);
     }
 }
