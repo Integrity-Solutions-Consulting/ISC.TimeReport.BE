@@ -21,7 +21,5 @@ namespace isc.time.report.be.application.Interfaces.Repository.Users
         Task SaveUserRolesAsync(List<UserRole> userRoles);
         Task<List<UserModule>> GetUserModulesAsync(int userId);
         Task SaveUserModulesAsync(List<UserModule> userModules);
-        Task<User> ResetPassword(User user);
-
     }
 }
