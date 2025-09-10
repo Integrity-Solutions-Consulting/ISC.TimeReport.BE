@@ -14,5 +14,6 @@ namespace isc.time.report.be.application.Interfaces.Service.TimeReports
         Task<TimeReportDataFillDto> GetTimeReportDataFillAsync(int employeeId, int clientId, int year, int month, bool fullMonth);
         Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteAsync(int? month = null, int? year = null, bool mesCompleto = false);
         Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteFiltradoAsync(int? month = null, int? year = null, bool mesCompleto = false, byte bancoGuayaquil = 0);
+        Task<byte[]> GenerateExcelModelAsync();
     }
 }
