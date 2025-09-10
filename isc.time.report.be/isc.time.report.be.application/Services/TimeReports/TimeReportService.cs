@@ -1124,5 +1124,10 @@ namespace isc.time.report.be.application.Services.TimeReports
             return await timeReportRepository.GetRecursosTimeReportPendienteAsync(month, year, mesCompleto);
         }
 
+        public async Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteFiltradoAsync(int? month = null, int? year = null, bool mesCompleto = false, byte bancoGuayaquil = 0)
+        {
+            return await timeReportRepository.GetRecursosTimeReportPendienteFiltradoAsync(month, year, mesCompleto, bancoGuayaquil);
+        }
+
     }
 }
