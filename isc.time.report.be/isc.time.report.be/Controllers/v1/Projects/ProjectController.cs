@@ -146,19 +146,19 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
             var list = await _projectService.GetProjectsForExcelAsync();
             return Ok(list);
         }
-
-        //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
+        //si ves que hay un cambio aqui es porque los roles estaban comentados
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpGet("export-projects-excel")]
         public async Task<IActionResult> ExportProjectsToExcel()
         {
-            // 1️⃣ Llamamos a tu ProjectService
+            // Llamamos a tu ProjectService
             var fileBytes = await _projectService.GenerateProjectsExcelAsync();
 
-            // 2️⃣ Definimos nombre dinámico con fecha
+            // Definimos nombre dinámico con fecha
             var fileName = $"Projects_{DateTime.Now:yyyyMMdd_HHmm}.xlsx";
             const string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
-            // 3️⃣ Retornamos archivo
+            // Retornamos archivo
             return File(fileBytes, contentType, fileName);
         }
 
