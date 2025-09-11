@@ -1,4 +1,5 @@
-﻿using isc.time.report.be.domain.Models.Request.DailyActivities;
+﻿using isc.time.report.be.domain.Entity.DailyActivities;
+using isc.time.report.be.domain.Models.Request.DailyActivities;
 using isc.time.report.be.domain.Models.Response.DailyActivities;
 using System;
 using System.Collections.Generic;
@@ -17,5 +18,6 @@ namespace isc.time.report.be.application.Interfaces.Service.DailyActivities
         Task<ActiveInactiveDailyActivityResponse> InactivateAsync(int id);
         Task<ActiveInactiveDailyActivityResponse> ActivateAsync(int id);
         Task<List<GetDailyActivityResponse>> ApproveActivitiesAsync(AproveDailyActivityRequest request, int approverId);
+        Task<CreateListOfDailyActivityFromBG> ImportActivitiesAsync(List<CreateDailyActivityFromBGResponse> excelRows);
     }
 }

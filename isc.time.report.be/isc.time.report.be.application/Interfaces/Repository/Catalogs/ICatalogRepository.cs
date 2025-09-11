@@ -22,6 +22,6 @@ namespace isc.time.report.be.application.Interfaces.Repository.Catalogs
         Task<List<WorkMode>> GetWorkModeActivosAsync();
         Task<List<CompanyCatalog>> GetCompanyCatalogActivosAsync();
         Task<List<EmployeeCategory>> GetEmployeeCategoryActivosAsync();
-
+        Task<ActivityType?> GetActivityTypeByNameAsync(string name);
     }
 }

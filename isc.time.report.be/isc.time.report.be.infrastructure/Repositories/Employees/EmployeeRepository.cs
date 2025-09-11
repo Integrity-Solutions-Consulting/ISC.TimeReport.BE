@@ -468,5 +468,20 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                 throw;
             }
         }
+        public async Task<Employee> GetEmployeeByCodeAsync(string employeeCode)
+        {
+            if (string.IsNullOrWhiteSpace(employeeCode))
+                throw new ClientFaultException("El EmployeeCode no puede estar vacío");
+
+            var employee = await _dbContext.Employees
+                .Include(e => e.Person) // Para poder obtener FirstName y LastName
+                .FirstOrDefaultAsync(e => e.EmployeeCode == employeeCode);
+
+            if (employee == null)
+                throw new ClientFaultException($"No se encontró un empleado con el código '{employeeCode}'");
+
+            return employee;
+        }
+
     }
 }

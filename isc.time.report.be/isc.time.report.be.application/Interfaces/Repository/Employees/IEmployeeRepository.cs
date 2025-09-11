@@ -22,5 +22,6 @@ namespace isc.time.report.be.application.Interfaces.Repository.Employees
         Task<Employee> InactivateEmployeeForInventoryAsync(int employeeId);
         Task<Employee> ActivateEmployeeAsync(int employeeId);
         Task<Employee> ActivateEmployeeForInventoryAsync(int employeeId);
+        Task<Employee> GetEmployeeByCodeAsync(string employeeCode);
     }
 }
