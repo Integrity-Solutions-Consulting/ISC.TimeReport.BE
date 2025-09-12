@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 using isc.time.report.be.application.Interfaces.Repository.Catalogs;
 using isc.time.report.be.application.Interfaces.Repository.DailyActivities;
 using isc.time.report.be.application.Interfaces.Repository.Employees;
@@ -184,27 +186,50 @@ namespace isc.time.report.be.application.Services.DailyActivities
             // 3️⃣ ActivityDescription
             string description = string.IsNullOrWhiteSpace(row.Comment) ? row.Title : row.Comment;
 
-            // Validar horas
+            // 4️⃣ Validar horas
             if (!decimal.TryParse(row.Hours, out decimal hours) || hours < 0)
                 throw new ClientFaultException("Horas inválidas");
 
-            // Validar fecha y convertir a DateOnly
-            var format = "d/M/yyyy H:mm:ss"; // Formato que trae el Excel
-            var culture = System.Globalization.CultureInfo.InvariantCulture;
+            // 5️⃣ Validar fecha y convertir a DateOnly
+            DateTime activityDateTime;
 
-            if (!DateTime.TryParseExact(row.Date, format, culture, System.Globalization.DateTimeStyles.None, out DateTime activityDateTime))
+            // 1️⃣ Intentar como número serial de Excel
+            if (double.TryParse(row.Date, System.Globalization.NumberStyles.Any,
+                                System.Globalization.CultureInfo.InvariantCulture, out double oaDate))
             {
-                throw new ClientFaultException("Fecha inválida");
+                activityDateTime = DateTime.FromOADate(oaDate);
+            }
+            else
+            {
+                // 2️⃣ Intentar como texto con formato de fecha
+                var format = "d/M/yyyy H:mm:ss"; // o "d/M/yyyy H:mm" si Excel no trae segundos
+                var culture = System.Globalization.CultureInfo.InvariantCulture;
+
+                if (!DateTime.TryParseExact(row.Date, format, culture,
+                    System.Globalization.DateTimeStyles.None, out activityDateTime))
+                {
+                    throw new ClientFaultException("Fecha inválida");
+                }
             }
 
+            // 3️⃣ Convertir a DateOnly para la base
             var activityDate = DateOnly.FromDateTime(activityDateTime);
 
-            // 5️⃣ Mapear a DailyActivity
+
+
+
+            // 6️⃣ Obtener ProjectID desde EmployeeProject (solo Banco Guayaquil)
+            var projectId = await _employeeRepository.GetProjectIdForEmployeeAsync(row.EmployeeCode);
+            if (projectId == null)
+                throw new ClientFaultException($"El empleado {row.EmployeeCode} no tiene proyecto asignado para Banco Guayaquil");
+
+            // 7️⃣ Mapear a DailyActivity
             return new DailyActivity
             {
                 EmployeeID = employee.Id,
+                ProjectID = projectId.Value,        
                 ActivityTypeID = activityType.Id,
-                ActivityDate = activityDate, 
+                ActivityDate = activityDate,
                 HoursQuantity = hours,
                 ActivityDescription = description,
                 RequirementCode = row.RequirementCode,
@@ -212,8 +237,64 @@ namespace isc.time.report.be.application.Services.DailyActivities
                 CreationDate = DateTime.Now,
                 Status = true
             };
-
         }
 
+
+        public async Task<List<CreateDailyActivityFromBGResponse>> ReadActivitiesFromExcelAsync(Stream fileStream)
+        {
+            var rowsList = new List<CreateDailyActivityFromBGResponse>();
+
+            using var document = SpreadsheetDocument.Open(fileStream, false);
+            var workbookPart = document.WorkbookPart;
+            var sheet = workbookPart.Workbook.Sheets.GetFirstChild<Sheet>();
+            var worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id!);
+            var sheetData = worksheetPart.Worksheet.Elements<SheetData>().First();
+
+
+            // Leer todas las filas, excepto la de encabezado, y filtrar filas vacías
+            var rows = sheetData.Elements<Row>()
+                                .Skip(1)
+                                .Where(r => r.Elements<Cell>()
+                                             .Any(c => !string.IsNullOrWhiteSpace(GetCellValue(c, workbookPart))));
+
+
+            foreach (var row in rows)
+            {
+                var cells = row.Elements<Cell>().ToList();
+
+                rowsList.Add(new CreateDailyActivityFromBGResponse
+                {
+                    Type = GetCellValue(cells[0], workbookPart),
+                    Title = GetCellValue(cells[1], workbookPart),
+                    RequirementCode = GetCellValue(cells[2], workbookPart),
+                    Date = GetCellValue(cells[3], workbookPart),
+                    Username = GetCellValue(cells[4], workbookPart),
+                    Hours = GetCellValue(cells[5], workbookPart),
+                    EmployeeCode = GetCellValue(cells[6], workbookPart),
+                    Comment = GetCellValue(cells[7], workbookPart),
+                });
+            }
+
+            return rowsList;
+        }
+
+        private string GetCellValue(Cell cell, WorkbookPart workbookPart)
+        {
+            if (cell.CellValue == null) return string.Empty;
+
+            string value = cell.CellValue.Text;
+
+            if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
+            {
+                return workbookPart.SharedStringTablePart!.SharedStringTable
+                       .Elements<SharedStringItem>()
+                       .ElementAt(int.Parse(value))
+                       .InnerText;
+            }
+
+            return value;
+        }
     }
+
 }
+

@@ -482,6 +482,15 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
 
             return employee;
         }
+        public async Task<int?> GetProjectIdForEmployeeAsync(string employeeCode)
+        {
+            return await _dbContext.EmployeeProjects
+                .Where(ep => ep.Employee.EmployeeCode == employeeCode
+                             && ep.Project.ClientID == 10)
+                .Select(ep => ep.ProjectID)
+                .FirstOrDefaultAsync();
+        }
+
 
     }
 }

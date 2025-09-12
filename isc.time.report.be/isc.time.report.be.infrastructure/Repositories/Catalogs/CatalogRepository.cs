@@ -39,7 +39,9 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
                 throw new ClientFaultException("El nombre del ActivityType no puede estar vacío");
 
             var activityType = await _dbContext.ActivityTypes
-                .FirstOrDefaultAsync(a => a.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && a.Status);
+                .Where(a => a.Name.ToLower() == name.ToLower() && a.Status)
+                .FirstOrDefaultAsync();
+
 
             if (activityType == null)
                 throw new ClientFaultException($"No se encontró un ActivityType activo con el nombre '{name}'");

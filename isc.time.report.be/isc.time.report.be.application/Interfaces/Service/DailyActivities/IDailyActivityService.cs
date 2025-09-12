@@ -19,5 +19,6 @@ namespace isc.time.report.be.application.Interfaces.Service.DailyActivities
         Task<ActiveInactiveDailyActivityResponse> ActivateAsync(int id);
         Task<List<GetDailyActivityResponse>> ApproveActivitiesAsync(AproveDailyActivityRequest request, int approverId);
         Task<CreateListOfDailyActivityFromBG> ImportActivitiesAsync(List<CreateDailyActivityFromBGResponse> excelRows);
+        Task<List<CreateDailyActivityFromBGResponse>> ReadActivitiesFromExcelAsync(Stream fileStream);
     }
 }

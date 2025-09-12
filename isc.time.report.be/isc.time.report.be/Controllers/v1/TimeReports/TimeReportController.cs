@@ -58,21 +58,6 @@ namespace isc.time.report.be.api.Controllers.v1.TimeReports
             return File(fileBytes, contentType, fileName);
         }
 
-        //[HttpPost("upload-activities")]
-        //public async Task<IActionResult> UploadActivities(IFormFile file)
-        //{
-        //    if (file == null || file.Length == 0)
-        //        return BadRequest("No se subió ningún archivo.");
-
-        //    using (var stream = file.OpenReadStream())
-        //    {
-        //        var activities = await _timeReportService.ReadActivitiesFromExcelAsync(stream);
-        //        // 🔹 Por ahora solo devolvemos lo leído, más adelante guardamos en BD
-        //        return Ok(activities);
-        //    }
-        //}
-
-
     }
 
 
