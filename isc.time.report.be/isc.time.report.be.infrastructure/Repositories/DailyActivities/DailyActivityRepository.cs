@@ -111,5 +111,25 @@ namespace isc.time.report.be.infrastructure.Repositories.DailyActivities
             await _context.SaveChangesAsync();
             return activities;
         }
+        public async Task AddRangeAsync(List<DailyActivity> activities)
+        {
+            // Solo agregamos las entidades, no validaciones ni asignaciones de negocio
+            _context.DailyActivities.AddRange(activities);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<string?> GetActivityTypeNameByIdAsync(int activityTypeId)
+        {
+            var activityType = await _context.ActivityTypes
+                .Where(a => a.Id == activityTypeId && a.Status)
+                .Select(a => a.Name)
+                .FirstOrDefaultAsync();
+
+            return activityType; // Devuelve null si no existe
+        }
+
+
+
+
     }
 }

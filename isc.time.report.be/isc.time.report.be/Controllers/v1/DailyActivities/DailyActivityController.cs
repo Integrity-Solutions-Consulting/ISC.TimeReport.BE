@@ -78,5 +78,19 @@ namespace isc.time.report.be.api.Controllers.v1.DailyActivities
             var result = await _service.ApproveActivitiesAsync(request, GetUserIdFromToken());
             return Ok(new SuccessResponse<List<GetDailyActivityResponse>>(200, "Actividades aprobadas exitosamente", result));
         }
+
+        [HttpPost("upload-activities")]
+        public async Task<IActionResult> UploadActivities(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("No se subió ningún archivo.");
+
+            var excelRows = await _service.ReadActivitiesFromExcelAsync(file.OpenReadStream());
+
+            var result = await _service.ImportActivitiesAsync(excelRows);
+
+            return Ok(result);
+        }
+
     }
 }

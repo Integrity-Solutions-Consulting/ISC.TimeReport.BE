@@ -47,18 +47,16 @@ namespace isc.time.report.be.api.Controllers.v1.TimeReports
         [HttpGet("export-excel-model")]
         public async Task<IActionResult> ExportExcelModelSIGD ()
         {
-            // 1️⃣ Llamamos a tu ProjectService
+            // 1️ Llamamos a tu ProjectService
             var fileBytes = await _timeReportService.GenerateExcelModelAsync();
 
-            // 2️⃣ Definimos nombre dinámico con fecha
+            // 2️ Definimos nombre dinámico con fecha
             var fileName = $"TimeReportModel_{DateTime.Now:yyyyMMdd_HHmm}.xlsx";
             const string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
-            // 3️⃣ Retornamos archivo
+            // 3️ Retornamos archivo
             return File(fileBytes, contentType, fileName);
         }
-
-
 
     }
 

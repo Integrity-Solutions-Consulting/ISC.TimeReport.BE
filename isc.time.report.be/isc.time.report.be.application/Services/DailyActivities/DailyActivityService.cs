@@ -1,5 +1,9 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using isc.time.report.be.application.Interfaces.Repository.Catalogs;
 using isc.time.report.be.application.Interfaces.Repository.DailyActivities;
+using isc.time.report.be.application.Interfaces.Repository.Employees;
 using isc.time.report.be.application.Interfaces.Repository.Permissions;
 using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.application.Interfaces.Service.DailyActivities;
@@ -21,13 +25,17 @@ namespace isc.time.report.be.application.Services.DailyActivities
         private readonly IMapper _mapper;
         private readonly ITimeReportRepository _timeReportRepository;
         private readonly IPermissionRepository _permissionRepository;
+        private readonly IEmployeeRepository _employeeRepository; 
+        private readonly ICatalogRepository _catalogRepository;
 
-        public DailyActivityService(IDailyActivityRepository repository, IMapper mapper, ITimeReportRepository timeReportRepository, IPermissionRepository permissionRepository)
+        public DailyActivityService(IDailyActivityRepository repository, IMapper mapper, ITimeReportRepository timeReportRepository, IPermissionRepository permissionRepository, IEmployeeRepository employeeRepository, ICatalogRepository catalogRepository)
         {
             _repository = repository;
             _mapper = mapper;
             _timeReportRepository = timeReportRepository;
             _permissionRepository = permissionRepository;
+            _employeeRepository = employeeRepository;
+            _catalogRepository = catalogRepository;
         }
 
         public async Task<List<GetDailyActivityResponse>> GetAllAsync()
@@ -122,5 +130,171 @@ namespace isc.time.report.be.application.Services.DailyActivities
             var result = await _repository.ApproveActivitiesAsync(request.ActivityId, request.EmployeeID, request.ProjectID, request.DateInicio, request.DateFin, approverId);
             return _mapper.Map<List<GetDailyActivityResponse>>(result);
         }
+
+        public async Task<CreateListOfDailyActivityFromBG> ImportActivitiesAsync(List<CreateDailyActivityFromBGResponse> excelRows)
+        {
+            var results = new CreateListOfDailyActivityFromBG();
+
+            // 1️⃣ Validar y mapear filas
+            var activitiesToInsert = await MapAndValidateRowsAsync(excelRows, results);
+
+            // 2️⃣ Insertar en bulk
+            if (activitiesToInsert.Any())
+            await _repository.AddRangeAsync(activitiesToInsert);
+
+            return results;
+        }
+
+   
+
+        private async Task<List<DailyActivity>> MapAndValidateRowsAsync(
+                    List<CreateDailyActivityFromBGResponse> excelRows,
+                    CreateListOfDailyActivityFromBG results)
+        {
+            var activities = new List<DailyActivity>();
+
+            foreach (var row in excelRows)
+            {
+                try
+                {
+                    var activity = await MapSingleRowAsync(row);
+                    activities.Add(activity);
+                    row.Status = "Inserted";
+                }
+                catch (Exception ex)
+                {
+                    row.Status = $"Error: {ex.Message}";
+                }
+
+                results.Activities.Add(row);
+            }
+
+            return activities;
+        }
+
+        private async Task<DailyActivity> MapSingleRowAsync(CreateDailyActivityFromBGResponse row)
+        {
+            // 1️⃣ Employee
+            var employee = await _employeeRepository.GetEmployeeByCodeAsync(row.EmployeeCode);
+            string username = $"{employee.Person.FirstName} {employee.Person.LastName}";
+
+            // 2️⃣ ActivityType
+            var activityType = await _catalogRepository.GetActivityTypeByNameAsync(row.Type);
+            if (activityType == null)
+                throw new ClientFaultException($"ActivityType '{row.Type}' no encontrado");
+
+            // 3️⃣ ActivityDescription
+            string description = string.IsNullOrWhiteSpace(row.Comment) ? row.Title : row.Comment;
+
+            // 4️⃣ Validar horas
+            if (!decimal.TryParse(row.Hours, out decimal hours) || hours < 0)
+                throw new ClientFaultException("Horas inválidas");
+
+            // 5️⃣ Validar fecha y convertir a DateOnly
+            DateTime activityDateTime;
+
+            // 1️⃣ Intentar como número serial de Excel
+            if (double.TryParse(row.Date, System.Globalization.NumberStyles.Any,
+                                System.Globalization.CultureInfo.InvariantCulture, out double oaDate))
+            {
+                activityDateTime = DateTime.FromOADate(oaDate);
+            }
+            else
+            {
+                // 2️⃣ Intentar como texto con formato de fecha
+                var format = "d/M/yyyy H:mm:ss"; // o "d/M/yyyy H:mm" si Excel no trae segundos
+                var culture = System.Globalization.CultureInfo.InvariantCulture;
+
+                if (!DateTime.TryParseExact(row.Date, format, culture,
+                    System.Globalization.DateTimeStyles.None, out activityDateTime))
+                {
+                    throw new ClientFaultException("Fecha inválida");
+                }
+            }
+
+            // 3️⃣ Convertir a DateOnly para la base
+            var activityDate = DateOnly.FromDateTime(activityDateTime);
+
+
+
+
+            // 6️⃣ Obtener ProjectID desde EmployeeProject (solo Banco Guayaquil)
+            var projectId = await _employeeRepository.GetProjectIdForEmployeeAsync(row.EmployeeCode);
+            if (projectId == null)
+                throw new ClientFaultException($"El empleado {row.EmployeeCode} no tiene proyecto asignado para Banco Guayaquil");
+
+            // 7️⃣ Mapear a DailyActivity
+            return new DailyActivity
+            {
+                EmployeeID = employee.Id,
+                ProjectID = projectId.Value,        
+                ActivityTypeID = activityType.Id,
+                ActivityDate = activityDate,
+                HoursQuantity = hours,
+                ActivityDescription = description,
+                RequirementCode = row.RequirementCode,
+                CreationUser = "SYSTEM",
+                CreationDate = DateTime.Now,
+                Status = true
+            };
+        }
+
+
+        public async Task<List<CreateDailyActivityFromBGResponse>> ReadActivitiesFromExcelAsync(Stream fileStream)
+        {
+            var rowsList = new List<CreateDailyActivityFromBGResponse>();
+
+            using var document = SpreadsheetDocument.Open(fileStream, false);
+            var workbookPart = document.WorkbookPart;
+            var sheet = workbookPart.Workbook.Sheets.GetFirstChild<Sheet>();
+            var worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id!);
+            var sheetData = worksheetPart.Worksheet.Elements<SheetData>().First();
+
+
+            // Leer todas las filas, excepto la de encabezado, y filtrar filas vacías
+            var rows = sheetData.Elements<Row>()
+                                .Skip(1)
+                                .Where(r => r.Elements<Cell>()
+                                             .Any(c => !string.IsNullOrWhiteSpace(GetCellValue(c, workbookPart))));
+
+
+            foreach (var row in rows)
+            {
+                var cells = row.Elements<Cell>().ToList();
+
+                rowsList.Add(new CreateDailyActivityFromBGResponse
+                {
+                    Type = GetCellValue(cells[0], workbookPart),
+                    Title = GetCellValue(cells[1], workbookPart),
+                    RequirementCode = GetCellValue(cells[2], workbookPart),
+                    Date = GetCellValue(cells[3], workbookPart),
+                    Username = GetCellValue(cells[4], workbookPart),
+                    Hours = GetCellValue(cells[5], workbookPart),
+                    EmployeeCode = GetCellValue(cells[6], workbookPart),
+                    Comment = GetCellValue(cells[7], workbookPart),
+                });
+            }
+
+            return rowsList;
+        }
+
+        private string GetCellValue(Cell cell, WorkbookPart workbookPart)
+        {
+            if (cell.CellValue == null) return string.Empty;
+
+            string value = cell.CellValue.Text;
+
+            if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
+            {
+                return workbookPart.SharedStringTablePart!.SharedStringTable
+                       .Elements<SharedStringItem>()
+                       .ElementAt(int.Parse(value))
+                       .InnerText;
+            }
+
+            return value;
+        }
     }
+
 }
+
