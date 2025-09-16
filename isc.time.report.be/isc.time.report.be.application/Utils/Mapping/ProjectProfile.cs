@@ -20,7 +20,11 @@ namespace isc.time.report.be.application.Utils.Mapping
             CreateMap<CreateProjectRequest, Project>();
 
             CreateMap<Project, UpdateProjectRequest>();
-            CreateMap<UpdateProjectRequest, Project>();
+
+            CreateMap<UpdateProjectRequest, Project>()
+                .ForMember(dest => dest.ActualEndDate,
+                           opt => opt.MapFrom(src => src.ActualEndDate));
+
 
 
             CreateMap<Project, ActiveInactiveProjectResponse>();
