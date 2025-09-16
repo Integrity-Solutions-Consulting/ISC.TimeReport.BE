@@ -165,7 +165,7 @@ namespace isc.time.report.be.application.Services.Projects
 
         public async Task AssignEmployeesToProject(AssignEmployeesToProjectRequest request)
         {
-            // 🔹 1. Traer el proyecto
+            //  Traer el proyecto
             Project project = await projectRepository.GetProjectByIDAsync(request.ProjectID);
 
             if (project == null)
@@ -173,24 +173,7 @@ namespace isc.time.report.be.application.Services.Projects
 
             DateTime now = DateTime.UtcNow;
 
-            // 🔹 2. Validar si el proyecto ya finalizó
-            if (project.EndDate.HasValue && project.EndDate.Value <= now)
-            {
-                // El proyecto ya finalizó -> desasignar todo
-                var existing = await projectRepository.GetByProjectEmployeeIDAsync(request.ProjectID);
-
-                foreach (var ep in existing.Where(e => e.Status))
-                {
-                    ep.Status = false;
-                    ep.ModificationDate = now;
-                    ep.ModificationUser = "SYSTEM";
-                }
-
-                await projectRepository.SaveAssignmentsAsync(existing);
-                return; // 🔚 se corta aquí porque ya no se debe asignar nada más
-            }
-
-            // 🔹 3. Validación de DTO (la que ya tienes)
+            
             foreach (var dto in request.EmployeeProjectMiddle)
             {
                 bool tieneEmpleado = dto.EmployeeId.HasValue;
@@ -205,7 +188,6 @@ namespace isc.time.report.be.application.Services.Projects
                 }
             }
 
-            // 🔹 4. Resto de la lógica (la que ya tenías implementada)
             var existingAssignments = await projectRepository.GetByProjectEmployeeIDAsync(request.ProjectID);
             var finalList = new List<EmployeeProject>();
 
