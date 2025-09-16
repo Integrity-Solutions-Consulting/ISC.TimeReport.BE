@@ -106,14 +106,24 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
         }
         public async Task<Project> UpdateProjectAsync(Project project)
         {
-            project.ModificationDate = DateTime.Now;
+            Project trackedEntity = await _dbContext.Projects
+                .FirstOrDefaultAsync(p => p.Id == project.Id);
 
-            _dbContext.Entry(project).State = EntityState.Modified;
+            if (trackedEntity == null)
+                throw new ArgumentException($"No se encontró el proyecto con ID {project.Id}");
+
+            // Actualiza todos los valores
+            _dbContext.Entry(trackedEntity).CurrentValues.SetValues(project);
+
+            trackedEntity.ModificationDate = DateTime.Now;
+            trackedEntity.ModificationUser = "SYSTEM";
 
             await _dbContext.SaveChangesAsync();
 
-            return project;
+            return trackedEntity;
         }
+
+
 
         public async Task<Project> InactivateProjectAsync(int projectId)
         {
