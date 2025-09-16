@@ -174,7 +174,7 @@ namespace isc.time.report.be.application.Services.Projects
             DateTime now = DateTime.UtcNow;
 
             // 🔹 2. Validar si el proyecto ya finalizó
-            if (project.ActualEndDate.HasValue && project.ActualEndDate.Value <= now)
+            if (project.EndDate.HasValue && project.EndDate.Value <= now)
             {
                 // El proyecto ya finalizó -> desasignar todo
                 var existing = await projectRepository.GetByProjectEmployeeIDAsync(request.ProjectID);
