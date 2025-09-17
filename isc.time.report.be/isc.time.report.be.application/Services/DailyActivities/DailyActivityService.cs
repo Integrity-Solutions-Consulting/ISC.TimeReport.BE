@@ -25,7 +25,7 @@ namespace isc.time.report.be.application.Services.DailyActivities
         private readonly IMapper _mapper;
         private readonly ITimeReportRepository _timeReportRepository;
         private readonly IPermissionRepository _permissionRepository;
-        private readonly IEmployeeRepository _employeeRepository; 
+        private readonly IEmployeeRepository _employeeRepository;
         private readonly ICatalogRepository _catalogRepository;
 
         public DailyActivityService(IDailyActivityRepository repository, IMapper mapper, ITimeReportRepository timeReportRepository, IPermissionRepository permissionRepository, IEmployeeRepository employeeRepository, ICatalogRepository catalogRepository)
@@ -92,6 +92,19 @@ namespace isc.time.report.be.application.Services.DailyActivities
             var result = await _repository.CreateAsync(entity);
             return _mapper.Map<CreateDailyActivityResponse>(result);
         }
+        public async Task ValidateActivityIsEditableAsync(int activityId)
+        {
+            var entity = await _repository.GetByIdAsync(activityId);
+            if (entity == null)
+            {
+                throw new ClientFaultException("Actividad no encontrada");
+            }
+
+            if (entity.ApprovedByID != null)
+            {
+                throw new ClientFaultException("La actividad ya fue aprobada y no puede ser modificada");
+            }
+        }
 
         public async Task<UpdateDailyActivityResponse> UpdateAsync(int id, UpdateDailyActivityRequest request, int employeeId)
         {
@@ -99,6 +112,8 @@ namespace isc.time.report.be.application.Services.DailyActivities
             {
                 throw new ClientFaultException("Las horas ingresadas no pueden ser 0");
             }
+
+            await ValidateActivityIsEditableAsync(id);
 
             var entity = await _repository.GetByIdAsync(id);
             if (entity == null) throw new Exception("Actividad no encontrada");
@@ -125,12 +140,38 @@ namespace isc.time.report.be.application.Services.DailyActivities
             var result = await _repository.ActivateAsync(id);
             return _mapper.Map<ActiveInactiveDailyActivityResponse>(result);
         }
-        public async Task<List<GetDailyActivityResponse>> ApproveActivitiesAsync(AproveDailyActivityRequest request, int approverId)
+        public async Task<List<GetDailyActivityResponse>> ApproveActivitiesAsync(
+         AproveDailyActivityRequest request,
+         int approverId)
         {
-            var result = await _repository.ApproveActivitiesAsync(request.ActivityId, request.EmployeeID, request.ProjectID, request.DateInicio, request.DateFin, approverId);
-            return _mapper.Map<List<GetDailyActivityResponse>>(result);
+            // Calcula primer y último día del mes
+            var firstDayOfMonth = new DateTime(request.Year, request.Month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+            //  Actualiza actividades
+            await _repository.ApproveActivitiesAsync(
+                request.ActivityId,
+                request.EmployeeID,
+                request.ProjectID,
+                firstDayOfMonth,
+                lastDayOfMonth,
+                approverId
+            );
+
+            //  Trae actividades actualizadas
+            var updatedActivities = await _repository.GetActivitiesForApprovalAsync(
+                request.ActivityId,
+                request.EmployeeID,
+                request.ProjectID,
+                firstDayOfMonth,
+                lastDayOfMonth
+            );
+
+            //  Mapea y retorna
+            return _mapper.Map<List<GetDailyActivityResponse>>(updatedActivities);
         }
 
+     
         public async Task<CreateListOfDailyActivityFromBG> ImportActivitiesAsync(List<CreateDailyActivityFromBGResponse> excelRows)
         {
             var results = new CreateListOfDailyActivityFromBG();
@@ -176,7 +217,10 @@ namespace isc.time.report.be.application.Services.DailyActivities
         {
             // 1️⃣ Employee
             var employee = await _employeeRepository.GetEmployeeByCodeAsync(row.EmployeeCode);
-            string username = $"{employee.Person.FirstName} {employee.Person.LastName}";
+
+            var projectIdVerify = await _employeeRepository.GetProjectIdForEmployeeAsync(row.EmployeeCode);
+            if (projectIdVerify == null)
+                throw new ClientFaultException($"El empleado {row.Username} no está asignado a proyectos del Cliente Banco Guayaquil.");
 
             // 2️⃣ ActivityType
             var activityType = await _catalogRepository.GetActivityTypeByNameAsync(row.Type);
