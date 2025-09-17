@@ -15,8 +15,9 @@ namespace isc.time.report.be.application.Interfaces.Repository.DailyActivities
         Task<DailyActivity> UpdateAsync(DailyActivity entity);
         Task<DailyActivity> InactivateAsync(int id);
         Task<DailyActivity> ActivateAsync(int id);
-        Task<List<DailyActivity>> ApproveActivitiesAsync(List<int> activityIds, int employeeId, int projectId, DateTime from, DateTime to, int approverId);
+        Task ApproveActivitiesAsync(List<int> activityIds,int employeeId,int projectId, DateTime from,DateTime to, int approverId);
         Task AddRangeAsync(List<DailyActivity> activities);
         Task<string?> GetActivityTypeNameByIdAsync(int activityTypeId);
+        Task<List<DailyActivity>> GetActivitiesForApprovalAsync(List<int> activityIds, int employeeId, int projectId, DateTime from, DateTime to);
     }
 }

@@ -487,7 +487,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
             return await _dbContext.EmployeeProjects
                 .Where(ep => ep.Employee.EmployeeCode == employeeCode
                              && ep.Project.ClientID == 10)
-                .Select(ep => ep.ProjectID)
+                .Select(ep => (int?)ep.ProjectID) 
                 .FirstOrDefaultAsync();
         }
 
