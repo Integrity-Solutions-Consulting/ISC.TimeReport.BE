@@ -19,5 +19,7 @@ namespace isc.time.report.be.application.Interfaces.Repository.DailyActivities
         Task AddRangeAsync(List<DailyActivity> activities);
         Task<string?> GetActivityTypeNameByIdAsync(int activityTypeId);
         Task<List<DailyActivity>> GetActivitiesForApprovalAsync(List<int> activityIds, int employeeId, int projectId, DateTime from, DateTime to);
-    }
+        Task<bool> ExistsApprovedActivitiesAsync(int employeeId, int month, int year);
+        
+        }
 }

@@ -56,6 +56,11 @@ namespace isc.time.report.be.application.Services.DailyActivities
         {
             // Validar si la fecha es sábado o domingo
             var activityDate = request.ActivityDate;
+            // 🔹 Validar si el mes ya fue aprobado
+            bool mesAprobado = await _repository.ExistsApprovedActivitiesAsync(employeeId, activityDate.Month, activityDate.Year);
+            if (mesAprobado)
+                throw new InvalidOperationException("No se pueden registrar actividades porque el mes ya ha sido aprobado.");
+
             var dayOfWeek = activityDate.DayOfWeek;
 
             //if (dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday)
