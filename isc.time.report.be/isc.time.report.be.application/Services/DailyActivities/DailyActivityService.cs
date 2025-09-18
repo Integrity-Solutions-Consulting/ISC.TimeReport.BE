@@ -52,10 +52,8 @@ namespace isc.time.report.be.application.Services.DailyActivities
             return _mapper.Map<GetDailyActivityResponse>(entity);
         }
 
-        public async Task<CreateDailyActivityResponse> CreateAsync(CreateDailyActivityRequest request, int employeeId, int id)
+        public async Task<CreateDailyActivityResponse> CreateAsync(CreateDailyActivityRequest request, int employeeId)
         {
-            await ValidateActivityIsEditableAsync(id);
-
             // Validar si la fecha es sábado o domingo
             var activityDate = request.ActivityDate;
             var dayOfWeek = activityDate.DayOfWeek;
@@ -98,15 +96,12 @@ namespace isc.time.report.be.application.Services.DailyActivities
         public async Task ValidateActivityIsEditableAsync(int activityId)
         {
             var entity = await _repository.GetByIdAsync(activityId);
-            if (entity == null)
-            {
-                throw new ClientFaultException("Actividad no encontrada");
-            }
 
             if (entity.ApprovedByID != null)
             {
                 throw new ClientFaultException("La actividad ya fue aprobada y no puede ser modificada");
             }
+
         }
 
         public async Task<UpdateDailyActivityResponse> UpdateAsync(int id, UpdateDailyActivityRequest request, int employeeId)

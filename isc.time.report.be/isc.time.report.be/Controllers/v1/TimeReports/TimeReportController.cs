@@ -43,7 +43,7 @@ namespace isc.time.report.be.api.Controllers.v1.TimeReports
             return Ok(result);
         }
 
-       // [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
+        [Authorize(Roles = "Administrador,Gerente,Lider,Administrativo")]
         [HttpGet("export-excel-model")]
         public async Task<IActionResult> ExportExcelModelSIGD ()
         {
