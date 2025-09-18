@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using isc.time.report.be.application.Interfaces.Repository.Catalogs;
@@ -51,8 +52,10 @@ namespace isc.time.report.be.application.Services.DailyActivities
             return _mapper.Map<GetDailyActivityResponse>(entity);
         }
 
-        public async Task<CreateDailyActivityResponse> CreateAsync(CreateDailyActivityRequest request, int employeeId)
+        public async Task<CreateDailyActivityResponse> CreateAsync(CreateDailyActivityRequest request, int employeeId, int id)
         {
+            await ValidateActivityIsEditableAsync(id);
+
             // Validar si la fecha es sábado o domingo
             var activityDate = request.ActivityDate;
             var dayOfWeek = activityDate.DayOfWeek;
@@ -215,29 +218,33 @@ namespace isc.time.report.be.application.Services.DailyActivities
 
         private async Task<DailyActivity> MapSingleRowAsync(CreateDailyActivityFromBGResponse row)
         {
-            // 1️⃣ Employee
+            // 1 Employee
             var employee = await _employeeRepository.GetEmployeeByCodeAsync(row.EmployeeCode);
 
             var projectIdVerify = await _employeeRepository.GetProjectIdForEmployeeAsync(row.EmployeeCode);
             if (projectIdVerify == null)
                 throw new ClientFaultException($"El empleado {row.Username} no está asignado a proyectos del Cliente Banco Guayaquil.");
 
-            // 2️⃣ ActivityType
+            // 2 ActivityType
             var activityType = await _catalogRepository.GetActivityTypeByNameAsync(row.Type);
             if (activityType == null)
                 throw new ClientFaultException($"ActivityType '{row.Type}' no encontrado");
 
-            // 3️⃣ ActivityDescription
+            
+            // 3 ActivityDescription
+            if (string.IsNullOrWhiteSpace(row.Title) && string.IsNullOrWhiteSpace(row.Comment))
+                throw new ClientFaultException("Debe existir al menos un Título o un Comentario", 400);
+
             string description = string.IsNullOrWhiteSpace(row.Comment) ? row.Title : row.Comment;
 
-            // 4️⃣ Validar horas
+            // 4 Validar horas
             if (!decimal.TryParse(row.Hours, out decimal hours) || hours < 0)
                 throw new ClientFaultException("Horas inválidas");
 
-            // 5️⃣ Validar fecha y convertir a DateOnly
+            // 5 Validar fecha y convertir a DateOnly
             DateTime activityDateTime;
 
-            // 1️⃣ Intentar como número serial de Excel
+            // 1 Intentar como número serial de Excel
             if (double.TryParse(row.Date, System.Globalization.NumberStyles.Any,
                                 System.Globalization.CultureInfo.InvariantCulture, out double oaDate))
             {
@@ -245,29 +252,29 @@ namespace isc.time.report.be.application.Services.DailyActivities
             }
             else
             {
-                // 2️⃣ Intentar como texto con formato de fecha
+                // 2️ Intentar como texto con formato de fecha
                 var format = "d/M/yyyy H:mm:ss"; // o "d/M/yyyy H:mm" si Excel no trae segundos
                 var culture = System.Globalization.CultureInfo.InvariantCulture;
 
                 if (!DateTime.TryParseExact(row.Date, format, culture,
                     System.Globalization.DateTimeStyles.None, out activityDateTime))
                 {
-                    throw new ClientFaultException("Fecha inválida");
+                    throw new ClientFaultException("Fecha inválida, formato esperado d/M/yyyy H:mm:ss");
                 }
             }
 
-            // 3️⃣ Convertir a DateOnly para la base
+            // 3 Convertir a DateOnly para la base
             var activityDate = DateOnly.FromDateTime(activityDateTime);
 
 
 
 
-            // 6️⃣ Obtener ProjectID desde EmployeeProject (solo Banco Guayaquil)
+            // 6️ Obtener ProjectID desde EmployeeProject (solo Banco Guayaquil)
             var projectId = await _employeeRepository.GetProjectIdForEmployeeAsync(row.EmployeeCode);
             if (projectId == null)
                 throw new ClientFaultException($"El empleado {row.EmployeeCode} no tiene proyecto asignado para Banco Guayaquil");
 
-            // 7️⃣ Mapear a DailyActivity
+            // 7 Mapear a DailyActivity
             return new DailyActivity
             {
                 EmployeeID = employee.Id,
