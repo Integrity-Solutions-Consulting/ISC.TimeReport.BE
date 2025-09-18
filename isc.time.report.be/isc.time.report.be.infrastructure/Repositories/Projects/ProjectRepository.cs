@@ -51,23 +51,17 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
             return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
         }
 
-        public async Task<PagedResult<Project>> GetAssignedProjectsForEmployeeAsync(PaginationParams paginationParams, string? search, int employeeId)
+        public async Task<PagedResult<Project>> GetAssignedProjectsForEmployeeAsync(
+            PaginationParams paginationParams, string? search, int employeeId)
         {
-            DateTime now = DateTime.Now;
-
             IQueryable<Project> query = _dbContext.Projects
                 .Where(p => p.Status == true
-                    && p.EmployeeProject.Any(ep => ep.EmployeeID == employeeId)
-                    && p.EndDate.HasValue
-                    && p.EndDate.Value.Month == now.Month
-                    && p.EndDate.Value.Year == now.Year)
-                .AsQueryable();
-
+                            && p.EmployeeProject.Any(ep => ep.EmployeeID == employeeId)
+                            && (!p.EndDate.HasValue || p.EndDate.Value >= DateTime.Now));
 
             if (!string.IsNullOrWhiteSpace(search))
             {
                 string normalizedSearch = search.Trim().ToLower();
-
                 query = query.Where(p =>
                     p.Name.ToLower().Contains(normalizedSearch) ||
                     p.Code.ToLower().Contains(normalizedSearch));
@@ -75,6 +69,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
 
             return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
         }
+
 
 
         public async Task<Project> GetProjectByIDAsync(int projectId)
