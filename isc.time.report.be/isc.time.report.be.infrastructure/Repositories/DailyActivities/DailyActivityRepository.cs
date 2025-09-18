@@ -160,6 +160,14 @@ namespace isc.time.report.be.infrastructure.Repositories.DailyActivities
             return activityType; // Devuelve null si no existe
         }
 
+        public async Task<bool> ExistsApprovedActivitiesAsync(int employeeId, int month, int year)
+        {
+            return await _context.DailyActivities
+                .AnyAsync(a => a.EmployeeID == employeeId
+                               && a.ActivityDate.Month == month
+                               && a.ActivityDate.Year == year
+                               && a.ApprovedByID != null);
+        }
 
 
 
