@@ -41,9 +41,9 @@ namespace isc.time.report.be.api.Controllers.v1.DailyActivities
 
         [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
         [HttpPost("CreateActivity")]
-        public async Task<ActionResult<SuccessResponse<CreateDailyActivityResponse>>> Create([FromBody] CreateDailyActivityRequest request, int id)
+        public async Task<ActionResult<SuccessResponse<CreateDailyActivityResponse>>> Create([FromBody] CreateDailyActivityRequest request)
         {
-            var result = await _service.CreateAsync(request, GetEmployeeIdFromToken(), id);
+            var result = await _service.CreateAsync(request, GetEmployeeIdFromToken());
             return Ok(new SuccessResponse<CreateDailyActivityResponse>(201, "Actividad creada exitosamente", result));
         }
 
