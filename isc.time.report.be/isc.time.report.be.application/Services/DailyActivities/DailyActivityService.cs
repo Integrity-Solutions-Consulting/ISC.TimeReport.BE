@@ -134,12 +134,14 @@ namespace isc.time.report.be.application.Services.DailyActivities
 
         public async Task<ActiveInactiveDailyActivityResponse> InactivateAsync(int id)
         {
+            await ValidateActivityIsEditableAsync(id);
             var result = await _repository.InactivateAsync(id);
             return _mapper.Map<ActiveInactiveDailyActivityResponse>(result);
         }
 
         public async Task<ActiveInactiveDailyActivityResponse> ActivateAsync(int id)
         {
+            await ValidateActivityIsEditableAsync(id);
             var result = await _repository.ActivateAsync(id);
             return _mapper.Map<ActiveInactiveDailyActivityResponse>(result);
         }
