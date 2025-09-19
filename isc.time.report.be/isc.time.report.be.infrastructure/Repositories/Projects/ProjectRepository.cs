@@ -56,7 +56,8 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
         {
             DateTime now = DateTime.Now;
             DateTime startOfMonth = new DateTime(now.Year, now.Month, 1);   // 1er día del mes actual
-            DateTime startOfNextMonth = startOfMonth.AddMonths(1);          // 1er día del mes siguiente
+            DateTime startOfNextMonth = startOfMonth.AddMonths(
+                1);          // 1er día del mes siguiente
 
             IQueryable<Project> query = _dbContext.Projects
                 .Where(p => p.Status == true
@@ -114,22 +115,29 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
         }
         public async Task<Project> UpdateProjectAsync(Project project)
         {
+            // Obtiene la entidad existente
             Project trackedEntity = await _dbContext.Projects
                 .FirstOrDefaultAsync(p => p.Id == project.Id);
 
             if (trackedEntity == null)
-                throw new ArgumentException($"No se encontró el proyecto con ID {project.Id}");
+                return null; // o lanzar excepción según tu manejo de errores
 
             // Actualiza todos los valores
             _dbContext.Entry(trackedEntity).CurrentValues.SetValues(project);
 
+            // Marca la entidad como modificada explícitamente
+            _dbContext.Entry(trackedEntity).State = EntityState.Modified;
+
+            // Actualiza campos de auditoría
             trackedEntity.ModificationDate = DateTime.Now;
             trackedEntity.ModificationUser = "SYSTEM";
 
+            // Guarda cambios en la base
             await _dbContext.SaveChangesAsync();
 
             return trackedEntity;
         }
+
 
 
 
