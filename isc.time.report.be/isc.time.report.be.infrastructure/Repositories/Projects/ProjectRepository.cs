@@ -54,10 +54,16 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
         public async Task<PagedResult<Project>> GetAssignedProjectsForEmployeeAsync(
             PaginationParams paginationParams, string? search, int employeeId)
         {
+            DateTime now = DateTime.Now;
+            DateTime startOfMonth = new DateTime(now.Year, now.Month, 1);   // 1er día del mes actual
+            DateTime startOfNextMonth = startOfMonth.AddMonths(1);          // 1er día del mes siguiente
+
             IQueryable<Project> query = _dbContext.Projects
                 .Where(p => p.Status == true
                             && p.EmployeeProject.Any(ep => ep.EmployeeID == employeeId)
-                            && (!p.EndDate.HasValue || p.EndDate.Value >= DateTime.Now));
+                            && p.EndDate.HasValue
+                            && p.EndDate.Value >= startOfMonth);
+
 
             if (!string.IsNullOrWhiteSpace(search))
             {
