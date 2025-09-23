@@ -33,6 +33,23 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
             }
             return activities;
         }
+        public async Task<ActivityType?> GetActivityTypeByNameAsync(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ClientFaultException("El nombre del ActivityType no puede estar vacío");
+
+            var activityType = await _dbContext.ActivityTypes
+                .Where(a => a.Name.ToLower() == name.ToLower() && a.Status)
+                .FirstOrDefaultAsync();
+
+
+            if (activityType == null)
+                throw new ClientFaultException($"No se encontró un ActivityType activo con el nombre '{name}'");
+
+            return activityType;
+        }
+
+
         public async Task<List<ApprovalStatus>> GetApprovalStatusActivosAsync()
         {
             var approval =  await _dbContext.ApprovalStatus

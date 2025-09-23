@@ -43,7 +43,7 @@ namespace isc.time.report.be.application.Services.TimeReports
 
         public async Task<byte[]> GenerateExcelReportAsync(int employeeId, int clientId, int year, int month, bool fullMonth)
         {
-            
+
             // Obtener datos reales
             var reportData = await GetTimeReportDataFillAsync(employeeId, clientId, year, month, fullMonth);
 
@@ -58,7 +58,8 @@ namespace isc.time.report.be.application.Services.TimeReports
             var diasPermiso = new HashSet<DateOnly>();
 
             var permissionRanges = permissions
-                .Select(p => new {
+                .Select(p => new
+                {
                     Start = DateOnly.FromDateTime(p.StartDate),
                     End = DateOnly.FromDateTime(p.EndDate)
                 })
@@ -125,13 +126,13 @@ namespace isc.time.report.be.application.Services.TimeReports
                 worksheetPart.Worksheet = worksheet;
 
                 // Crear hoja
-                    var sheets = workbookPart.Workbook.AppendChild(new Sheets());
-                    sheets.Append(new Sheet
-                    {
-                        Id = workbookPart.GetIdOfPart(worksheetPart),
-                        SheetId = 1,
-                        Name = "TimeReport"
-                    });
+                var sheets = workbookPart.Workbook.AppendChild(new Sheets());
+                sheets.Append(new Sheet
+                {
+                    Id = workbookPart.GetIdOfPart(worksheetPart),
+                    SheetId = 1,
+                    Name = "TimeReport"
+                });
 
                 // === Crear filas ===
 
@@ -144,7 +145,7 @@ namespace isc.time.report.be.application.Services.TimeReports
                 var row2 = new Row { RowIndex = 2, Height = 18, CustomHeight = true };
                 row2.Append(
                     CreateCell("", 0), CreateCell("", 0), CreateCell("", 0),
-                    CreateCell("", 0), CreateCell("", 0),CreateCell(GetMonthName(month), 2),
+                    CreateCell("", 0), CreateCell("", 0), CreateCell(GetMonthName(month), 2),
                     CreateCell("", 0), CreateCell("", 0),
                     CreateCell(year.ToString(), 2)
                 );
@@ -168,10 +169,10 @@ namespace isc.time.report.be.application.Services.TimeReports
                 row5.Append(
                     CreateCell("Nombre del consultor:", 3),
                     CreateCell("", 0),
-                    CreateCell(reportData.FirstName+" "+reportData.LastName, 3)
+                    CreateCell(reportData.FirstName + " " + reportData.LastName, 3)
 
 
-                    //aqui va lo de dias habiles
+                //aqui va lo de dias habiles
 
                 );
                 sheetData.Append(row5);
@@ -419,11 +420,11 @@ namespace isc.time.report.be.application.Services.TimeReports
                 var sigRow3 = new Row { RowIndex = extraStartRow + 2 };
                 sigRow3.Append(CreateCell(""));     // A
 
-                if (reportData.Company == "ISC" )
+                if (reportData.Company == "ISC")
                 {
                     sigRow3.Append(CreateCell("ISC INTEGRITY SOLUTIONS & CONSULTING CIA. LTDA.", 10)); // B
                 }
-                else 
+                else
                 {
                     sigRow3.Append(CreateCell("RPS RISK PROCESS SOLUTIONS S.A.", 10)); // B
                 }
@@ -1123,6 +1124,201 @@ namespace isc.time.report.be.application.Services.TimeReports
         {
             return await timeReportRepository.GetRecursosTimeReportPendienteAsync(month, year, mesCompleto);
         }
+
+        public async Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteFiltradoAsync(int? month = null, int? year = null, bool mesCompleto = false, byte bancoGuayaquil = 0)
+        {
+            return await timeReportRepository.GetRecursosTimeReportPendienteFiltradoAsync(month, year, mesCompleto, bancoGuayaquil);
+        }
+        public async Task<byte[]> GenerateExcelModelAsync()
+        {
+           await using (var memoryStream = new MemoryStream())
+            {
+                using (var spreadsheetDocument = SpreadsheetDocument.Create(memoryStream, SpreadsheetDocumentType.Workbook))
+                {
+                    var workbookPart = spreadsheetDocument.AddWorkbookPart();
+                    workbookPart.Workbook = new Workbook();
+
+                    // Agregar estilos al workbook
+                    var stylesPart = workbookPart.AddNewPart<WorkbookStylesPart>();
+                    stylesPart.Stylesheet = CreateStylesheetModel();
+                    stylesPart.Stylesheet.Save();
+
+                    var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+                    worksheetPart.Worksheet = new Worksheet();
+
+                    // 🔹 Definir anchos de columnas (fijos)
+                    var columns = new Columns();
+                    columns.Append(CreateColumnModel(1, 1, 15)); // Type
+                    columns.Append(CreateColumnModel(2, 2, 35)); // Title
+                    columns.Append(CreateColumnModel(3, 3, 20)); // Requerimiento
+                    columns.Append(CreateColumnModel(4, 4, 20)); // Date
+                    columns.Append(CreateColumnModel(5, 5, 30)); // Username
+                    columns.Append(CreateColumnModel(6, 6, 15)); // Time Spent (h)
+                    columns.Append(CreateColumnModel(7, 7, 20)); // code employee
+                    columns.Append(CreateColumnModel(8, 8, 50)); // Comment
+
+                    var sheetData = new SheetData();
+                    worksheetPart.Worksheet.Append(columns);
+                    worksheetPart.Worksheet.Append(sheetData);
+
+                    var sheets = workbookPart.Workbook.AppendChild(new Sheets());
+                    var sheet = new Sheet
+                    {
+                        Id = workbookPart.GetIdOfPart(worksheetPart),
+                        SheetId = 1,
+                        Name = "Timesheet Report"
+                    };
+                    sheets.Append(sheet);
+
+                    // 🔹 Cabecera
+                    var headerRow = new Row();
+                    headerRow.Append(
+                        CreateCellModel("Type", 1),
+                        CreateCellModel("Title", 1),
+                        CreateCellModel("Requerimiento", 1),
+                        CreateCellModel("Date", 1),
+                        CreateCellModel("Username", 1),
+                        CreateCellModel("Time Spent (h)", 1),
+                        CreateCellModel("code employee", 1),
+                        CreateCellModel("Comment", 1)
+                    );
+                    sheetData.AppendChild(headerRow);
+
+                    // 🔹 Generar 30 filas en blanco con bordes
+                    for (int i = 0; i < 30; i++)
+                    {
+                        var row = new Row();
+                        row.Append(
+                            CreateCellModel(string.Empty, 2), // Type
+                            CreateCellModel(string.Empty, 2), // Title
+                            CreateCellModel(string.Empty, 2), // Requerimiento
+                            CreateCellModel(string.Empty, 2), // Date
+                            CreateCellModel(string.Empty, 2), // Username
+                            CreateCellModel(string.Empty, 2), // Time Spent (h)
+                            CreateCellModel(string.Empty, 2), // code employee
+                            CreateCellModel(string.Empty, 2)  // Comment
+                        );
+                        sheetData.AppendChild(row);
+                    }
+
+                }
+
+
+
+                return memoryStream.ToArray();
+            }
+        }
+
+        // Helpers
+        private Cell CreateCellModel(string value, uint styleIndex = 0)
+        {
+            return new Cell
+            {
+                DataType = CellValues.String,
+                CellValue = new CellValue(value ?? ""),
+                StyleIndex = styleIndex
+            };
+        }
+
+        private Column CreateColumnModel(uint min, uint max, double width)
+        {
+            return new Column
+            {
+                Min = min,
+                Max = max,
+                Width = width,
+                CustomWidth = true
+            };
+        }
+
+        private double CalculateColumnWidth(IEnumerable<string> values)
+        {
+            if (!values.Any())
+                return 10;
+
+            int maxLength = values.Max(v => v?.Length ?? 0);
+
+            // Aproximación: cada carácter ~1.2 unidades en Excel
+            return Math.Min(100, maxLength * 1.2);
+        }
+
+        private Stylesheet CreateStylesheetModel()
+        {
+            return new Stylesheet(
+                new Fonts(
+                    new Font( // 0 - Default Calibri 11
+                        new FontSize { Val = 10 },
+                        new FontName { Val = "Calibri" }
+                    ),
+                    new Font( // 1 - Bold Calibri 11 (cabeceras)
+                        new FontSize { Val = 10 },
+                        new Bold(),
+                        new FontName { Val = "Calibri" }
+                    )
+                ),
+
+                new Fills(
+                    new Fill(new PatternFill { PatternType = PatternValues.None }), // 0 - Default
+                    new Fill(new PatternFill { PatternType = PatternValues.Gray125 }), // 1 - Default
+                    new Fill(
+                            new PatternFill(
+                                new ForegroundColor { Rgb = "FFFFFF00" } // ARGB -> FF + Yellow
+                            )
+                            { PatternType = PatternValues.Solid }
+                        )
+                    ),
+
+                new Borders(
+                    new Border(), // 0 - Sin bordes (para título)
+                    new Border(   // 1 - Bordes completos
+                        new LeftBorder { Style = BorderStyleValues.Thin },
+                        new RightBorder { Style = BorderStyleValues.Thin },
+                        new TopBorder { Style = BorderStyleValues.Thin },
+                        new BottomBorder { Style = BorderStyleValues.Thin },
+                        new DiagonalBorder())
+                ),
+
+                new CellFormats(
+                    new CellFormat { FontId = 0, FillId = 0, BorderId = 0 }, // 0 - Default
+
+                       new CellFormat // 1 - Cabeceras
+                       {
+                           FontId = 1,
+                           FillId = 2,  // 🔹 ahora usa el amarillo
+                           BorderId = 1,
+                           Alignment = new Alignment
+                           {
+                               Horizontal = HorizontalAlignmentValues.Center,
+                               Vertical = VerticalAlignmentValues.Center,
+                               WrapText = true
+                           },
+                           ApplyFont = true,
+                           ApplyFill = true,
+                           ApplyBorder = true,
+                           ApplyAlignment = true
+                       },
+
+
+                    new CellFormat // 2 - Celdas normales con bordes
+                    {
+                        FontId = 0,
+                        FillId = 0,
+                        BorderId = 1,
+                        Alignment = new Alignment
+                        {
+                            Horizontal = HorizontalAlignmentValues.Left,
+                            Vertical = VerticalAlignmentValues.Center,
+                            WrapText = true
+                        },
+                        ApplyFont = true,
+                        ApplyFill = false,
+                        ApplyBorder = true,
+                        ApplyAlignment = true
+                    }
+                )
+            );
+        }
+
 
     }
 }

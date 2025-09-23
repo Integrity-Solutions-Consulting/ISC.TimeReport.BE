@@ -134,7 +134,7 @@ namespace isc.time.report.be.application.Services.Projects
             projectGet.Budget = projectParaUpdate.Budget;
             projectGet.Hours = projectParaUpdate.Hours;
             projectGet.WaitingStartDate = projectParaUpdate.WaitingStartDate;
-            projectGet.ActualEndDate = projectParaUpdate.WaitingEndDate;
+            projectGet.WaitingEndDate = projectParaUpdate.WaitingEndDate;
             projectGet.Observation = projectParaUpdate.Observation;
 
             if (projectGet.StartDate > projectGet.EndDate)
@@ -165,6 +165,15 @@ namespace isc.time.report.be.application.Services.Projects
 
         public async Task AssignEmployeesToProject(AssignEmployeesToProjectRequest request)
         {
+            //  Traer el proyecto
+            Project project = await projectRepository.GetProjectByIDAsync(request.ProjectID);
+
+            if (project == null)
+                throw new ArgumentException($"No se encontró el proyecto con ID {request.ProjectID}");
+
+            DateTime now = DateTime.UtcNow;
+
+            
             foreach (var dto in request.EmployeeProjectMiddle)
             {
                 bool tieneEmpleado = dto.EmployeeId.HasValue;
@@ -179,13 +188,12 @@ namespace isc.time.report.be.application.Services.Projects
                 }
             }
 
-            var existing = await projectRepository.GetByProjectEmployeeIDAsync(request.ProjectID);
-            var now = DateTime.UtcNow;
+            var existingAssignments = await projectRepository.GetByProjectEmployeeIDAsync(request.ProjectID);
             var finalList = new List<EmployeeProject>();
 
             foreach (var dto in request.EmployeeProjectMiddle)
             {
-                var match = existing.FirstOrDefault(ep =>
+                var match = existingAssignments.FirstOrDefault(ep =>
                     ep.EmployeeID == dto.EmployeeId &&
                     ep.SupplierID == dto.SupplierID
                 );
@@ -223,7 +231,7 @@ namespace isc.time.report.be.application.Services.Projects
                 }
             }
 
-            foreach (var ep in existing)
+            foreach (var ep in existingAssignments)
             {
                 bool sigueEnRequest = request.EmployeeProjectMiddle.Any(dto =>
                     dto.EmployeeId == ep.EmployeeID &&
@@ -241,6 +249,7 @@ namespace isc.time.report.be.application.Services.Projects
 
             await projectRepository.SaveAssignmentsAsync(finalList);
         }
+
 
         public async Task<GetProjectDetailByIDResponse?> GetProjectDetailByID(int projectID)
         {

@@ -107,5 +107,27 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
                 return list;
             }
 
+        public async Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteFiltradoAsync(int? month = null, int? year = null, bool mesCompleto = false, byte bancoGuayaquil = 0)
+        {
+            var parameters = new[]
+            {
+                    new SqlParameter("@Mes", month ?? (object)DBNull.Value),
+                    new SqlParameter("@Anio", year ?? (object)DBNull.Value),
+                    new SqlParameter("@MesCompleto", mesCompleto ? 1 : 0),
+                    new SqlParameter("@BancoGuayaquil", bancoGuayaquil)
+                };
+
+            var list = await _dbContext.Set<DashboardRecursosPendientesDto>()
+                .FromSqlRaw("EXEC dbo.sp_RecursosTimeReportPorClienteBG @Mes, @Anio, @MesCompleto, @BancoGuayaquil", parameters)
+                .ToListAsync();
+
+            if (!list.Any())
+            {
+                throw new ServerFaultException("No se encontraron recursos pendientes para el Time Report");
+            }
+
+            return list;
         }
+
+    }
 }

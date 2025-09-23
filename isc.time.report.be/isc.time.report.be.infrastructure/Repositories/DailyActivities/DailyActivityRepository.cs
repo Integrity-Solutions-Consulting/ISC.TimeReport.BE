@@ -1,6 +1,7 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.DailyActivities;
 using isc.time.report.be.domain.Entity.DailyActivities;
 using isc.time.report.be.domain.Exceptions;
+using isc.time.report.be.domain.Models.Request.DailyActivities;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -89,27 +90,86 @@ namespace isc.time.report.be.infrastructure.Repositories.DailyActivities
             return entity;
         }
 
-        public async Task<List<DailyActivity>> ApproveActivitiesAsync(List<int> activityIds, int employeeId, int projectId, DateTime from, DateTime to, int approverId)
-        {
-            var activities = await _context.DailyActivities
-                .Where(a => activityIds.Contains(a.Id)
-                         && a.EmployeeID == employeeId
-                         && a.ProjectID == projectId
-                         && a.ActivityDate >= DateOnly.FromDateTime(from)
-                         && a.ActivityDate <= DateOnly.FromDateTime(to))
-                .ToListAsync();
+        public async Task ApproveActivitiesAsync(
+                 List<int> activityIds,
+                        int employeeId,
+                        int projectId,
+                        DateTime from,
+                        DateTime to,
+                        int approverId)
+                        {
+                            var query = _context.DailyActivities
+                                .Where(a => a.ActivityDate >= DateOnly.FromDateTime(from)
+                                            && a.ActivityDate <= DateOnly.FromDateTime(to));
 
-            foreach (var activity in activities)
-            {
-                activity.ApprovedByID = approverId;
-                activity.ApprovalDate = DateTime.Now;
-                activity.ModificationDate = DateTime.Now;
-                activity.ModificationUser = "SYSTEM";
-            }
+                            if (employeeId > 0)
+                                query = query.Where(a => a.EmployeeID == employeeId);
 
-            _context.DailyActivities.UpdateRange(activities);
-            await _context.SaveChangesAsync();
-            return activities;
+                            if (projectId > 0)
+                                query = query.Where(a => a.ProjectID == projectId);
+
+                            if (activityIds != null && activityIds.Any())
+                                query = query.Where(a => activityIds.Contains(a.Id));
+
+                            await query.ExecuteUpdateAsync(a => a
+                                .SetProperty(x => x.ApprovedByID, approverId)
+                                .SetProperty(x => x.ApprovalDate, DateTime.Now)
+                                .SetProperty(x => x.ModificationDate, DateTime.Now)
+                                .SetProperty(x => x.ModificationUser, "SYSTEM")
+                            );
         }
+
+        public async Task<List<DailyActivity>> GetActivitiesForApprovalAsync(
+            List<int> activityIds,
+                    int employeeId,
+                    int projectId,
+                    DateTime from,
+                    DateTime to)
+                    {
+                        var query = _context.DailyActivities
+                            .Where(a => a.ActivityDate >= DateOnly.FromDateTime(from)
+                                        && a.ActivityDate <= DateOnly.FromDateTime(to));
+
+                        if (employeeId > 0)
+                            query = query.Where(a => a.EmployeeID == employeeId);
+
+                        if (projectId > 0)
+                            query = query.Where(a => a.ProjectID == projectId);
+
+
+                        return await query.ToListAsync();
+                    }
+
+
+
+
+        public async Task AddRangeAsync(List<DailyActivity> activities)
+        {
+            // Solo agregamos las entidades, no validaciones ni asignaciones de negocio
+            _context.DailyActivities.AddRange(activities);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<string?> GetActivityTypeNameByIdAsync(int activityTypeId)
+        {
+            var activityType = await _context.ActivityTypes
+                .Where(a => a.Id == activityTypeId && a.Status)
+                .Select(a => a.Name)
+                .FirstOrDefaultAsync();
+
+            return activityType; // Devuelve null si no existe
+        }
+
+        public async Task<bool> ExistsApprovedActivitiesAsync(int employeeId, int month, int year)
+        {
+            return await _context.DailyActivities
+                .AnyAsync(a => a.EmployeeID == employeeId
+                               && a.ActivityDate.Month == month
+                               && a.ActivityDate.Year == year
+                               && a.ApprovedByID != null);
+        }
+
+
+
     }
 }

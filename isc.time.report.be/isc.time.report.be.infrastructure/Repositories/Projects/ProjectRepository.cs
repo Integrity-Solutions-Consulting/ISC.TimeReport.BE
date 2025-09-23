@@ -51,16 +51,24 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
             return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
         }
 
-        public async Task<PagedResult<Project>> GetAssignedProjectsForEmployeeAsync(PaginationParams paginationParams, string? search, int employeeId)
+        public async Task<PagedResult<Project>> GetAssignedProjectsForEmployeeAsync(
+            PaginationParams paginationParams, string? search, int employeeId)
         {
-            var query = _dbContext.Projects
-                .Where(p => p.Status == true && p.EmployeeProject.Any(ep => ep.EmployeeID == employeeId))
-                .AsQueryable();
+            DateTime now = DateTime.Now;
+            DateTime startOfMonth = new DateTime(now.Year, now.Month, 1);   // 1er día del mes actual
+            DateTime startOfNextMonth = startOfMonth.AddMonths(
+                1);          // 1er día del mes siguiente
+
+            IQueryable<Project> query = _dbContext.Projects
+                .Where(p => p.Status == true
+                            && p.EmployeeProject.Any(ep => ep.EmployeeID == employeeId)
+                            && p.EndDate.HasValue
+                            && p.EndDate.Value >= startOfMonth);
+
 
             if (!string.IsNullOrWhiteSpace(search))
             {
                 string normalizedSearch = search.Trim().ToLower();
-
                 query = query.Where(p =>
                     p.Name.ToLower().Contains(normalizedSearch) ||
                     p.Code.ToLower().Contains(normalizedSearch));
@@ -68,6 +76,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
 
             return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
         }
+
 
 
         public async Task<Project> GetProjectByIDAsync(int projectId)
@@ -106,14 +115,31 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
         }
         public async Task<Project> UpdateProjectAsync(Project project)
         {
-            project.ModificationDate = DateTime.Now;
+            // Obtiene la entidad existente
+            Project trackedEntity = await _dbContext.Projects
+                .FirstOrDefaultAsync(p => p.Id == project.Id);
 
-            _dbContext.Entry(project).State = EntityState.Modified;
+            if (trackedEntity == null)
+                return null; // o lanzar excepción según tu manejo de errores
 
+            // Actualiza todos los valores
+            _dbContext.Entry(trackedEntity).CurrentValues.SetValues(project);
+
+            // Marca la entidad como modificada explícitamente
+            _dbContext.Entry(trackedEntity).State = EntityState.Modified;
+
+            // Actualiza campos de auditoría
+            trackedEntity.ModificationDate = DateTime.Now;
+            trackedEntity.ModificationUser = "SYSTEM";
+
+            // Guarda cambios en la base
             await _dbContext.SaveChangesAsync();
 
-            return project;
+            return trackedEntity;
         }
+
+
+
 
         public async Task<Project> InactivateProjectAsync(int projectId)
         {

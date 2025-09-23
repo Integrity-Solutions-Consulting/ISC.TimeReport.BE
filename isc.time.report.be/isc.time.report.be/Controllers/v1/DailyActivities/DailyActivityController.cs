@@ -71,12 +71,35 @@ namespace isc.time.report.be.api.Controllers.v1.DailyActivities
             return Ok(new SuccessResponse<ActiveInactiveDailyActivityResponse>(200, "Actividad activada", result));
         }
 
-        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
+        [Authorize(Roles = "Administrador,Administrativo")]
         [HttpPost("ApproveActivities")]
-        public async Task<ActionResult<SuccessResponse<List<GetDailyActivityResponse>>>> ApproveActivities([FromBody] AproveDailyActivityRequest request)
+        public async Task<ActionResult<SuccessResponse<List<GetDailyActivityResponse>>>> ApproveActivities(
+            [FromBody] AproveDailyActivityRequest request)
         {
-            var result = await _service.ApproveActivitiesAsync(request, GetUserIdFromToken());
-            return Ok(new SuccessResponse<List<GetDailyActivityResponse>>(200, "Actividades aprobadas exitosamente", result));
+            var approverId = GetUserIdFromToken(); // ID del usuario que aprueba
+
+            var result = await _service.ApproveActivitiesAsync(request, approverId);
+
+            return Ok(new SuccessResponse<List<GetDailyActivityResponse>>(
+                200,
+                "Actividades aprobadas exitosamente",
+                result
+            ));
         }
+
+        [Authorize(Roles = "Administrador,Gerente,Lider,Administrativo")]
+        [HttpPost("upload-activities")]
+        public async Task<IActionResult> UploadActivities(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("No se subió ningún archivo.");
+
+            var excelRows = await _service.ReadActivitiesFromExcelAsync(file.OpenReadStream());
+
+            var result = await _service.ImportActivitiesAsync(excelRows);
+
+            return Ok(result);
+        }
+
     }
 }
