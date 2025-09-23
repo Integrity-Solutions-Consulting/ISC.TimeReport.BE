@@ -1,4 +1,7 @@
 ﻿using isc.time.report.be.domain.Entity.DailyActivities;
+using isc.time.report.be.domain.Entity.Shared;
+using isc.time.report.be.domain.Models.Response.DailyActivities;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +12,7 @@ namespace isc.time.report.be.application.Interfaces.Repository.DailyActivities
 {
     public interface IDailyActivityRepository
     {
-        Task<List<DailyActivity>> GetAllAsync();
+        Task<List<DailyActivity>> GetAllAsync(int employeeId, int? month, int? year);
         Task<DailyActivity?> GetByIdAsync(int id);
         Task<DailyActivity> CreateAsync(DailyActivity entity);
         Task<DailyActivity> UpdateAsync(DailyActivity entity);

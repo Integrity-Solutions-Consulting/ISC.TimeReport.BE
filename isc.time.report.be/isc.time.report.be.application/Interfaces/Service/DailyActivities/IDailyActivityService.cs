@@ -1,6 +1,8 @@
 ﻿using isc.time.report.be.domain.Entity.DailyActivities;
+using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Models.Request.DailyActivities;
 using isc.time.report.be.domain.Models.Response.DailyActivities;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +13,7 @@ namespace isc.time.report.be.application.Interfaces.Service.DailyActivities
 {
     public interface IDailyActivityService
     {
-        Task<List<GetDailyActivityResponse>> GetAllAsync();
+        Task<List<GetDailyActivityResponse>> GetAllAsync(int employeeId, int month, int year);
         Task<GetDailyActivityResponse> GetByIdAsync(int id);
         Task<CreateDailyActivityResponse> CreateAsync(CreateDailyActivityRequest request, int employeeId);
         Task<UpdateDailyActivityResponse> UpdateAsync(int id, UpdateDailyActivityRequest request, int employeeId);
