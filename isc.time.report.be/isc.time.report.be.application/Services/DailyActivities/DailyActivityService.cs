@@ -8,10 +8,14 @@ using isc.time.report.be.application.Interfaces.Repository.Employees;
 using isc.time.report.be.application.Interfaces.Repository.Permissions;
 using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.application.Interfaces.Service.DailyActivities;
+using isc.time.report.be.application.Utils.Auth;
 using isc.time.report.be.domain.Entity.DailyActivities;
+using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.DailyActivities;
+using isc.time.report.be.domain.Models.Response.Clients;
 using isc.time.report.be.domain.Models.Response.DailyActivities;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,8 +32,10 @@ namespace isc.time.report.be.application.Services.DailyActivities
         private readonly IPermissionRepository _permissionRepository;
         private readonly IEmployeeRepository _employeeRepository;
         private readonly ICatalogRepository _catalogRepository;
+        private readonly JWTUtils _jwtUtils;
 
-        public DailyActivityService(IDailyActivityRepository repository, IMapper mapper, ITimeReportRepository timeReportRepository, IPermissionRepository permissionRepository, IEmployeeRepository employeeRepository, ICatalogRepository catalogRepository)
+
+        public DailyActivityService(IDailyActivityRepository repository, IMapper mapper, ITimeReportRepository timeReportRepository, IPermissionRepository permissionRepository, IEmployeeRepository employeeRepository, ICatalogRepository catalogRepository, JWTUtils jwtUtils)
         {
             _repository = repository;
             _mapper = mapper;
@@ -37,13 +43,19 @@ namespace isc.time.report.be.application.Services.DailyActivities
             _permissionRepository = permissionRepository;
             _employeeRepository = employeeRepository;
             _catalogRepository = catalogRepository;
+            _jwtUtils = jwtUtils;
         }
 
-        public async Task<List<GetDailyActivityResponse>> GetAllAsync()
+        public async Task<List<GetDailyActivityResponse>> GetAllAsync(int employeeId, int month, int year)
         {
-            var list = await _repository.GetAllAsync();
-            return _mapper.Map<List<GetDailyActivityResponse>>(list);
+            var result = await _repository.GetAllAsync(employeeId, month, year);
+
+            var mapped = _mapper.Map<List<GetDailyActivityResponse>>(result);
+
+            return mapped;
         }
+
+
 
         public async Task<GetDailyActivityResponse> GetByIdAsync(int id)
         {

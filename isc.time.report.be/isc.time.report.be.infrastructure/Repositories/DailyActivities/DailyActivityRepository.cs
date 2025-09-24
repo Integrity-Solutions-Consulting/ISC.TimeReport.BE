@@ -1,8 +1,11 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.DailyActivities;
+﻿using DocumentFormat.OpenXml.Office2010.PowerPoint;
+using isc.time.report.be.application.Interfaces.Repository.DailyActivities;
 using isc.time.report.be.domain.Entity.DailyActivities;
+using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.DailyActivities;
 using isc.time.report.be.infrastructure.Database;
+using isc.time.report.be.infrastructure.Utils.Pagination;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -21,15 +24,38 @@ namespace isc.time.report.be.infrastructure.Repositories.DailyActivities
             _context = context;
         }
 
-        public async Task<List<DailyActivity>> GetAllAsync()
+        public async Task<List<DailyActivity>> GetAllAsync(int employeeId, int? month, int? year)
         {
-            var list = await _context.DailyActivities.ToListAsync();
+            // Mes y año por defecto si no se envían
+            int selectedMonth = month.HasValue && month.Value >= 1 && month.Value <= 12
+                ? month.Value
+                : DateTime.Now.Month;
+
+            int selectedYear = year.HasValue && year.Value >= 1 && year.Value <= 9999
+                ? year.Value
+                : DateTime.Now.Year;
+
+            // Primer y último día del mes
+            DateOnly startOfMonth = new DateOnly(selectedYear, selectedMonth, 1);
+            DateOnly endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+
+            var list = await _context.DailyActivities
+                .Where(d => d.EmployeeID == employeeId
+                            && d.ActivityDate >= startOfMonth
+                            && d.ActivityDate <= endOfMonth) // incluye último día del mes
+                .OrderBy(d => d.ActivityDate)
+                .ToListAsync();
+
             if (!list.Any())
             {
-                throw new ServerFaultException("No se encontraron las Daily Activities");
+                throw new ServerFaultException("No se encontraron Daily Activities para este empleado en ese rango");
             }
+
             return list;
         }
+
+
+
 
         public async Task<DailyActivity?> GetByIdAsync(int id)
         {
