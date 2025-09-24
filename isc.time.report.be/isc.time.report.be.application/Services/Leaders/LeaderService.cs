@@ -143,9 +143,9 @@ namespace isc.time.report.be.application.Services.Leaders
                         {
                             Id = firstLeader.Person.Id,
                             IdentificationNumber = firstLeader.Person.IdentificationNumber,
-                            GenderId = (int)firstLeader.Person.GenderID,
-                            NationalityId = (int)firstLeader.Person.NationalityId,
-                            IdentificationTypeId = (int)firstLeader.Person.IdentificationTypeId,
+                            GenderId = firstLeader.Person.GenderID,
+                            NationalityId = firstLeader.Person.NationalityId,
+                            IdentificationTypeId = firstLeader.Person.IdentificationTypeId,
                             FirstName = firstLeader.Person.FirstName,
                             LastName = firstLeader.Person.LastName,
                             Email = firstLeader.Person.Email,

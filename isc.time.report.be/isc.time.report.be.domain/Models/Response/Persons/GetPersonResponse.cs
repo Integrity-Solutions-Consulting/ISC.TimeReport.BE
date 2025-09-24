@@ -9,9 +9,9 @@ namespace isc.time.report.be.domain.Models.Response.Persons
     public class GetPersonResponse
     {
         public int Id { get; set; }
-        public int GenderId { get; set; }
-        public int NationalityId { get; set;}
-        public int IdentificationTypeId { get; set; }
+        public int? GenderId { get; set; }
+        public int? NationalityId { get; set;}
+        public int? IdentificationTypeId { get; set; }
         public string IdentificationNumber { get; set; }
         public string PersonType { get; set; }
         public string FirstName { get; set; }
