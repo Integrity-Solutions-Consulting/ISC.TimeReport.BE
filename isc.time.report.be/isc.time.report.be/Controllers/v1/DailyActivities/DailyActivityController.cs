@@ -1,4 +1,5 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.DailyActivities;
+using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Models.Request.DailyActivities;
 using isc.time.report.be.domain.Models.Response.DailyActivities;
 using isc.time.report.be.domain.Models.Response.Shared;
@@ -25,9 +26,10 @@ namespace isc.time.report.be.api.Controllers.v1.DailyActivities
 
         [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
         [HttpGet("GetAllActivities")]
-        public async Task<ActionResult<SuccessResponse<List<GetDailyActivityResponse>>>> GetAll()
+        public async Task<ActionResult<SuccessResponse<List<GetDailyActivityResponse>>>> GetAll(
+            [FromQuery] int month, [FromQuery] int year)
         {
-            var result = await _service.GetAllAsync();
+            var result = await _service.GetAllAsync(GetEmployeeIdFromToken(), month, year);
             return Ok(new SuccessResponse<List<GetDailyActivityResponse>>(200, "Actividades obtenidas correctamente", result));
         }
 
