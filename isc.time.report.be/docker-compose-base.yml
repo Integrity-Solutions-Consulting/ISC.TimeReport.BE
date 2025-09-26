@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: time-report-sqlserver
+    restart: always
+    environment:
+      SA_PASSWORD: "Zp8#kV42wLp@tR3m"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - backend-net
+
+volumes:
+  sqlserver_data:
+
+networks:
+  backend-net:
+    driver: bridge
