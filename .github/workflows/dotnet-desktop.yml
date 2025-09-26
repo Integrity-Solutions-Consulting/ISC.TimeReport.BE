@@ -32,7 +32,7 @@ jobs:
         run: |
           ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }} << 'EOF'
             cd ${{ secrets.VPS_DEPLOY_PATH }}/isc.time.report.be
-            docker compose down || true
-            docker compose up -d --build
+            docker compose -f docker-compose.base.yml -f docker-compose.prod.yml down || true
+            docker compose -f docker-compose.base.yml -f docker-compose.prod.yml up -d --build
           EOF
           
