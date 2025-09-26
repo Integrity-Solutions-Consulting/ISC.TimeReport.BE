@@ -61,8 +61,8 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
 
             var request = new InventoryLoginDto
             {
-                email = "kerly.jimenez@integritysolutions.com.ec",
-                password = "Password2@"
+                email = _configuration["InventoryCredentials:Email"],
+                password = _configuration["InventoryCredentials:Password"]
             };
 
             var response = await _httpUtils.SendRequest<InventoryLoginResponse>($"{_configuration["Infrastructure:InventoryAuthUrlBase"]}/api/v1/auth/login", HttpMethod.Post, request);
