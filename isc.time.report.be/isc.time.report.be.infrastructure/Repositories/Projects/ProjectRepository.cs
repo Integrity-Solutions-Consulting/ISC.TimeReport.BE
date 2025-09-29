@@ -61,7 +61,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
 
             IQueryable<Project> query = _dbContext.Projects
                 .Where(p => p.Status == true
-                            && p.EmployeeProject.Any(ep => ep.EmployeeID == employeeId && ep.Status == true)
+                            && p.EmployeeProject.Any(ep => ep.EmployeeID == employeeId)
                             && p.EndDate.HasValue
                             && p.EndDate.Value >= startOfMonth);
 
@@ -77,7 +77,31 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
             return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
         }
 
+        public async Task<PagedResult<Project>> GetAssignedProjectsForEmployeeActiveAsync(
+    PaginationParams paginationParams, string? search, int employeeId)
+        {
+            DateTime now = DateTime.Now;
+            DateTime startOfMonth = new DateTime(now.Year, now.Month, 1);   // 1er día del mes actual
+            DateTime startOfNextMonth = startOfMonth.AddMonths(
+                1);          // 1er día del mes siguiente
 
+            IQueryable<Project> query = _dbContext.Projects
+                .Where(p => p.Status == true
+                            && p.EmployeeProject.Any(ep => ep.EmployeeID == employeeId && ep.Status == true)
+                            && p.EndDate.HasValue
+                            && p.EndDate.Value >= startOfMonth);
+
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                string normalizedSearch = search.Trim().ToLower();
+                query = query.Where(p =>
+                    p.Name.ToLower().Contains(normalizedSearch) ||
+                    p.Code.ToLower().Contains(normalizedSearch));
+            }
+
+            return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
+        }
 
         public async Task<Project> GetProjectByIDAsync(int projectId)
         {

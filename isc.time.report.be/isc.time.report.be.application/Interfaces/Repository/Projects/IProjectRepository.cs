@@ -14,6 +14,7 @@ namespace isc.time.report.be.application.Interfaces.Repository.Projects
         Task<Project> CreateProject(Project project);
         Task<PagedResult<Project>> GetAllProjectsPaginatedAsync(PaginationParams paginationParams, string? search);
         Task<PagedResult<Project>> GetAssignedProjectsForEmployeeAsync(PaginationParams paginationParams, string? search, int employeeId);
+        Task<PagedResult<Project>> GetAssignedProjectsForEmployeeActiveAsync(PaginationParams paginationParams, string? search, int employeeId);
         Task<Project> GetProjectByIDAsync(int projectId);
         Task<Project> UpdateProjectAsync(Project project);
         Task<Project> InactivateProjectAsync(int projectId);
