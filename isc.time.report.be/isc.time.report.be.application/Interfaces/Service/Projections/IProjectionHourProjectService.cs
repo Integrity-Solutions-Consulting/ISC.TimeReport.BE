@@ -1,4 +1,5 @@
-﻿using System;
+﻿using isc.time.report.be.domain.Models.Response.Projections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,6 @@ namespace isc.time.report.be.application.Interfaces.Service.Projections
 {
     public interface IProjectionHourProjectService  
     {
+        Task<List<ProjectionHoursProjectResponse>> GetAllProjectionByProjectId(int projectId);
     }
 }

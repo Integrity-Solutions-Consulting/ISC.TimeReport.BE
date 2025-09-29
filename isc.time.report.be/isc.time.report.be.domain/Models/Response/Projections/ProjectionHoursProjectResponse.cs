@@ -10,6 +10,7 @@ namespace isc.time.report.be.domain.Models.Response.Projections
         int IDRecurso,
         string TipoRecurso,
         string NombreRecurso,
-        decimal CostoPorHora
+        decimal CostoPorHora,
+        int CantidadRecursos
     );
 }

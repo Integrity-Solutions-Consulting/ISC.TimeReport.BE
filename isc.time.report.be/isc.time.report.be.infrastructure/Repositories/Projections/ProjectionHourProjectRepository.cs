@@ -1,6 +1,8 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.Projections;
+using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Models.Response.Projections;
 using isc.time.report.be.infrastructure.Database;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -20,10 +22,15 @@ namespace isc.time.report.be.infrastructure.Repositories.Projections
         }
 
 
-        //public async Task<List<ProjectionHoursProjectResponse>> GetAllProjectionsAsync(int IDRecurso, string TipoRecurso, string NombreRecurso, decimal CostoPorHora)
-        //{
-
-        //}
+        public async Task<List<ProjectionHoursProjectResponse>> GetAllProjectionsAsync(int projectId)
+        {
+            var parameters = new[] {
+                new SqlParameter("@ProjectId", projectId)
+            };
+            return await _dbContext.Set<ProjectionHoursProjectResponse>()
+                .FromSqlRaw("EXEC dbo.sp_ProyeccionHorasPorProyecto @ProjectID", parameters)
+                .ToListAsync();
+        }
     }
 
 
