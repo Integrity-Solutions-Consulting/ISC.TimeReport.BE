@@ -23,10 +23,14 @@ namespace isc.time.report.be.application.Services.Projections
         {
             var result = await _projectionHourProjectRepository.GetAllProjectionsAsync(projectId);
 
-            if (!result.Any())
+            if (result.Any())
+            {
+                return result;
+            }
+            else
+            {
                 throw new ClientFaultException("No se encontraron recursos para la proyeccion especificada.");
-
-            return result;
+            }
         }
     }
 }
