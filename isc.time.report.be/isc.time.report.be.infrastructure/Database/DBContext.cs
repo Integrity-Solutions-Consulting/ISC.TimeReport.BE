@@ -12,6 +12,7 @@ using isc.time.report.be.domain.Entity.Persons;
 using isc.time.report.be.domain.Entity.Projections;
 using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Models.Response.Dashboards;
+using isc.time.report.be.domain.Models.Response.Projections;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using System;
@@ -752,6 +753,7 @@ namespace isc.time.report.be.infrastructure.Database
             modelBuilder.Entity<DashboardRecursosClienteDto>().HasNoKey();
             modelBuilder.Entity<DashboardResumenProyectoDto>().HasNoKey();
             modelBuilder.Entity<DashboardRecursosPendientesDto>().HasNoKey();
+            modelBuilder.Entity<ProjectionHoursProjectResponse>().HasNoKey();
 
 
 
