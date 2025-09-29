@@ -61,7 +61,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
 
             IQueryable<Project> query = _dbContext.Projects
                 .Where(p => p.Status == true
-                            && p.EmployeeProject.Any(ep => ep.EmployeeID == employeeId)
+                            && p.EmployeeProject.Any(ep => ep.EmployeeID == employeeId && ep.Status == true)
                             && p.EndDate.HasValue
                             && p.EndDate.Value >= startOfMonth);
 
