@@ -75,7 +75,7 @@ namespace isc.time.report.be.application.Services.Projects
             {
                 // Obtiene solo los proyectos asignados al empleado
                 var result = await projectRepository.GetAssignedProjectsForEmployeeActiveAsync(paginationParams, search, employeeId);
-
+           
                 var responseItems = _mapper.Map<List<GetAllProjectsResponse>>(result.Items);
 
                 return new PagedResult<GetAllProjectsResponse>
