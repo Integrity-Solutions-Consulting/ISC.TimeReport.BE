@@ -11,6 +11,7 @@ using isc.time.report.be.application.Interfaces.Repository.Menus;
 using isc.time.report.be.application.Interfaces.Repository.Permissions;
 using isc.time.report.be.application.Interfaces.Repository.PermissionTypes;
 using isc.time.report.be.application.Interfaces.Repository.Persons;
+using isc.time.report.be.application.Interfaces.Repository.Projections;
 using isc.time.report.be.application.Interfaces.Repository.Projects;
 using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.application.Interfaces.Repository.Users;
@@ -30,6 +31,7 @@ using isc.time.report.be.infrastructure.Repositories.Menus;
 using isc.time.report.be.infrastructure.Repositories.Permissions;
 using isc.time.report.be.infrastructure.Repositories.PermissionTypes;
 using isc.time.report.be.infrastructure.Repositories.Persons;
+using isc.time.report.be.infrastructure.Repositories.Projections;
 using isc.time.report.be.infrastructure.Repositories.Projects;
 using isc.time.report.be.infrastructure.Repositories.TimeReports;
 using isc.time.report.be.infrastructure.Repositories.Users;
@@ -70,6 +72,7 @@ namespace isc.time.report.be.infrastructure.IOC
             services.AddScoped<IInventoryApiRepository, InventoryApiRepository>();
             services.AddScoped<InventoryApiRepository>();
             services.AddScoped<IHolidayRepository, HolidayRepository>();
+            services.AddScoped<IProjectionHourProjectRepository, ProjectionHourProjectRepository>();
 
 
             services.AddSingleton<EmailUtils>();

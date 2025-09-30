@@ -27,7 +27,7 @@ namespace isc.time.report.be.domain.Models.Response.Dashboards
        int AnioConsulta,
        string TipoConsulta
    );
-    public class DashboardResumenGeneralDto
+   public class DashboardResumenGeneralDto
     {
         public int TotalProyectosActivos { get; set; }
         public int TotalClientes { get; set; }

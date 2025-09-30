@@ -9,8 +9,10 @@ using isc.time.report.be.domain.Entity.Leaders;
 using isc.time.report.be.domain.Entity.Modules;
 using isc.time.report.be.domain.Entity.Permisions;
 using isc.time.report.be.domain.Entity.Persons;
+using isc.time.report.be.domain.Entity.Projections;
 using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Models.Response.Dashboards;
+using isc.time.report.be.domain.Models.Response.Projections;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using System;
@@ -718,12 +720,42 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
             });
 
+            modelBuilder.Entity<ProjectionHourProject>(entity =>
+            {
+                entity.ToTable("Projection_Hours_Project");
+                entity.HasKey(p => p.Id);
+                entity.Property(p => p.Id).HasColumnName("ProjectionHoursProjectId");
+                entity.Property(p => p.ResourceTypeId).HasColumnName("ResourceTypeId");
+                entity.Property(p => p.ResourceName).HasColumnName("resource_name");
+                entity.Property(p => p.HourlyCost).HasColumnName("hourly_cost");
+                entity.Property(p => p.ResourceQuantity).HasColumnName("resource_quantity");
+                entity.Property(p => p.TimeDistribution).HasColumnName("time_distribution");
+                entity.Property(p => p.TotalTime).HasColumnName("total_time");
+                entity.Property(p => p.ResourceCost).HasColumnName("resource_cost");
+                entity.Property(p => p.ParticipationPercentage).HasColumnName("participation_percentage");
+                entity.Property(p => p.PeriodType).HasColumnName("period_type");
+                entity.Property(p => p.PeriodQuantity).HasColumnName("period_quantity");
+
+                entity.Property(p => p.Status).HasColumnName("status");
+                entity.Property(p => p.CreationUser).HasColumnName("creation_user");
+                entity.Property(p => p.ModificationUser).HasColumnName("modification_user");
+                entity.Property(p => p.CreationDate).HasColumnName("creation_date");
+                entity.Property(p => p.ModificationDate).HasColumnName("modification_date");
+                entity.Property(p => p.CreationIp).HasColumnName("creation_ip");
+                entity.Property(p => p.ModificationIp).HasColumnName("modification_ip");
+
+
+            });
+
 
             modelBuilder.Entity<DashboardResumenGeneralDto>().HasNoKey();
             modelBuilder.Entity<DashboardHorasActividadDto>().HasNoKey();
             modelBuilder.Entity<DashboardRecursosClienteDto>().HasNoKey();
             modelBuilder.Entity<DashboardResumenProyectoDto>().HasNoKey();
             modelBuilder.Entity<DashboardRecursosPendientesDto>().HasNoKey();
+            modelBuilder.Entity<ProjectionHoursProjectResponse>().HasNoKey();
+
+
 
 
             base.OnModelCreating(modelBuilder);
@@ -759,5 +791,6 @@ namespace isc.time.report.be.infrastructure.Database
         public DbSet<InventoryToken> InventoryTokens { get; set; }
         public DbSet<CompanyCatalog> CompanyCatalogs { get; set; }
         public DbSet<EmployeeCategory> EmployeeCategories { get; set; }
+        public DbSet<ProjectionHourProject> ProjectionHoursProjects { get; set; }
     }
 }

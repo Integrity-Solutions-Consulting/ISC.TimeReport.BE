@@ -68,20 +68,40 @@ namespace isc.time.report.be.application.Services.Projects
         public async Task<PagedResult<GetAllProjectsResponse>> GetAllProjectsByEmployeeIDPaginated(
             PaginationParams paginationParams,
             string? search,
-            int employeeId)
+            int employeeId,
+            bool active)
         {
-            // Obtiene solo los proyectos asignados al empleado
-            var result = await projectRepository.GetAssignedProjectsForEmployeeAsync(paginationParams, search, employeeId);
-
-            var responseItems = _mapper.Map<List<GetAllProjectsResponse>>(result.Items);
-
-            return new PagedResult<GetAllProjectsResponse>
+            if(active == true)
             {
-                Items = responseItems,
-                TotalItems = result.TotalItems,
-                PageNumber = result.PageNumber,
-                PageSize = result.PageSize
-            };
+                // Obtiene solo los proyectos asignados al empleado
+                var result = await projectRepository.GetAssignedProjectsForEmployeeActiveAsync(paginationParams, search, employeeId);
+           
+                var responseItems = _mapper.Map<List<GetAllProjectsResponse>>(result.Items);
+
+                return new PagedResult<GetAllProjectsResponse>
+                {
+                    Items = responseItems,
+                    TotalItems = result.TotalItems,
+                    PageNumber = result.PageNumber,
+                    PageSize = result.PageSize
+                };
+            }
+            else
+            {
+                // Obtiene solo los proyectos asignados al empleado
+                var result = await projectRepository.GetAssignedProjectsForEmployeeAsync(paginationParams, search, employeeId);
+
+                var responseItems = _mapper.Map<List<GetAllProjectsResponse>>(result.Items);
+
+                return new PagedResult<GetAllProjectsResponse>
+                {
+                    Items = responseItems,
+                    TotalItems = result.TotalItems,
+                    PageNumber = result.PageNumber,
+                    PageSize = result.PageSize
+                };
+            }
+
         }
 
         public async Task<GetProjectByIDResponse> GetProjectByID(int projectID)

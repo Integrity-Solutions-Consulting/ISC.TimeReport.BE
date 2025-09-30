@@ -22,31 +22,9 @@ services:
       - EmailSettings__Password=Vrocoli23_
       - Infrastructure__InventoryAPIUrlBase=https://api.inventory.integritysolutions.com.ec
       - Infrastructure__InventoryAuthUrlBase=https://auth.inventory.integritysolutions.com.ec
+      - InventoryCredentials_Email=kerly.jimenez@integritysolutions.com.ec
+      - InventoryCredentials_Password=Password2@
     depends_on:
       - sqlserver
     networks:
       - backend-net
-
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: time-report-sqlserver
-    restart: always
-    environment:
-      SA_PASSWORD: "Zp8#kV42wLp@tR3m"
-      ACCEPT_EULA: "Y"
-    ports:
-      - "1433:1433"
-    volumes:
-      - sqlserver_data:/var/opt/mssql
-    networks:
-      - backend-net
-
-volumes:
-  sqlserver_data:
-
-networks:
-  backend-net:
-    driver: bridge
-
-
-
