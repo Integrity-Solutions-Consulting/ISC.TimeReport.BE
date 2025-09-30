@@ -1,4 +1,5 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.Projections;
+using isc.time.report.be.domain.Models.Response.Projections;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,7 +18,7 @@ namespace isc.time.report.be.api.Controllers.v1.Projections
 
         //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
         [HttpGet("get-all-projection-by-projectId/{projectId:int}")]
-        public async Task<IActionResult> GetProyeccionesPorProyecto(int projectId)
+        public async Task<ActionResult<List<ProjectionHoursProjectResponse>>> GetProyeccionesPorProyecto(int projectId)
         {
             var result = await _service.GetAllProjectionByProjectId(projectId);
             return Ok(result);

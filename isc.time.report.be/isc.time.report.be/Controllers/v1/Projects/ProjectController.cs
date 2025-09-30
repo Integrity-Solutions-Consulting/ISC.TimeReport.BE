@@ -46,11 +46,12 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
         [HttpGet("GetAllProjectsWhereEmployee")]
         public async Task<ActionResult<SuccessResponse<PagedResult<GetAllProjectsResponse>>>> GetAllProjectsByEmployeeID(
         [FromQuery] PaginationParams paginationParams,
-        [FromQuery] string? search)
+        [FromQuery] string? search,
+        [FromQuery] bool active)
         {
             int employeeId = GetEmployeeIdFromToken();
 
-            var projects = await _projectService.GetAllProjectsByEmployeeIDPaginated(paginationParams, search, employeeId);
+            var projects = await _projectService.GetAllProjectsByEmployeeIDPaginated(paginationParams, search, employeeId, active);
             return Ok(projects);
         }
 

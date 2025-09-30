@@ -14,7 +14,7 @@ namespace isc.time.report.be.application.Interfaces.Service.Projects
     {
         Task<CreateProjectResponse> CreateProject(CreateProjectRequest projectRequest);
         Task<PagedResult<GetAllProjectsResponse>> GetAllProjectsPaginated(PaginationParams paginationParams, string? search);
-        Task<PagedResult<GetAllProjectsResponse>> GetAllProjectsByEmployeeIDPaginated(PaginationParams paginationParams, string? search, int employeeId);
+        Task<PagedResult<GetAllProjectsResponse>> GetAllProjectsByEmployeeIDPaginated(PaginationParams paginationParams, string? search, int employeeId, bool active);
         Task<GetProjectByIDResponse> GetProjectByID(int projectID);
         Task<UpdateProjectResponse> UpdateProject(int projectId, UpdateProjectRequest projectParaUpdate);
         Task<ActiveInactiveProjectResponse> InactiveProject(int projectId);
