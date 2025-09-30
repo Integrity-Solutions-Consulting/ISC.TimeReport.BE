@@ -10,16 +10,15 @@ namespace isc.time.report.be.domain.Models.Request.Projections
     {
     public int ProjectionHoursProjectId { get; set; }
     public int ResourceTypeId { get; set; }
-    public string ResourceTypeName { get; set;}
-    public string resource_name { get; set; }
-    public decimal hourly_cost { get; set; }
-    public int resource_quantity { get; set; }
-    public string time_distribution { get; set; }
-    public decimal total_time { get; set; }
-    public decimal resource_cost { get; set; }
-    public decimal participation_percentage { get; set; }
-    public bool period_type { get; set; }
-    public int period_quantity { get; set; }
+    public string ResourceName { get; set; }
+    public decimal HourlyCost { get; set; }
+    public int ResourceQuantity { get; set; }
+    public  List<int> TimeDistribution { get; set; }
+    public decimal TotalTime { get; set; }
+    public decimal ResourceCost { get; set; }
+    public decimal ParticipationPercentage { get; set; }
+    public bool PeriodType { get; set; }
+    public int PeriodQuantity { get; set; }
     public int ProjectID { get; set; }
     }
 }

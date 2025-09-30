@@ -1,5 +1,9 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.Projections;
+﻿using DocumentFormat.OpenXml.InkML;
+using isc.time.report.be.application.Interfaces.Repository.Projections;
+using isc.time.report.be.domain.Entity.DailyActivities;
+using isc.time.report.be.domain.Entity.Projections;
 using isc.time.report.be.domain.Entity.Projects;
+using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Response.Projections;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.Data.SqlClient;
@@ -30,6 +34,53 @@ namespace isc.time.report.be.infrastructure.Repositories.Projections
             return await _dbContext.Set<ProjectionHoursProjectResponse>()
                 .FromSqlRaw("EXEC dbo.sp_ProyeccionHorasPorProyectoGOOOD @ProjectID", parameters)
                 .ToListAsync();
+        } 
+        public async Task<ProjectionHourProject> CreateProjectionAsync(ProjectionHourProject entity)
+        {
+            entity.CreationDate = DateTime.Now;
+            entity.CreationUser = "SYSTEM";
+            entity.Status = true;
+            await _dbContext.ProjectionHoursProjects.AddAsync(entity);
+            await _dbContext.SaveChangesAsync();
+            return entity;
+        }
+
+        public async Task<ProjectionHourProject> UpdateResourceAssignedToProjectionAsync(ProjectionHourProject entity, int projectid, int id)
+        {
+            _dbContext.Entry(entity).State = EntityState.Modified;
+
+            await _dbContext.SaveChangesAsync();
+
+            return entity;
+        }
+
+        public async Task<ProjectionHourProject> ActiveInactiveResourceOfProjectionAsync(int projectId, int id)
+        {
+            // Traemos la entidad
+            var entity = await GetResourceByProjectionIdAsync(projectId, id);
+
+            if (entity == null)
+                throw new Exception("Registro no encontrado");
+
+            // Alternamos el Status
+            entity.Status = !entity.Status;
+            entity.ModificationDate = DateTime.Now;
+
+            // Guardamos los cambios usando el método del repositorio
+            var updatedEntity = await UpdateResourceAssignedToProjectionAsync(entity, projectId, id);
+
+            return updatedEntity;
+
+
+        }
+        public async Task<ProjectionHourProject?> GetResourceByProjectionIdAsync(int projectId, int id)
+        {
+            if (id <= 0)
+            {
+                throw new ClientFaultException("El ID del Daily no puede ser negativo");
+            }
+            var resource = await _dbContext.ProjectionHoursProjects.FindAsync(id);
+            return resource;
         }
     }
 
