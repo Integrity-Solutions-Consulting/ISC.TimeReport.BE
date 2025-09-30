@@ -23,5 +23,7 @@ namespace isc.time.report.be.api.Controllers.v1.Projections
             var result = await _service.GetAllProjectionByProjectId(projectId);
             return Ok(result);
         }
+
+
     }
 }
