@@ -49,6 +49,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
             {
                 try
                 {
+
                     var expirationDate = _jwtInventoryUtils.GetExpirationDateFromToken(inventoryToken.Token);
 
                     if (expirationDate > DateTime.UtcNow)

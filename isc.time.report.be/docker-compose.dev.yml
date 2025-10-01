@@ -22,8 +22,8 @@ services:
       - EmailSettings__Password=Vrocoli23_
       - Infrastructure__InventoryAPIUrlBase=http://147.93.181.146:9091
       - Infrastructure__InventoryAuthUrlBase=http://147.93.181.146:9090
-      - InventoryCredentials_Email=kerly.jimenez@integritysolutions.com.ec
-      - InventoryCredentials_Password=Password2@
+      - InventoryCredentials__Email=kerly.jimenez@integritysolutions.com.ec
+      - InventoryCredentials__Password=Password2@
     depends_on:
       - sqlserver
     networks:
