@@ -12,6 +12,7 @@ namespace isc.time.report.be.application.Interfaces.Service.Projections
     public interface IProjectionHourProjectService  
     {
         Task<List<ProjectionHoursProjectResponse>> GetAllProjectionByProjectId(int projectId);
-        Task<ProjectionHourProject> CreateAsync(ProjectionHoursProjectRequest request);
+        Task<ProjectionHoursProjectRequest> CreateAsync(ProjectionHoursProjectRequest request);
+        Task<UpdateProjectionHoursProjectRequest> UpdateAsync(UpdateProjectionHoursProjectRequest request, int resourceTypeId, int projectId);
     }
 }

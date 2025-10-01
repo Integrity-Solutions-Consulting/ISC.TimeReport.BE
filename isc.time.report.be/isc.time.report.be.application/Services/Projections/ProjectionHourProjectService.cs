@@ -84,17 +84,17 @@ namespace isc.time.report.be.application.Services.Projections
             return request;
         }
 
-        public async Task<UpdateProjectionHoursProjectRequest> UpdateAsync(UpdateProjectionHoursProjectRequest request, int id, int projectId)
+        public async Task<UpdateProjectionHoursProjectRequest> UpdateAsync(UpdateProjectionHoursProjectRequest request, int resourceTypeId, int projectId)
         {
-            // Traemos la entidad de la DB por id y projectId
-            var entity = await _projectionHourProjectRepository.GetResourceByProjectionIdAsync(projectId, id);
+            
+            var entity = await _projectionHourProjectRepository.GetResourceByProjectionIdAsync(projectId, resourceTypeId);
 
             if (entity == null)
-                throw new Exception("Registro no encontrado");
+                throw new ClientFaultException ("Registro no encontrado", 401);
 
-            // Actualizamos solo los campos estáticos (no tocamos period_type ni period_quantity)
+            // no tocamos period_type ni period_quantity porque son campos estaticos recuerda
             entity.ResourceTypeId = request.ResourceTypeId;
-            entity.ProjectId = request.ProjectID; // o projectId si quieres asegurar consistencia
+            entity.ProjectId = request.ProjectID; 
             entity.ResourceName = request.ResourceName;
             entity.HourlyCost = request.HourlyCost;
             entity.ResourceQuantity = request.ResourceQuantity;
@@ -102,13 +102,13 @@ namespace isc.time.report.be.application.Services.Projections
             entity.ResourceCost = request.ResourceCost;
             entity.ParticipationPercentage = request.ParticipationPercentage;
 
-            // Serializamos la lista TimeDistribution
+            // Serializacion
             entity.TimeDistribution = JsonSerializer.Serialize(request.TimeDistribution);
 
-            // Guardamos cambios en la DB
-            await _projectionHourProjectRepository.UpdateResourceAssignedToProjectionAsync(entity, id, projectId);
+            
+            await _projectionHourProjectRepository.UpdateResourceAssignedToProjectionAsync(entity, resourceTypeId, projectId);
 
-            // Mapear entidad a UpdateProjectionHoursProjectRequest
+            // Mapear 
             var response = new UpdateProjectionHoursProjectRequest
             {
                 ProjectionHoursProjectId = entity.Id,

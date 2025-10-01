@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.InkML;
+﻿using Azure.Core;
+using DocumentFormat.OpenXml.InkML;
 using isc.time.report.be.application.Interfaces.Repository.Projections;
 using isc.time.report.be.domain.Entity.DailyActivities;
 using isc.time.report.be.domain.Entity.Projections;
@@ -54,25 +55,15 @@ namespace isc.time.report.be.infrastructure.Repositories.Projections
             return entity;
         }
 
-        public async Task<ProjectionHourProject> ActiveInactiveResourceOfProjectionAsync(int projectId, int id)
+        public async Task<int> ActiveInactiveResourceOfProjectionAsync(int projectId, int resourceTypeId, bool status)
         {
-            // Traemos la entidad
-            var entity = await GetResourceByProjectionIdAsync(projectId, id);
-
-            if (entity == null)
-                throw new Exception("Registro no encontrado");
-
-            // Alternamos el Status
-            entity.Status = !entity.Status;
-            entity.ModificationDate = DateTime.Now;
-
-            // Guardamos los cambios usando el método del repositorio
-            var updatedEntity = await UpdateResourceAssignedToProjectionAsync(entity, projectId, id);
-
-            return updatedEntity;
-
-
+            return await _dbContext.ProjectionHoursProjects
+                .Where(r => r.ProjectId == projectId && r.ResourceTypeId == resourceTypeId)
+                .ExecuteUpdateAsync(setters =>
+                    setters.SetProperty(r => r.Status, status)
+                );
         }
+
         public async Task<ProjectionHourProject?> GetResourceByProjectionIdAsync(int projectId, int id)
         {
             if (id <= 0)
