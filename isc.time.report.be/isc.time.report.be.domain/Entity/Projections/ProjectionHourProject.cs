@@ -15,7 +15,7 @@ namespace isc.time.report.be.domain.Entity.Projections
         public string ResourceName { get; set; }               
         public decimal HourlyCost { get; set; }                
         public int ResourceQuantity { get; set; }            
-        public decimal TimeDistribution { get; set; }          
+        public string TimeDistribution { get; set; }          
         public decimal TotalTime { get; set; }                
         public decimal ResourceCost { get; set; }   
         public decimal ParticipationPercentage { get; set; }   
