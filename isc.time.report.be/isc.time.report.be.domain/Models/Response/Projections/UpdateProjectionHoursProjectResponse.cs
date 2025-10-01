@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace isc.time.report.be.domain.Models.Request.Projections
+namespace isc.time.report.be.domain.Models.Response.Projections
 {
-    public class UpdateProjectionHoursProjectRequest
+    public class UpdateProjectionHoursProjectResponse
     {
         public int ResourceTypeId { get; set; }
         public string ResourceName { get; set; }
@@ -16,5 +16,6 @@ namespace isc.time.report.be.domain.Models.Request.Projections
         public decimal TotalTime { get; set; }
         public decimal ResourceCost { get; set; }
         public decimal ParticipationPercentage { get; set; }
+        public int ProjectId { get; set; }
     }
 }
