@@ -1,4 +1,5 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.Projections;
+﻿using AutoMapper;
+using isc.time.report.be.application.Interfaces.Repository.Projections;
 using isc.time.report.be.application.Interfaces.Service.Projections;
 using isc.time.report.be.domain.Entity.Projections;
 using isc.time.report.be.domain.Exceptions;
@@ -15,10 +16,13 @@ namespace isc.time.report.be.application.Services.Projections
 {
     public class ProjectionHourProjectService : IProjectionHourProjectService
     {
-        private readonly IProjectionHourProjectRepository _projectionHourProjectRepository ;
-        public ProjectionHourProjectService(IProjectionHourProjectRepository projectionHourProjectRepository) { 
+        private readonly IProjectionHourProjectRepository _projectionHourProjectRepository;
+        private readonly IMapper _mapper;
 
-            _projectionHourProjectRepository = projectionHourProjectRepository ;
+        public ProjectionHourProjectService(IProjectionHourProjectRepository projectionHourProjectRepository, IMapper mapper) {
+
+            _projectionHourProjectRepository = projectionHourProjectRepository;
+            _mapper = mapper;
 
         }
 
@@ -35,85 +39,70 @@ namespace isc.time.report.be.application.Services.Projections
                 throw new ClientFaultException("No se encontraron recursos para la proyeccion especificada.");
             }
         }
-        public ProjectionHourProject MapToEntity(ProjectionHoursProjectRequest request)
-        {
-            return new ProjectionHourProject
-            {
-                Id = request.ProjectionHoursProjectId,
-                ResourceTypeId = request.ResourceTypeId,
-                ProjectId = request.ProjectID,
-                ResourceName = request.ResourceName,
-                HourlyCost = request.HourlyCost,
-                ResourceQuantity = request.ResourceQuantity,
-                TimeDistribution = JsonSerializer.Serialize(request.TimeDistribution), 
-                TotalTime = request.TotalTime,
-                ResourceCost = request.ResourceCost,
-                ParticipationPercentage = request.ParticipationPercentage,
-                PeriodType = request.PeriodType,
-                PeriodQuantity = request.PeriodQuantity
-            };
-        }
 
-        public ProjectionHoursProjectRequest MapToRequest(ProjectionHourProject entity)
+
+        public async Task<CreateProjectionHoursProjectResponse> CreateAsync(ProjectionHoursProjectRequest request, int projectId)
         {
-            return new ProjectionHoursProjectRequest
+
+            var entity = _mapper.Map<ProjectionHourProject>(request);
+
+            entity.TimeDistribution = JsonSerializer.Serialize(request.TimeDistribution);
+
+            await _projectionHourProjectRepository.CreateProjectionAsync(entity);
+
+
+            var response = new CreateProjectionHoursProjectResponse
             {
-                ProjectionHoursProjectId = entity.Id,
                 ResourceTypeId = entity.ResourceTypeId,
-                ProjectID = entity.ProjectId,
                 ResourceName = entity.ResourceName,
                 HourlyCost = entity.HourlyCost,
                 ResourceQuantity = entity.ResourceQuantity,
-                TimeDistribution = string.IsNullOrEmpty(entity.TimeDistribution)
-                    ? new List<int>()
-                    : JsonSerializer.Deserialize<List<int>>(entity.TimeDistribution), // Deserializa el string
                 TotalTime = entity.TotalTime,
                 ResourceCost = entity.ResourceCost,
                 ParticipationPercentage = entity.ParticipationPercentage,
                 PeriodType = entity.PeriodType,
                 PeriodQuantity = entity.PeriodQuantity,
+                ProjecId= entity.ProjectId,
+                TimeDistribution = string.IsNullOrEmpty(entity.TimeDistribution)
+                    ? new List<int>()
+                    : JsonSerializer.Deserialize<List<int>>(entity.TimeDistribution)
+
+
             };
+
+            return response;
         }
 
-        public async Task<ProjectionHoursProjectRequest> CreateAsync(ProjectionHoursProjectRequest request)
+        public async Task<UpdateProjectionHoursProjectResponse> UpdateAsync(UpdateProjectionHoursProjectRequest request, int resourceTypeId, int projectId)
         {
-            var entity = MapToEntity(request);
 
-            await _projectionHourProjectRepository.CreateProjectionAsync(entity);
-
-            return request;
-        }
-
-        public async Task<UpdateProjectionHoursProjectRequest> UpdateAsync(UpdateProjectionHoursProjectRequest request, int resourceTypeId, int projectId)
-        {
-            
             var entity = await _projectionHourProjectRepository.GetResourceByProjectionIdAsync(projectId, resourceTypeId);
 
             if (entity == null)
-                throw new ClientFaultException ("Registro no encontrado", 401);
+                throw new ClientFaultException("Registro no encontrado", 401);
 
-            // no tocamos period_type ni period_quantity porque son campos estaticos recuerda
+            // Mapeo 
             entity.ResourceTypeId = request.ResourceTypeId;
-            entity.ProjectId = request.ProjectID; 
+            entity.ProjectId = projectId;
             entity.ResourceName = request.ResourceName;
             entity.HourlyCost = request.HourlyCost;
             entity.ResourceQuantity = request.ResourceQuantity;
             entity.TotalTime = request.TotalTime;
             entity.ResourceCost = request.ResourceCost;
             entity.ParticipationPercentage = request.ParticipationPercentage;
+           
 
-            // Serializacion
+            // Serialización 
             entity.TimeDistribution = JsonSerializer.Serialize(request.TimeDistribution);
 
-            
+            //Guardamos
             await _projectionHourProjectRepository.UpdateResourceAssignedToProjectionAsync(entity, resourceTypeId, projectId);
 
-            // Mapear 
-            var response = new UpdateProjectionHoursProjectRequest
+            //Mapeo actualizado
+            var response = new UpdateProjectionHoursProjectResponse
             {
-                ProjectionHoursProjectId = entity.Id,
                 ResourceTypeId = entity.ResourceTypeId,
-                ProjectID = entity.ProjectId,
+                ProjectId = entity.ProjectId,
                 ResourceName = entity.ResourceName,
                 HourlyCost = entity.HourlyCost,
                 ResourceQuantity = entity.ResourceQuantity,
@@ -123,13 +112,21 @@ namespace isc.time.report.be.application.Services.Projections
                 TotalTime = entity.TotalTime,
                 ResourceCost = entity.ResourceCost,
                 ParticipationPercentage = entity.ParticipationPercentage,
-                PeriodType = entity.PeriodType,
-                PeriodQuantity = entity.PeriodQuantity
+
             };
 
             return response;
         }
 
+        public async Task ActivateInactiveResourceAsync (int projectId, int resourceTypeId, bool active)
+        {
+            var rowsAffected = await _projectionHourProjectRepository.ActiveInactiveResourceOfProjectionAsync(projectId, resourceTypeId, active);
+
+            if (rowsAffected == 0)
+            {
+                throw new ServerFaultException($"Recurso {resourceTypeId} no encontrado en el projecto {projectId}");
+            }
+        }
 
 
     }

@@ -8,7 +8,6 @@ namespace isc.time.report.be.domain.Models.Request.Projections
 {
     public class ProjectionHoursProjectRequest
     {
-    public int ProjectionHoursProjectId { get; set; }
     public int ResourceTypeId { get; set; }
     public string ResourceName { get; set; }
     public decimal HourlyCost { get; set; }
