@@ -15,5 +15,6 @@ namespace isc.time.report.be.application.Interfaces.Service.Projections
         Task<CreateProjectionHoursProjectResponse> CreateAsync(ProjectionHoursProjectRequest request, int projectId);
         Task<UpdateProjectionHoursProjectResponse> UpdateAsync(UpdateProjectionHoursProjectRequest request, int resourceTypeId, int projectId);
         Task ActivateInactiveResourceAsync(int projectId, int resourceTypeId, bool active);
+        Task<byte[]> ExportProjectionToExcelAsync(int projectId);
     }
 }
