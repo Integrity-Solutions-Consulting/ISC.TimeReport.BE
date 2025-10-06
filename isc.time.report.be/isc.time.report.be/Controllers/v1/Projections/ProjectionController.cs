@@ -56,21 +56,15 @@ namespace isc.time.report.be.api.Controllers.v1.Projections
         {
             try
             {
-                // Llamamos al servicio que genera el Excel en memoria
                 byte[] fileBytes = await _service.ExportProjectionToExcelAsync(projectId);
-
-                // Nombre del archivo
                 string fileName = $"Proyeccion_Proyecto_{projectId}.xlsx";
 
-                // Retornamos el archivo para descarga
                 return File(fileBytes,
                             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                             fileName);
-               
             }
             catch (Exception ex)
             {
-                // Manejo básico de errores
                 return BadRequest(new { message = ex.Message });
             }
         }

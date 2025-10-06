@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.ExtendedProperties;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using isc.time.report.be.application.Interfaces.Repository.Projections;
@@ -171,6 +172,32 @@ namespace isc.time.report.be.application.Services.Projections
                     Name = "Projection Report"
                 });
 
+                // -------------------------- TÍTULO PRINCIPAL --------------------------
+                var titleRow = new Row();
+
+                // Creamos una celda con el título y le aplicamos formato de cabecera (puedes usar CellFormatId = 1)
+                titleRow.Append(
+                    CreateCellModel("Distribución de Horas por Proyecto", 4)
+                );
+
+                // Agregamos la fila al SheetData
+                sheetData.Append(titleRow);
+
+                // -------------------------- MERGE CELLS PARA EL TÍTULO --------------------------
+                var mergeCells = worksheetPart.Worksheet.Elements<MergeCells>().FirstOrDefault();
+                if (mergeCells == null)
+                {
+                    mergeCells = new MergeCells();
+                    worksheetPart.Worksheet.InsertAfter(mergeCells, worksheetPart.Worksheet.Elements<SheetData>().First());
+                }
+
+                // Combinar de A1 a K1
+                mergeCells.Append(new MergeCell
+                {
+                    Reference = new StringValue("A1:K1")
+                });
+
+
                 // --------------------------
                 // CABECERA DINÁMICA
                 // --------------------------
@@ -200,6 +227,15 @@ namespace isc.time.report.be.application.Services.Projections
                 sheetData.Append(headerRow);
 
                 // --------------------------
+                // Inicializar totales
+                // --------------------------
+                int totalResourceQuantity = 0;
+                List<int> totalDistribution = Enumerable.Repeat(0, periodQty).ToList();
+                decimal totalTime = 0m;
+                decimal totalResourceCost = 0m;
+                decimal totalParticipation = 0m;
+
+                // --------------------------
                 // FILAS DE DATOS
                 // --------------------------
                 foreach (var item in data)
@@ -212,24 +248,81 @@ namespace isc.time.report.be.application.Services.Projections
                         CreateCellModel(item.resource_quantity.ToString(), 2)
                     );
 
-                    var distribution = JsonSerializer.Deserialize<List<int>>(item.time_distribution);
+                    var distribution = JsonSerializer.Deserialize<List<int>>(item.time_distribution) ?? new List<int>();
 
                     for (int i = 0; i < periodQty; i++)
-                        row.Append(CreateCellModel(distribution != null && i < distribution.Count ? distribution[i].ToString() : "0", 2));
+                    {
+                        int value = (i < distribution.Count) ? distribution[i] : 0;
+                        row.Append(CreateCellModel(value.ToString(), 2));
+
+                        // 🔹 Acumular el total por periodo
+                        totalDistribution[i] += value;
+                    }
 
                     row.Append(
                         CreateCellModel(item.total_time.ToString("F2"), 2),
                         CreateCellModel(item.resource_cost.ToString("F2"), 2)
                     );
-                    decimal valorExcel = item.participation_percentage;
-                    row.Append(CreateNumberCell(valorExcel/100, 3));
 
+                    decimal valorExcel = item.participation_percentage;
+                    row.Append(CreateNumberCell(valorExcel / 100, 3)); // Formato porcentaje
 
                     sheetData.Append(row);
-                }
-            }
 
+                    // 🔹 Acumular totales generales
+                    totalResourceQuantity += item.resource_quantity;
+                    totalTime += item.total_time;
+                    totalResourceCost += item.resource_cost;
+                    totalParticipation += item.participation_percentage;
+                }
+
+                // --------------------------
+                // Pie de página con totales
+                // --------------------------
+                var totalRow = new Row();
+                totalRow.Append(
+                    CreateCellModel("Total", 1), // Tipo de recurso
+                    CreateCellModel("", 1),      // Nombre recurso
+                    CreateCellModel("", 1),      // Costo por hora
+                    CreateCellModel(totalResourceQuantity.ToString(), 1) // Cantidad de recursos
+                );
+
+                // Totales por periodo (time distribution)
+                for (int i = 0; i < periodQty; i++)
+                    totalRow.Append(CreateCellModel(totalDistribution[i].ToString(), 1));
+
+                // Totales de tiempo y costo
+                totalRow.Append(
+                    CreateCellModel(totalTime.ToString("F2"), 1),
+                    CreateCellModel(totalResourceCost.ToString("F2"), 1),
+                    CreateNumberCell(totalParticipation / 100, 3) // porcentaje total
+                );
+
+                // Agregar la fila al SheetData
+                sheetData.Append(totalRow);
+
+
+                uint totalRowIndex = (uint)sheetData.ChildElements.Count;
+
+                // Buscar o crear el contenedor de merges
+                if (mergeCells == null)
+                {
+                    mergeCells = new MergeCells();
+
+                    // Insertar mergeCells después del SheetData
+                    var lastSheetData = worksheetPart.Worksheet.Elements<SheetData>().FirstOrDefault();
+                    worksheetPart.Worksheet.InsertAfter(mergeCells, lastSheetData);
+                }
+
+                // Agregar el merge específico
+                mergeCells.Append(new MergeCell()
+                {
+                    Reference = new StringValue($"A{totalRowIndex}:C{totalRowIndex}")
+                });
+
+            }
             return memoryStream.ToArray();
+
         }
 
 
@@ -289,7 +382,12 @@ namespace isc.time.report.be.application.Services.Projections
                         new FontSize { Val = 10 },
                         new Bold(),
                         new FontName { Val = "Calibri" }
-                    )
+                    ),
+                    new Font( // 2 - Fuente para título principal
+                        new FontSize { Val = 16 }, // tamaño más grande
+                        new Bold(),                // negrita
+                        new FontName { Val = "Calibri" }
+)
                 ),
 
                 new Fills(
@@ -297,7 +395,7 @@ namespace isc.time.report.be.application.Services.Projections
                     new Fill(new PatternFill { PatternType = PatternValues.Gray125 }), // 1 - Default
                     new Fill(
                         new PatternFill(
-                            new ForegroundColor { Rgb = "FFB0B0B0" } // color cabecera
+                            new ForegroundColor { Rgb = "F2F2F2" } // color cabecera
                         )
                         { PatternType = PatternValues.Solid }
                     )
@@ -350,7 +448,7 @@ namespace isc.time.report.be.application.Services.Projections
                     },
                     new CellFormat // 3 - Porcentaje
                     {
-                        FontId = 0,
+                        FontId = 1,
                         FillId = 0,
                         BorderId = 1,
                         NumberFormatId = 10, // formato porcentaje con 2 decimales en Excel
@@ -361,10 +459,27 @@ namespace isc.time.report.be.application.Services.Projections
                         },
                         ApplyNumberFormat = true,
                         ApplyFont = true,
-                        ApplyFill = false,
+                        ApplyFill = true,
                         ApplyBorder = true,
                         ApplyAlignment = true
+                    },
+                    new CellFormat // 4 - Título principal (más grande y negrita)
+                    {
+                        FontId = 2, // Debemos definir una nueva fuente con tamaño mayor y bold
+                        FillId = 0, // sin fondo o puedes ponerle uno si quieres
+                        BorderId = 0, // sin bordes
+                        Alignment = new Alignment
+                        {
+                            Horizontal = HorizontalAlignmentValues.Center,
+                            Vertical = VerticalAlignmentValues.Center,
+                            WrapText = true
+                        },
+                        ApplyFont = true,
+                        ApplyFill = false,
+                        ApplyBorder = false,
+                        ApplyAlignment = true
                     }
+
 
                 )
             );
