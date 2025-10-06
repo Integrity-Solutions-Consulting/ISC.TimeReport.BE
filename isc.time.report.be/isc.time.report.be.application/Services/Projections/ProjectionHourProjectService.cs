@@ -72,8 +72,8 @@ namespace isc.time.report.be.application.Services.Projections
                 PeriodQuantity = entity.PeriodQuantity,
                 ProjecId = entity.ProjectId,
                 TimeDistribution = string.IsNullOrEmpty(entity.TimeDistribution)
-                    ? new List<int>()
-                    : JsonSerializer.Deserialize<List<int>>(entity.TimeDistribution)
+                    ? new List<double>()
+                    : JsonSerializer.Deserialize<List<double>>(entity.TimeDistribution)
 
 
             };
@@ -115,8 +115,8 @@ namespace isc.time.report.be.application.Services.Projections
                 HourlyCost = entity.HourlyCost,
                 ResourceQuantity = entity.ResourceQuantity,
                 TimeDistribution = string.IsNullOrEmpty(entity.TimeDistribution)
-                    ? new List<int>()
-                    : JsonSerializer.Deserialize<List<int>>(entity.TimeDistribution),
+                    ? new List<double>()
+                    : JsonSerializer.Deserialize<List<double>>(entity.TimeDistribution),
                 TotalTime = entity.TotalTime,
                 ResourceCost = entity.ResourceCost,
                 ParticipationPercentage = entity.ParticipationPercentage,
