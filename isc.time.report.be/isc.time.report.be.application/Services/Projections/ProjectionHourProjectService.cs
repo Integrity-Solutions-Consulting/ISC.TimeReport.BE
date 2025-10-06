@@ -230,7 +230,7 @@ namespace isc.time.report.be.application.Services.Projections
                 // Inicializar totales
                 // --------------------------
                 int totalResourceQuantity = 0;
-                List<int> totalDistribution = Enumerable.Repeat(0, periodQty).ToList();
+                List<double> totalDistribution = Enumerable.Repeat(0.0, periodQty).ToList();
                 decimal totalTime = 0m;
                 decimal totalResourceCost = 0m;
                 decimal totalParticipation = 0m;
@@ -248,11 +248,11 @@ namespace isc.time.report.be.application.Services.Projections
                         CreateCellModel(item.resource_quantity.ToString(), 2)
                     );
 
-                    var distribution = JsonSerializer.Deserialize<List<int>>(item.time_distribution) ?? new List<int>();
+                    var distribution = JsonSerializer.Deserialize<List<double>>(item.time_distribution) ?? new List<double>();
 
                     for (int i = 0; i < periodQty; i++)
                     {
-                        int value = (i < distribution.Count) ? distribution[i] : 0;
+                        double value = (i < distribution.Count) ? distribution[i] : 0;
                         row.Append(CreateCellModel(value.ToString(), 2));
 
                         // 🔹 Acumular el total por periodo
