@@ -70,6 +70,8 @@ namespace isc.time.report.be.infrastructure.Repositories.Projections
             var resource = await _dbContext.ProjectionHoursProjects.FirstOrDefaultAsync(r => r.ProjectId == projectId && r.ResourceTypeId == id);
             return resource;
         }
+
+        
     }
 
 
