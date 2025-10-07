@@ -274,6 +274,12 @@ namespace isc.time.report.be.application.Services.Projections
                     totalTime += item.total_time;
                     totalResourceCost += item.resource_cost;
                     totalParticipation += item.participation_percentage;
+                    if (totalParticipation > 100.00m)
+                    {
+                        totalParticipation = 100.00m;
+                    }
+
+
                 }
 
                 // --------------------------
