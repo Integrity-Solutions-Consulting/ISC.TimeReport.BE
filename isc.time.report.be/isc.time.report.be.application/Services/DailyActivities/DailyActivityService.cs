@@ -327,6 +327,10 @@ namespace isc.time.report.be.application.Services.DailyActivities
             {
                 var cells = row.Elements<Cell>().ToList();
 
+                // Asegurar que siempre haya 8 columnas (rellenar si faltan)
+                while (cells.Count < 8)
+                    cells.Add(new Cell());
+
                 rowsList.Add(new CreateDailyActivityFromBGResponse
                 {
                     Type = GetCellValue(cells[0], workbookPart),
@@ -336,8 +340,9 @@ namespace isc.time.report.be.application.Services.DailyActivities
                     Username = GetCellValue(cells[4], workbookPart),
                     Hours = GetCellValue(cells[5], workbookPart),
                     EmployeeCode = GetCellValue(cells[6], workbookPart),
-                    Comment = GetCellValue(cells[7], workbookPart),
+                    Comment = GetCellValue(cells[7], workbookPart)
                 });
+
             }
 
             return rowsList;
