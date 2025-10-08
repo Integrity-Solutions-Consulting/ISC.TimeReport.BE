@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace isc.time.report.be.api.Controllers.v1.DailyActivities
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("/timereport/api/[controller]")]
     [ApiExplorerSettings(GroupName = "v1")]
     public class DailyActivityController : ControllerBase
     {

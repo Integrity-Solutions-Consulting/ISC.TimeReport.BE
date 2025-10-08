@@ -14,7 +14,7 @@ using System.Security.Claims;
 namespace isc.time.report.be.api.Controllers.v1.Projects
 {
     [ApiExplorerSettings(GroupName = "v1")]
-    [Route("api/[controller]")]
+    [Route("/timereport/api/[controller]")]
     [ApiController]
     public class ProjectController : ControllerBase
     {

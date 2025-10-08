@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace isc.time.report.be.api.Controllers.v1.Holidays
 {
-    [Route("api/[controller]")]
+    [Route("/timereport/api/[controller]")]
     [ApiController]
     public class HolidayController : ControllerBase
     {

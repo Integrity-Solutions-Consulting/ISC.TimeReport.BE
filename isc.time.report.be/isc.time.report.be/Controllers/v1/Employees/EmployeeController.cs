@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace isc.time.report.be.api.Controllers.v1.Employees
 {
     [ApiExplorerSettings(GroupName = "v1")]
-    [Route("api/[controller]")]
+    [Route("/timereport/api/[controller]")]
     [ApiController]
     public class EmployeeController : ControllerBase
     {

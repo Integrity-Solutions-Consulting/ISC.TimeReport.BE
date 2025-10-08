@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace isc.time.report.be.api.Controllers.v1.TimeReports
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("/timereport/api/[controller]")]
     public class TimeReportController : ControllerBase
     {
         private readonly ITimeReportService _timeReportService;

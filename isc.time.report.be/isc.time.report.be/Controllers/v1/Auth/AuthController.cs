@@ -12,7 +12,7 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
 {
     [ApiExplorerSettings(GroupName = "v1")] 
     [ApiController]
-    [Route("api/auth")]
+    [Route("/timereport/api/auth")]
     public class AuthController : ControllerBase
     {
 
