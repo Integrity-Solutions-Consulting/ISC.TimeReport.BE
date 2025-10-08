@@ -37,18 +37,19 @@ namespace isc.time.report.be.infrastructure.Repositories.DailyActivities
 
             // Primer y último día del mes
             DateOnly startOfMonth = new DateOnly(selectedYear, selectedMonth, 1);
+            DateOnly startOfPreviousMonth = startOfMonth.AddMonths(-1);
             DateOnly endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
 
             var list = await _context.DailyActivities
                 .Where(d => d.EmployeeID == employeeId
-                            && d.ActivityDate >= startOfMonth
+                            && d.ActivityDate >= startOfPreviousMonth
                             && d.ActivityDate <= endOfMonth) // incluye último día del mes
                 .OrderBy(d => d.ActivityDate)
                 .ToListAsync();
 
             if (!list.Any())
             {
-                throw new ServerFaultException("No se encontraron Daily Activities para este empleado en ese rango");
+                return new List<DailyActivity>();
             }
 
             return list;

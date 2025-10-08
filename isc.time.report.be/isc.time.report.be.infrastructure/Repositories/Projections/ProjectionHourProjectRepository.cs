@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -66,13 +67,11 @@ namespace isc.time.report.be.infrastructure.Repositories.Projections
 
         public async Task<ProjectionHourProject?> GetResourceByProjectionIdAsync(int projectId, int id)
         {
-            if (id <= 0)
-            {
-                throw new ClientFaultException("El ID del Daily no puede ser negativo");
-            }
-            var resource = await _dbContext.ProjectionHoursProjects.FindAsync(id);
+            var resource = await _dbContext.ProjectionHoursProjects.FirstOrDefaultAsync(r => r.ProjectId == projectId && r.ResourceTypeId == id);
             return resource;
         }
+
+        
     }
 
 
