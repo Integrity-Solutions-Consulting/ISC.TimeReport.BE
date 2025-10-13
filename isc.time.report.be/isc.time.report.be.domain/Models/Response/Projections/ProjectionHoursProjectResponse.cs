@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace isc.time.report.be.domain.Models.Response.Projections
 {
     public record ProjectionHoursProjectResponse(
+
     int ProjectionHoursProjectId,
     int ResourceTypeId,
     string ResourceTypeName,
@@ -20,5 +21,6 @@ namespace isc.time.report.be.domain.Models.Response.Projections
     bool period_type,  
     int period_quantity,
     int ProjectID    
+
     );
 }

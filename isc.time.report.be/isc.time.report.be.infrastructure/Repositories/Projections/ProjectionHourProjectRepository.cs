@@ -34,7 +34,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Projections
                 new SqlParameter("@ProjectId", projectId)
             };
             return await _dbContext.Set<ProjectionHoursProjectResponse>()
-                .FromSqlRaw("EXEC dbo.sp_ProyeccionHorasPorProyectoGOOOD @ProjectID", parameters)
+                .FromSqlRaw("EXEC dbo.sp_ProyeccionHorasPorProyecto @ProjectID", parameters)
                 .ToListAsync();
         } 
         public async Task<ProjectionHourProject> CreateProjectionAsync(ProjectionHourProject entity)
