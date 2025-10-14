@@ -187,27 +187,6 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                     $"Ya existe un empleado con ese Número de Identificación '{employee.Person.IdentificationNumber}'."
                 );
 
-            var invEmployee = new InventoryCreateEmployeeRequest
-            {
-                Id = employee.Id,
-                idIdentificationType = employee.Person?.IdentificationTypeId ?? 0,
-                idGender = employee.Person?.GenderID ?? 0,
-                idPosition = employee.PositionID ?? 0,
-                idWorkMode = employee.WorkModeID,
-                idNationality = employee.Person?.NationalityId ?? 0,
-                firstName = employee.Person?.FirstName,
-                lastName = employee.Person?.LastName,
-                identification = employee.Person?.IdentificationNumber,
-                phone = employee.Person.Phone,
-                email = employee.CorporateEmail,
-                address = employee.Person.Address,
-                contractDate = employee.HireDate.HasValue
-                    ? DateOnly.FromDateTime(employee.HireDate.Value)
-                    : throw new ClientFaultException("La fecha de contratación es obligatoria."),
-                contractEndDate = employee.TerminationDate.HasValue
-                    ? DateOnly.FromDateTime(employee.TerminationDate.Value)
-                    : null
-            };
 
             // Transacción local para asegurar consistencia
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
@@ -224,9 +203,31 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                 await _dbContext.Employees.AddAsync(employee);
                 await _dbContext.SaveChangesAsync(); // Inserción local
 
+                var invEmployee = new InventoryCreateEmployeeRequest
+                {
+                    Id = employee.Id,
+                    idIdentificationType = employee.Person?.IdentificationTypeId ?? 0,
+                    idGender = employee.Person?.GenderID ?? 0,
+                    idPosition = employee.PositionID ?? 0,
+                    idWorkMode = employee.WorkModeID,
+                    idNationality = employee.Person?.NationalityId ?? 0,
+                    firstName = employee.Person?.FirstName,
+                    lastName = employee.Person?.LastName,
+                    identification = employee.Person?.IdentificationNumber,
+                    phone = employee.Person.Phone,
+                    email = employee.CorporateEmail,
+                    address = employee.Person.Address,
+                    contractDate = employee.HireDate.HasValue
+                        ? DateOnly.FromDateTime(employee.HireDate.Value)
+                        : throw new ClientFaultException("La fecha de contratación es obligatoria."),
+                    contractEndDate = employee.TerminationDate.HasValue
+                        ? DateOnly.FromDateTime(employee.TerminationDate.Value)
+                        : null
+                };
+
                 // Llamada a API externa
                 var invEmpInsert = await inventoryApiRepository.CreateEmployeeInventoryAsync(invEmployee);
-                if (invEmpInsert == null)
+                if (!invEmpInsert)
                     throw new ClientFaultException("No se pudo crear el empleado en el sistema de inventario.");
 
                
