@@ -232,17 +232,22 @@ namespace isc.time.report.be.application.Services.DailyActivities
 
         private async Task<DailyActivity> MapSingleRowAsync(CreateDailyActivityFromBGResponse row)
         {
-            // 1 Employee
-            var employee = await _employeeRepository.GetEmployeeByCodeAsync(row.EmployeeCode);
+            // Limpiar el EmployeeCode y validar que no esté vacío
+            var employeeCode = row.EmployeeCode?.Trim();
 
-            var projectIdVerify = await _employeeRepository.GetProjectIdForEmployeeAsync(row.EmployeeCode);
+            if (string.IsNullOrEmpty(employeeCode))
+                throw new ClientFaultException($"El empleado {row.Username} tiene un código de empleado vacío o inválido.");
+
+            // 1. Obtener Employee
+            var employee = await _employeeRepository.GetEmployeeByCodeAsync(employeeCode);
+
+            // 2. Verificar si el empleado está asignado a un proyecto del Cliente Banco Guayaquil
+            var projectIdVerify = await _employeeRepository.GetProjectIdForEmployeeAsync(employeeCode);
+
             if (projectIdVerify == null)
                 throw new ClientFaultException($"El empleado {row.Username} no está asignado a proyectos del Cliente Banco Guayaquil.");
 
-            // 2 ActivityType
-            var activityType = await _catalogRepository.GetActivityTypeByNameAsync(row.Type);
-            if (activityType == null)
-                throw new ClientFaultException($"ActivityType '{row.Type}' no encontrado");
+
 
             
             // 3 ActivityDescription
@@ -284,16 +289,16 @@ namespace isc.time.report.be.application.Services.DailyActivities
 
 
             // 6️ Obtener ProjectID desde EmployeeProject (solo Banco Guayaquil)
-            var projectId = await _employeeRepository.GetProjectIdForEmployeeAsync(row.EmployeeCode);
+            var projectId = await _employeeRepository.GetProjectIdForEmployeeAsync(employeeCode);
             if (projectId == null)
-                throw new ClientFaultException($"El empleado {row.EmployeeCode} no tiene proyecto asignado para Banco Guayaquil");
+                throw new ClientFaultException($"El empleado {employeeCode} no tiene proyecto asignado para Banco Guayaquil");
 
             // 7 Mapear a DailyActivity
             return new DailyActivity
             {
                 EmployeeID = employee.Id,
                 ProjectID = projectId.Value,        
-                ActivityTypeID = activityType.Id,
+                ActivityTypeID = 4002,
                 ActivityDate = activityDate,
                 HoursQuantity = hours,
                 ActivityDescription = description,
@@ -325,23 +330,31 @@ namespace isc.time.report.be.application.Services.DailyActivities
 
             foreach (var row in rows)
             {
-                var cells = row.Elements<Cell>().ToList();
+                var cells = row.Elements<Cell>();
+                var rowValues = new string[8]; // suponiendo 8 columnas
 
-                // Asegurar que siempre haya 8 columnas (rellenar si faltan)
-                while (cells.Count < 8)
-                    cells.Add(new Cell());
+                foreach (var cell in cells)
+                {
+                    // Obtener la columna como letra(s), ej. "A", "B", "C"
+                    string columnLetter = new string(cell.CellReference.Value.Where(c => Char.IsLetter(c)).ToArray());
+                    int columnIndex = ColumnLetterToNumber(columnLetter) - 1; // índice 0-based
 
+                    rowValues[columnIndex] = GetCellValue(cell, workbookPart);
+                }
+
+                // Mapear a tu objeto
                 rowsList.Add(new CreateDailyActivityFromBGResponse
                 {
-                    Type = GetCellValue(cells[0], workbookPart),
-                    Title = GetCellValue(cells[1], workbookPart),
-                    RequirementCode = GetCellValue(cells[2], workbookPart),
-                    Date = GetCellValue(cells[3], workbookPart),
-                    Username = GetCellValue(cells[4], workbookPart),
-                    Hours = GetCellValue(cells[5], workbookPart),
-                    EmployeeCode = GetCellValue(cells[6], workbookPart),
-                    Comment = GetCellValue(cells[7], workbookPart)
+                    Type = rowValues[0],
+                    Title = rowValues[1],
+                    RequirementCode = rowValues[2],
+                    Date = rowValues[3],
+                    Username = rowValues[4],
+                    Hours = rowValues[5],
+                    EmployeeCode = rowValues[6],
+                    Comment = rowValues[7]
                 });
+
 
             }
 
@@ -364,6 +377,18 @@ namespace isc.time.report.be.application.Services.DailyActivities
 
             return value;
         }
+
+        private int ColumnLetterToNumber(string columnLetter)
+        {
+            int sum = 0;
+            for (int i = 0; i < columnLetter.Length; i++)
+            {
+                sum *= 26;
+                sum += (columnLetter[i] - 'A' + 1);
+            }
+            return sum;
+        }
+
     }
 
 }

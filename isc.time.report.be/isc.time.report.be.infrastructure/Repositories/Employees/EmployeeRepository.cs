@@ -475,8 +475,9 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                 throw new ClientFaultException("El EmployeeCode no puede estar vacío");
 
             var employee = await _dbContext.Employees
-                .Include(e => e.Person) // Para poder obtener FirstName y LastName
+                .Include(e => e.Person)
                 .FirstOrDefaultAsync(e => e.EmployeeCode == employeeCode);
+
 
             if (employee == null)
                 throw new ClientFaultException($"No se encontró un empleado con el código '{employeeCode}'");
