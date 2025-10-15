@@ -11,7 +11,7 @@ namespace isc.time.report.be.domain.Models.Response.DailyActivities
         public string Type { get; set; }
         public string? Title { get; set; }
         public string Comment { get; set; }
-        public string RequirementCode { get; set; }
+        public string? RequirementCode { get; set; }
         public string Date { get; set; }
         public string Username { get; set; }
         public string Hours { get; set; }
