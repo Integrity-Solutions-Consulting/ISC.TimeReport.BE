@@ -235,9 +235,11 @@ namespace isc.time.report.be.application.Services.DailyActivities
             // 1 Employee
             var employee = await _employeeRepository.GetEmployeeByCodeAsync(row.EmployeeCode);
 
-            var projectIdVerify = await _employeeRepository.GetProjectIdForEmployeeAsync(row.EmployeeCode);
+            var projectIdVerify = await _employeeRepository.GetProjectIdForEmployeeAsync(row.EmployeeCode?.Trim());
+
             if (projectIdVerify == null)
                 throw new ClientFaultException($"El empleado {row.Username} no está asignado a proyectos del Cliente Banco Guayaquil.");
+
 
             // 2 ActivityType
             var activityType = await _catalogRepository.GetActivityTypeByNameAsync(row.Type);
