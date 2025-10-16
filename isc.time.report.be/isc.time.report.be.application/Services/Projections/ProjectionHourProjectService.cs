@@ -47,6 +47,24 @@ namespace isc.time.report.be.application.Services.Projections
                 throw new ClientFaultException("No se encontraron recursos para la proyeccion especificada.");
             }
         }
+        public async Task<ProjectionWithoutProjectResponse> GetProjectionWithoutProjectByIdAsync(GetProjectionWithoutProjectByIdRequest request)
+        {
+            var response = new ProjectionWithoutProjectResponse
+            {
+                ProjectId = request.ProjectId,
+                ResourceTypeId = 0,
+                ResourceName = string.Empty,
+                HourlyCost = 0,
+                ResourceQuantity = 0,
+                TotalTime = 0,
+                ResourceCost = 0,
+                ParticipationPercentage = 0,
+                PeriodType = string.Empty,
+                PeriodQuantity = 0,
+                TimeDistribution = new List<double>()
+            };
+            return response;
+        }
 
 
         public async Task<CreateProjectionHoursProjectResponse> CreateAsync(ProjectionHoursProjectRequest request, int projectId)
@@ -75,6 +93,28 @@ namespace isc.time.report.be.application.Services.Projections
                     ? new List<double>()
                     : JsonSerializer.Deserialize<List<double>>(entity.TimeDistribution)
 
+
+            };
+
+            return response;
+        }
+        public async Task<CreateProjectionWithoutProjectResponse> CreateProjectionWithoutProjectAsync(CreateProjectionWithoutProjectRequest request)
+        {
+
+
+            var response = new CreateProjectionWithoutProjectResponse
+            {
+                ProjectId = Guid.NewGuid(),
+                ResourceTypeId = request.ResourceTypeId,
+                ResourceName = request.ResourceName,
+                HourlyCost = request.HourlyCost,
+                ResourceQuantity = request.ResourceQuantity,
+                TotalTime = request.TotalTime,
+                ResourceCost = request.ResourceCost,
+                ParticipationPercentage = request.ParticipationPercentage,
+                PeriodType = request.PeriodType,
+                PeriodQuantity = request.PeriodQuantity,
+                TimeDistribution = request.TimeDistribution ?? new List<double>()
 
             };
 
@@ -124,6 +164,25 @@ namespace isc.time.report.be.application.Services.Projections
             };
 
             return response;
+        }
+        public async Task<UpdateProjectionWithoutProjectResponse> UpdateProjectionWithooutProjectAsync(UpdateProjectionWithoutProjectRequest request)
+        {
+
+            var response = new UpdateProjectionWithoutProjectResponse
+            {
+                ProjectId = request.Id,  
+                ResourceTypeId = request.ResourceTypeId,
+                ResourceName = request.ResourceName,
+                HourlyCost = request.HourlyCost,
+                ResourceQuantity = request.ResourceQuantity,
+                TotalTime = request.TotalTime,
+                ResourceCost = request.ResourceCost,
+                ParticipationPercentage = request.ParticipationPercentage,
+                TimeDistribution = request.TimeDistribution ?? new List<double>()
+            };
+
+            return response;
+
         }
 
         public async Task ActivateInactiveResourceAsync(int projectId, int resourceTypeId, bool active)

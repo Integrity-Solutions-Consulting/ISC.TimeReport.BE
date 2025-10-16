@@ -26,6 +26,14 @@ namespace isc.time.report.be.api.Controllers.v1.Projections
             return Ok(result);
         }
 
+        [HttpGet("{projectId:guid}/get-all-projection-without-projectid")]
+        public async Task<ActionResult<ProjectionWithoutProjectResponse>> GetProjectionById(string projectId)
+        {
+            var result = await _service.GetProjectionWithoutProjectByIdAsync(
+                new GetProjectionWithoutProjectByIdRequest());  
+            return Ok(result);
+        }
+
         [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpPost("create")]
         public async Task<ActionResult<ProjectionHoursProjectRequest>> CreateProjection([FromBody] ProjectionHoursProjectRequest request, [FromRoute] int projectId)
@@ -33,6 +41,15 @@ namespace isc.time.report.be.api.Controllers.v1.Projections
             var result = await _service.CreateAsync(request, projectId);
             return CreatedAtAction(nameof(CreateProjection), new { projectId = result.ProjecId }, result);
         }
+
+        [HttpPost("create-without-project")]
+        public async Task<ActionResult<CreateProjectionWithoutProjectResponse>> CreateProjection(
+          [FromBody] CreateProjectionWithoutProjectRequest request)
+        {
+            var result = await _service.CreateProjectionWithoutProjectAsync(request);
+            return CreatedAtAction(nameof(CreateProjection), new { id = result.ProjectId }, result);
+        }
+
 
         [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpPut("{projectId:int}/update/{resourceTypeId:int}")]
@@ -42,6 +59,19 @@ namespace isc.time.report.be.api.Controllers.v1.Projections
             [FromBody] UpdateProjectionHoursProjectRequest request)
         {
             var result = await _service.UpdateAsync(request, resourceTypeId, projectId);
+            return Ok(result);
+        }
+
+        [HttpPut("{projectionId:guid}/update/{resourceTypeId:int}")]
+        public async Task<ActionResult<UpdateProjectionWithoutProjectResponse>> UpdateProjectionResource(
+            Guid projectionId,
+            int resourceTypeId,
+            [FromBody] UpdateProjectionWithoutProjectRequest request)
+        {
+            // Asignamos solo el ProjectionId al request
+            request.Id = projectionId;
+
+            var result = await _service.UpdateProjectionWithooutProjectAsync(request);
             return Ok(result);
         }
 
