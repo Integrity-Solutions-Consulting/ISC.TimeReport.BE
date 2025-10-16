@@ -49,9 +49,9 @@ namespace isc.time.report.be.application.Services.Projections
         }
         public async Task<ProjectionWithoutProjectResponse> GetProjectionWithoutProjectByIdAsync(GetProjectionWithoutProjectByIdRequest request)
         {
-            return new ProjectionWithoutProjectResponse
+            var response = new ProjectionWithoutProjectResponse
             {
-                Id = request.Id,
+                ProjectId = request.ProjectId,
                 ResourceTypeId = 0,
                 ResourceName = string.Empty,
                 HourlyCost = 0,
@@ -63,6 +63,7 @@ namespace isc.time.report.be.application.Services.Projections
                 PeriodQuantity = 0,
                 TimeDistribution = new List<double>()
             };
+            return response;
         }
 
 
@@ -103,7 +104,7 @@ namespace isc.time.report.be.application.Services.Projections
 
             var response = new CreateProjectionWithoutProjectResponse
             {
-                Id = Guid.NewGuid(),
+                ProjectId = Guid.NewGuid(),
                 ResourceTypeId = request.ResourceTypeId,
                 ResourceName = request.ResourceName,
                 HourlyCost = request.HourlyCost,
@@ -164,12 +165,12 @@ namespace isc.time.report.be.application.Services.Projections
 
             return response;
         }
-        public async Task<UpdateProjectionWithoutProjectResponse> UpdateProjectionWithooutProjectAsync(UpdateProjectionWithoutProjectRequest request, int resourceTypeId)
+        public async Task<UpdateProjectionWithoutProjectResponse> UpdateProjectionWithooutProjectAsync(UpdateProjectionWithoutProjectRequest request)
         {
 
             var response = new UpdateProjectionWithoutProjectResponse
             {
-                Id = request.Id,  // viene del frontend
+                ProjectId = request.Id,  
                 ResourceTypeId = request.ResourceTypeId,
                 ResourceName = request.ResourceName,
                 HourlyCost = request.HourlyCost,

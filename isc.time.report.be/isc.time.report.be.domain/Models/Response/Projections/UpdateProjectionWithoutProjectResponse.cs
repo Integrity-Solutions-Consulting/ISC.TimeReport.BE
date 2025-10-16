@@ -8,7 +8,7 @@ namespace isc.time.report.be.domain.Models.Response.Projections
 {
     public class UpdateProjectionWithoutProjectResponse
     {
-        public Guid Id { get; set; }
+        public Guid ProjectId { get; set; }
 
         public int ResourceTypeId { get; set; }
         public string ResourceName { get; set; }

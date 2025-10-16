@@ -26,11 +26,11 @@ namespace isc.time.report.be.api.Controllers.v1.Projections
             return Ok(result);
         }
 
-        [HttpGet("{projectId:int}/get-all-projection-withou-projectid")]
-        public async Task<ActionResult<ProjectionWithoutProjectResponse>> GetProjectionById(Guid projectionId)
+        [HttpGet("{projectId:guid}/get-all-projection-without-projectid")]
+        public async Task<ActionResult<ProjectionWithoutProjectResponse>> GetProjectionById(string projectId)
         {
             var result = await _service.GetProjectionWithoutProjectByIdAsync(
-                new GetProjectionWithoutProjectByIdRequest { Id = projectionId });
+                new GetProjectionWithoutProjectByIdRequest());  
             return Ok(result);
         }
 
@@ -47,7 +47,7 @@ namespace isc.time.report.be.api.Controllers.v1.Projections
           [FromBody] CreateProjectionWithoutProjectRequest request)
         {
             var result = await _service.CreateProjectionWithoutProjectAsync(request);
-            return CreatedAtAction(nameof(CreateProjection), new { id = result.Id }, result);
+            return CreatedAtAction(nameof(CreateProjection), new { id = result.ProjectId }, result);
         }
 
 
@@ -71,7 +71,7 @@ namespace isc.time.report.be.api.Controllers.v1.Projections
             // Asignamos solo el ProjectionId al request
             request.Id = projectionId;
 
-            var result = await _service.UpdateProjectionWithooutProjectAsync(request, resourceTypeId);
+            var result = await _service.UpdateProjectionWithooutProjectAsync(request);
             return Ok(result);
         }
 

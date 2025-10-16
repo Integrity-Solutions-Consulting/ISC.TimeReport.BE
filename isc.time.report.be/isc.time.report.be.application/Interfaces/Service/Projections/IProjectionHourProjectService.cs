@@ -1,4 +1,5 @@
 ﻿using isc.time.report.be.domain.Entity.Projections;
+using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Models.Request.Projections;
 using isc.time.report.be.domain.Models.Response.Projections;
 using System;
@@ -18,6 +19,6 @@ namespace isc.time.report.be.application.Interfaces.Service.Projections
         Task<byte[]> ExportProjectionToExcelAsync(int projectId);
         Task<ProjectionWithoutProjectResponse> GetProjectionWithoutProjectByIdAsync(GetProjectionWithoutProjectByIdRequest request);
         Task<CreateProjectionWithoutProjectResponse> CreateProjectionWithoutProjectAsync(CreateProjectionWithoutProjectRequest request);
-        Task<UpdateProjectionWithoutProjectResponse> UpdateProjectionWithooutProjectAsync(UpdateProjectionWithoutProjectRequest request, int resourceTypeId);
+        Task<UpdateProjectionWithoutProjectResponse> UpdateProjectionWithooutProjectAsync(UpdateProjectionWithoutProjectRequest request);
     }
 }
