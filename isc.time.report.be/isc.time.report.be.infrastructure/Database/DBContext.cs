@@ -9,6 +9,7 @@ using isc.time.report.be.domain.Entity.Leaders;
 using isc.time.report.be.domain.Entity.Modules;
 using isc.time.report.be.domain.Entity.Permisions;
 using isc.time.report.be.domain.Entity.Persons;
+using isc.time.report.be.domain.Entity.ProjectionHours;
 using isc.time.report.be.domain.Entity.Projections;
 using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Models.Response.Dashboards;
@@ -735,6 +736,7 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(p => p.ParticipationPercentage).HasColumnName("participation_percentage");
                 entity.Property(p => p.PeriodType).HasColumnName("period_type");
                 entity.Property(p => p.PeriodQuantity).HasColumnName("period_quantity");
+                entity.Property(p => p.ProjectId).HasColumnName("ProjectId");
 
                 entity.Property(p => p.Status).HasColumnName("status");
                 entity.Property(p => p.CreationUser).HasColumnName("creation_user");
@@ -746,6 +748,34 @@ namespace isc.time.report.be.infrastructure.Database
 
 
             });
+
+            modelBuilder.Entity<ProjectionHour>(entity =>
+            {
+                entity.ToTable("Projection_Hours");
+                entity.HasKey(p => p.Id);
+                entity.Property(p => p.Id).HasColumnName("ProjectionHoursId");
+                entity.Property(p => p.GroupProjection).HasColumnName("GroupProjection");
+                entity.Property(p => p.ResourceTypeId).HasColumnName("ResourceTypeId");
+                entity.Property(p => p.ResourceName).HasColumnName("resource_name");
+                entity.Property(p => p.HourlyCost).HasColumnName("hourly_cost");
+                entity.Property(p => p.ResourceQuantity).HasColumnName("resource_quantity");
+                entity.Property(p => p.TimeDistribution).HasColumnName("time_distribution");
+                entity.Property(p => p.TotalTime).HasColumnName("total_time");
+                entity.Property(p => p.ResourceCost).HasColumnName("resource_cost");
+                entity.Property(p => p.ParticipationPercentage).HasColumnName("participation_percentage");
+                entity.Property(p => p.PeriodType).HasColumnName("period_type");
+                entity.Property(p => p.PeriodQuantity).HasColumnName("period_quantity");
+
+                entity.Property(p => p.Status).HasColumnName("status");
+                entity.Property(p => p.CreationUser).HasColumnName("creation_user");
+                entity.Property(p => p.ModificationUser).HasColumnName("modification_user");
+                entity.Property(p => p.CreationDate).HasColumnName("creation_date");
+                entity.Property(p => p.ModificationDate).HasColumnName("modification_date");
+                entity.Property(p => p.CreationIp).HasColumnName("creation_ip");
+                entity.Property(p => p.ModificationIp).HasColumnName("modification_ip");
+            });
+
+
 
 
             modelBuilder.Entity<DashboardResumenGeneralDto>().HasNoKey();
