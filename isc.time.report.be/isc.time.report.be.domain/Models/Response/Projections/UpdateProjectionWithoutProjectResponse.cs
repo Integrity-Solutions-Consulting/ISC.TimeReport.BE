@@ -8,10 +8,10 @@ namespace isc.time.report.be.domain.Models.Response.Projections
 {
     public class UpdateProjectionWithoutProjectResponse
     {
-        public Guid ProjectId { get; set; }
-
+        public Guid? GroupProjection { get; set; }
         public int ResourceTypeId { get; set; }
         public string ResourceName { get; set; }
+        public string ProjectionName { get; set; }
         public decimal HourlyCost { get; set; }
         public int ResourceQuantity { get; set; }
         public List<double> TimeDistribution { get; set; }
