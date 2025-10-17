@@ -757,6 +757,7 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(p => p.GroupProjection).HasColumnName("GroupProjection");
                 entity.Property(p => p.ResourceTypeId).HasColumnName("ResourceTypeId");
                 entity.Property(p => p.ResourceName).HasColumnName("resource_name");
+                entity.Property(p => p.ProjectionName).HasColumnName("projection_name");
                 entity.Property(p => p.HourlyCost).HasColumnName("hourly_cost");
                 entity.Property(p => p.ResourceQuantity).HasColumnName("resource_quantity");
                 entity.Property(p => p.TimeDistribution).HasColumnName("time_distribution");
@@ -784,6 +785,7 @@ namespace isc.time.report.be.infrastructure.Database
             modelBuilder.Entity<DashboardResumenProyectoDto>().HasNoKey();
             modelBuilder.Entity<DashboardRecursosPendientesDto>().HasNoKey();
             modelBuilder.Entity<ProjectionHoursProjectResponse>().HasNoKey();
+            modelBuilder.Entity<ProjectionWithoutProjectResponse>().HasNoKey();
 
 
 
@@ -822,5 +824,6 @@ namespace isc.time.report.be.infrastructure.Database
         public DbSet<CompanyCatalog> CompanyCatalogs { get; set; }
         public DbSet<EmployeeCategory> EmployeeCategories { get; set; }
         public DbSet<ProjectionHourProject> ProjectionHoursProjects { get; set; }
+        public DbSet<ProjectionHour> ProjectionHour { get; set; }
     }
 }

@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace isc.time.report.be.domain.Models.Request.Projections
 {
     public class CreateProjectionWithoutProjectRequest
     {
-
+        public Guid? GroupProjection { get; set; }
         public int ResourceTypeId { get; set; }
         public string ResourceName { get; set; }
+        [JsonPropertyName("projectName")]
+        public string ProjectionName { get; set; }
         public decimal HourlyCost { get; set; }
         public int ResourceQuantity { get; set; }
         public List<double> TimeDistribution { get; set; }

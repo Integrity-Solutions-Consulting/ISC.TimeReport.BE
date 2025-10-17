@@ -6,18 +6,21 @@ using System.Threading.Tasks;
 
 namespace isc.time.report.be.domain.Models.Response.Projections
 {
-    public class ProjectionWithoutProjectResponse
-    {
-        public Guid ProjectId { get; set; }
-        public int ResourceTypeId { get; set; }
-        public string ResourceName { get; set; } = string.Empty;
-        public decimal HourlyCost { get; set; }
-        public int ResourceQuantity { get; set; }
-        public double TotalTime { get; set; }
-        public decimal ResourceCost { get; set; }
-        public double ParticipationPercentage { get; set; }
-        public string PeriodType { get; set; } = string.Empty;
-        public int PeriodQuantity { get; set; }
-        public List<double> TimeDistribution { get; set; } = new();
-    }
+    public record ProjectionWithoutProjectResponse(
+
+            Guid GroupProjection,
+            int ResourceTypeId,
+            string resource_name,
+            string projection_name,
+            decimal hourly_cost,
+            int resource_quantity,
+            string time_distribution,
+            decimal total_time,
+            decimal resource_cost,
+            decimal participation_percentage,
+            bool period_type,
+            int period_quantity
+
+);
+
 }

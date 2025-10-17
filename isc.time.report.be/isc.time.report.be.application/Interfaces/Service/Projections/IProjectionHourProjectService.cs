@@ -17,8 +17,6 @@ namespace isc.time.report.be.application.Interfaces.Service.Projections
         Task<UpdateProjectionHoursProjectResponse> UpdateAsync(UpdateProjectionHoursProjectRequest request, int resourceTypeId, int projectId);
         Task ActivateInactiveResourceAsync(int projectId, int resourceTypeId, bool active);
         Task<byte[]> ExportProjectionToExcelAsync(int projectId);
-        Task<ProjectionWithoutProjectResponse> GetProjectionWithoutProjectByIdAsync(GetProjectionWithoutProjectByIdRequest request);
-        Task<CreateProjectionWithoutProjectResponse> CreateProjectionWithoutProjectAsync(CreateProjectionWithoutProjectRequest request);
-        Task<UpdateProjectionWithoutProjectResponse> UpdateProjectionWithooutProjectAsync(UpdateProjectionWithoutProjectRequest request);
+
     }
 }

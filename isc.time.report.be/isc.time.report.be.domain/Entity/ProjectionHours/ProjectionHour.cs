@@ -9,7 +9,7 @@ namespace isc.time.report.be.domain.Entity.ProjectionHours
 {
     public class ProjectionHour : BaseEntity
     {
-        public int GroupProjection { get; set; }
+        public Guid? GroupProjection { get; set; }
         public int ResourceTypeId { get; set; }
         public string ResourceName { get; set; }
         public string ProjectionName { get; set; }

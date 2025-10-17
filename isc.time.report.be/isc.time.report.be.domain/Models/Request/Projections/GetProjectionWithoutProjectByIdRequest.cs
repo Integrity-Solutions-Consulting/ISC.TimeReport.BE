@@ -8,6 +8,6 @@ namespace isc.time.report.be.domain.Models.Request.Projections
 {
     public class GetProjectionWithoutProjectByIdRequest
     {
-        public Guid ProjectId { get; set; }
+        public Guid GroupProjection { get; set; }
     }
 }
