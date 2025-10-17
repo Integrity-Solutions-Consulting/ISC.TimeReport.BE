@@ -24,7 +24,7 @@ namespace isc.time.report.be.application.Services.ProjectionHours
     {
         private readonly IProjectionHoursRepository _projectionHoursRepository;
         private readonly IMapper _mapper;
-        
+
 
         public ProjectionHourService(IProjectionHoursRepository projectionHoursRepository, IMapper mapper)
         {
@@ -49,7 +49,7 @@ namespace isc.time.report.be.application.Services.ProjectionHours
         public async Task<CreateProjectionWithoutProjectResponse> CreateAsync(CreateProjectionWithoutProjectRequest request)
         {
             // Si el frontend no envía GroupProjection, generamos uno nuevo
-            if (request.GroupProjection == Guid.Empty)
+            if (request.GroupProjection == null)
             {
                 request.GroupProjection = Guid.NewGuid();
             }
