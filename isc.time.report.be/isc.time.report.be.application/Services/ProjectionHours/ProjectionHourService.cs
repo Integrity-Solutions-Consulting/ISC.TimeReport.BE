@@ -10,6 +10,7 @@ using isc.time.report.be.domain.Entity.Projections;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.Projections;
 using isc.time.report.be.domain.Models.Response.Projections;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -179,12 +180,12 @@ namespace isc.time.report.be.application.Services.ProjectionHours
                 {
                     Id = workbookPart.GetIdOfPart(worksheetPart),
                     SheetId = 1,
-                    Name = "Projection Without Project"
+                    Name = $"Projection {first.projection_name}"
                 });
 
                 // -------------------------- TÍTULO PRINCIPAL --------------------------
                 var titleRow = new Row();
-                titleRow.Append(CreateCellModel("Distribución de Horas - Sin Proyecto", 4));
+                titleRow.Append(CreateCellModel($"Distribución de Horas - {first.projection_name}", 4));
                 sheetData.Append(titleRow);
 
                 // -------------------------- MERGE CELLS PARA EL TÍTULO --------------------------
