@@ -35,7 +35,7 @@ namespace isc.time.report.be.application.Services.ProjectionHours
 
         public async Task<List<ProjectionWithoutProjectResponse>> GetAllProjectionByProjectId(Guid projectionId)
         {
-            var result = await _projectionHoursRepository.GetAllProjectionsWithoutProjectAsync(projectionId);
+            var result = await _projectionHoursRepository.GetProjectionsByGuidWithoutProjectAsync(projectionId);
 
             if (result.Any())
             {
@@ -237,7 +237,8 @@ namespace isc.time.report.be.application.Services.ProjectionHours
                     var row = new Row();
                     row.Append(
 
-                        CreateCellModel(item.resource_name, 2),
+                        CreateCellModel(item.ResourceTypeName, 2),
+                        CreateCellModel(item.resource_name.ToString(), 2),
                         CreateCellModel(item.hourly_cost.ToString("F2"), 2),
                         CreateCellModel(item.resource_quantity.ToString(), 2)
                     );
@@ -460,7 +461,22 @@ namespace isc.time.report.be.application.Services.ProjectionHours
 
                 )
             );
+        } 
+        public async Task<List<List<ProjectionWithoutProjectResponse>>> GetAllProjectionWithoutProjectAsync()
+        {
+            var groupProjections = await _projectionHoursRepository.GetAllGroupProjectionsAsync();
+
+            var allGroups = new List<List<ProjectionWithoutProjectResponse>>();
+
+            foreach (var groupId in groupProjections)
+            {
+                var projections = await _projectionHoursRepository.GetProjectionsByGuidWithoutProjectAsync(groupId);
+
+                if (projections != null && projections.Any())
+                    allGroups.Add(projections);
+            }
+
+            return allGroups;
         }
-    
-}
+        }
 }

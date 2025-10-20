@@ -18,15 +18,20 @@ namespace isc.time.report.be.api.Controllers.v1.ProjectionHours
             _service = service;
         }
 
+        [HttpGet("get-all")]
+        public async Task<ActionResult<List<List<ProjectionWithoutProjectResponse>>>> GetAllProjectionsByGuid()
+        {
+            var result = await _service.GetAllProjectionWithoutProjectAsync();
+            return Ok(result);
+        }
 
-        [HttpGet("{groupProjection:guid}/get-all")]
+        [HttpGet("{groupProjection}/get-by-guid")]
         public async Task<ActionResult<List<ProjectionWithoutProjectResponse>>> GetProjectionOfGroup(Guid groupProjection)
         {
             var result = await _service.GetAllProjectionByProjectId(groupProjection);
             return Ok(result);
         }
 
-        // POST: api/projectionwithoutproject/create/{groupProjection}
         [HttpPost("create")]
         public async Task<ActionResult<CreateProjectionWithoutProjectResponse>> CreateProjectionWithoutProject(
             [FromBody] CreateProjectionWithoutProjectRequest request)
@@ -37,7 +42,6 @@ namespace isc.time.report.be.api.Controllers.v1.ProjectionHours
             return CreatedAtAction(nameof(CreateProjectionWithoutProject), new { groupProjection = result.GroupProjection }, result);
         }
 
-        // PUT: api/projectionwithoutproject/{groupProjection}/update/{resourceTypeId}
         [HttpPut("{groupProjection}/update/{resourceTypeId}")]
         public async Task<ActionResult<UpdateProjectionWithoutProjectRequest>> UpdateProjection(
             Guid groupProjection,
@@ -49,7 +53,6 @@ namespace isc.time.report.be.api.Controllers.v1.ProjectionHours
         }
 
 
-        // PUT: api/projectionwithoutproject/{groupProjection}/activate-inactivate/{resourceTypeId}
         [HttpPut("{groupProjection:guid}/activate-inactivate/{resourceTypeId:int}")]
         public async Task<IActionResult> ActivateInactivateResource(
             Guid groupProjection,
@@ -60,7 +63,6 @@ namespace isc.time.report.be.api.Controllers.v1.ProjectionHours
             return NoContent();
         }
 
-        // GET: api/projectionwithoutproject/{groupProjection}/export-excel
         [HttpGet("{groupProjection:guid}/export-excel")]
         public async Task<IActionResult> ExportProjectionExcel(Guid groupProjection)
         {
