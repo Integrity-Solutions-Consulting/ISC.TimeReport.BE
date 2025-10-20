@@ -10,6 +10,7 @@ namespace isc.time.report.be.domain.Models.Response.Projections
 
             Guid GroupProjection,
             int ResourceTypeId,
+            string ResourceTypeName,
             string resource_name,
             string projection_name,
             decimal hourly_cost,

@@ -21,8 +21,16 @@ namespace isc.time.report.be.infrastructure.Repositories.ProjectionHours
         public ProjectionHourRepository(DBContext dBContext) {
             _dbContext = dBContext;
         }
-
-        public async Task<List<ProjectionWithoutProjectResponse>> GetAllProjectionsWithoutProjectAsync(Guid groupProjection)
+        public async Task<List<Guid>> GetAllGroupProjectionsAsync()
+        {
+            var list = await _dbContext.ProjectionHour
+                .Where(p => p.GroupProjection != null)
+                .Select(p => p.GroupProjection.Value)
+                .Distinct()
+                .ToListAsync();
+            return list;
+        }
+        public async Task<List<ProjectionWithoutProjectResponse>> GetProjectionsByGuidWithoutProjectAsync(Guid groupProjection)
         {
             var parameters = new[] {
                 new SqlParameter("@GroupProjection", groupProjection)
@@ -46,10 +54,8 @@ namespace isc.time.report.be.infrastructure.Repositories.ProjectionHours
         public async Task<ProjectionHour> UpdateResourceAssignedToProjectionAsync(ProjectionHour entity)
         {
 
-            // 2️⃣ Marcar toda la entidad como modificada
             _dbContext.Entry(entity).State = EntityState.Modified;
 
-            // 3️⃣ Guardar los cambios
             await _dbContext.SaveChangesAsync();
 
             return entity;
