@@ -1001,11 +1001,11 @@ namespace isc.time.report.be.application.Services.TimeReports
             if (client == null)
                 throw new Exception("Cliente no encontrado.");
 
-            //ESTO DE AQUI ES COMO SI VA A IR     var projectIds = await timeReportRepository.GetProjectIdsForEmployeeByClientAsync(employeeId, clientId);
+            var projectIds = await timeReportRepository.GetProjectIdsForEmployeeByClientAsync(employeeId, clientId);
 
             //ESTO HAY QUE CAMBIARLO EN UN FUTURO PORQUE N DEBERIA DE SER ASI PERO HCIIERO  UQ ELO HAGAMOS ASI YA PUES ASI GTOCA
 
-            var projectIds = await projectRepository.GetProjectToEmployeeAsync(employeeId);
+            //var projectIds = await projectRepository.GetProjectToEmployeeAsync(employeeId);
 
 
             if (projectIds == null || !projectIds.Any())

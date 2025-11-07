@@ -17,7 +17,6 @@ namespace isc.time.report.be.api.Controllers.v1.Projections
         {
            _service = service;
         }
-
         [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpGet("{projectId:int}/get-all-projection-by-projectId")]
         public async Task<ActionResult<List<ProjectionHoursProjectResponse>>> GetProjectionOfProject (int projectId)
@@ -26,6 +25,7 @@ namespace isc.time.report.be.api.Controllers.v1.Projections
             return Ok(result);
         }
 
+
         [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpPost("create")]
         public async Task<ActionResult<ProjectionHoursProjectRequest>> CreateProjection([FromBody] ProjectionHoursProjectRequest request, [FromRoute] int projectId)
@@ -33,6 +33,7 @@ namespace isc.time.report.be.api.Controllers.v1.Projections
             var result = await _service.CreateAsync(request, projectId);
             return CreatedAtAction(nameof(CreateProjection), new { projectId = result.ProjecId }, result);
         }
+
 
         [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpPut("{projectId:int}/update/{resourceTypeId:int}")]

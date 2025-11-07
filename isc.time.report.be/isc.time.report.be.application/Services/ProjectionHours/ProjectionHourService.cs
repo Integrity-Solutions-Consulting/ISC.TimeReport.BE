@@ -1,43 +1,41 @@
 ﻿using AutoMapper;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.ExtendedProperties;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Vml.Office;
+using isc.time.report.be.application.Interfaces.Repository.ProjectionHours;
 using isc.time.report.be.application.Interfaces.Repository.Projections;
-using isc.time.report.be.application.Interfaces.Service.Projections;
+using isc.time.report.be.application.Interfaces.Service.ProjectionHours;
+using isc.time.report.be.domain.Entity.ProjectionHours;
 using isc.time.report.be.domain.Entity.Projections;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.Projections;
 using isc.time.report.be.domain.Models.Response.Projections;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-
-namespace isc.time.report.be.application.Services.Projections
+namespace isc.time.report.be.application.Services.ProjectionHours
 {
-    public class ProjectionHourProjectService : IProjectionHourProjectService
+    public class ProjectionHourService : IProjectionHourService
     {
-        private readonly IProjectionHourProjectRepository _projectionHourProjectRepository;
+        private readonly IProjectionHoursRepository _projectionHoursRepository;
         private readonly IMapper _mapper;
 
-        public ProjectionHourProjectService(IProjectionHourProjectRepository projectionHourProjectRepository, IMapper mapper)
+
+        public ProjectionHourService(IProjectionHoursRepository projectionHoursRepository, IMapper mapper)
         {
-
-            _projectionHourProjectRepository = projectionHourProjectRepository;
+            _projectionHoursRepository = projectionHoursRepository;
             _mapper = mapper;
-
         }
 
-        public async Task<List<ProjectionHoursProjectResponse>> GetAllProjectionByProjectId(int projectId)
+        public async Task<List<ProjectionWithoutProjectResponse>> GetAllProjectionByProjectId(Guid projectionId)
         {
-            var result = await _projectionHourProjectRepository.GetAllProjectionsAsync(projectId);
+            var result = await _projectionHoursRepository.GetProjectionsByGuidWithoutProjectAsync(projectionId);
 
             if (result.Any())
             {
@@ -49,21 +47,33 @@ namespace isc.time.report.be.application.Services.Projections
             }
         }
 
-
-        public async Task<CreateProjectionHoursProjectResponse> CreateAsync(ProjectionHoursProjectRequest request, int projectId)
+        public async Task<CreateProjectionWithoutProjectResponse> CreateAsync(CreateProjectionWithoutProjectRequest request)
         {
+            // Si el frontend no envía GroupProjection, generamos uno nuevo
+            if (request.GroupProjection == null)
+            {
+                request.GroupProjection = Guid.NewGuid();
+            }
 
-            var entity = _mapper.Map<ProjectionHourProject>(request);
+            // Mapeo del request a la entidad
+            var entity = _mapper.Map<ProjectionHour>(request);
 
+            // Aseguramos que la entidad tenga el GroupProjection correcto
+            entity.GroupProjection = request.GroupProjection;
+
+            // Serializamos la distribución de tiempo
             entity.TimeDistribution = JsonSerializer.Serialize(request.TimeDistribution);
 
-            await _projectionHourProjectRepository.CreateProjectionAsync(entity);
+            // Guardamos en la base de datos
+            await _projectionHoursRepository.CreateProjectionWithoutProjectAsync(entity);
 
-
-            var response = new CreateProjectionHoursProjectResponse
+            // Construimos la respuesta
+            var response = new CreateProjectionWithoutProjectResponse
             {
+                GroupProjection = entity.GroupProjection,
                 ResourceTypeId = entity.ResourceTypeId,
                 ResourceName = entity.ResourceName,
+                ProjectionName = entity.ProjectionName,
                 HourlyCost = entity.HourlyCost,
                 ResourceQuantity = entity.ResourceQuantity,
                 TotalTime = entity.TotalTime,
@@ -71,48 +81,48 @@ namespace isc.time.report.be.application.Services.Projections
                 ParticipationPercentage = entity.ParticipationPercentage,
                 PeriodType = entity.PeriodType,
                 PeriodQuantity = entity.PeriodQuantity,
-                ProjecId = entity.ProjectId,
                 TimeDistribution = string.IsNullOrEmpty(entity.TimeDistribution)
                     ? new List<double>()
                     : JsonSerializer.Deserialize<List<double>>(entity.TimeDistribution)
-
-
             };
 
             return response;
         }
 
-        public async Task<UpdateProjectionHoursProjectResponse> UpdateAsync(UpdateProjectionHoursProjectRequest request, int resourceTypeId, int projectId)
-        {
 
-            var entity = await _projectionHourProjectRepository.GetResourceByProjectionIdAsync(projectId, resourceTypeId);
+        public async Task<UpdateProjectionWithoutProjectResponse> UpdateAsync(UpdateProjectionWithoutProjectRequest request, Guid groupProjection, int resourceTypeId)
+        {
+            // 1️⃣ Buscar el registro existente
+            var entity = await _projectionHoursRepository.GetResourceByProjectionIdAsync(groupProjection, resourceTypeId);
 
             if (entity == null)
-                throw new ClientFaultException("Registro no encontrado", 401);
+            {
+                throw new Exception($"No se encontró el recurso con GroupProjection = {groupProjection} y ResourceTypeId = {resourceTypeId}");
+            }
 
-            // Mapeo 
+            // 2️⃣ Actualizar los campos
             entity.ResourceTypeId = request.ResourceTypeId;
-            entity.ProjectId = projectId;
             entity.ResourceName = request.ResourceName;
+            entity.ProjectionName = request.ProjectionName ?? entity.ProjectionName;
             entity.HourlyCost = request.HourlyCost;
             entity.ResourceQuantity = request.ResourceQuantity;
+            entity.TimeDistribution = JsonSerializer.Serialize(request.TimeDistribution);
             entity.TotalTime = request.TotalTime;
             entity.ResourceCost = request.ResourceCost;
             entity.ParticipationPercentage = request.ParticipationPercentage;
 
+            entity.ModificationDate = DateTime.UtcNow;
 
-            // Serialización 
-            entity.TimeDistribution = JsonSerializer.Serialize(request.TimeDistribution);
+            // 3️⃣ Guardar cambios
+            await _projectionHoursRepository.UpdateResourceAssignedToProjectionAsync(entity);
 
-            //Guardamos
-            await _projectionHourProjectRepository.UpdateResourceAssignedToProjectionAsync(entity, resourceTypeId, projectId);
-
-            //Mapeo actualizado
-            var response = new UpdateProjectionHoursProjectResponse
+            // 4️⃣ Construir y devolver respuesta
+            var response = new UpdateProjectionWithoutProjectResponse
             {
+                GroupProjection = entity.GroupProjection,
                 ResourceTypeId = entity.ResourceTypeId,
-                ProjectId = entity.ProjectId,
                 ResourceName = entity.ResourceName,
+                ProjectionName = entity.ProjectionName,
                 HourlyCost = entity.HourlyCost,
                 ResourceQuantity = entity.ResourceQuantity,
                 TimeDistribution = string.IsNullOrEmpty(entity.TimeDistribution)
@@ -120,33 +130,33 @@ namespace isc.time.report.be.application.Services.Projections
                     : JsonSerializer.Deserialize<List<double>>(entity.TimeDistribution),
                 TotalTime = entity.TotalTime,
                 ResourceCost = entity.ResourceCost,
-                ParticipationPercentage = entity.ParticipationPercentage,
-
+                ParticipationPercentage = entity.ParticipationPercentage
             };
 
             return response;
         }
 
-        public async Task ActivateInactiveResourceAsync(int projectId, int resourceTypeId, bool active)
+
+
+        public async Task ActivateInactiveResourceAsync(Guid groupProjection, int resourceTypeId, bool active)
         {
-            var rowsAffected = await _projectionHourProjectRepository.ActiveInactiveResourceOfProjectionAsync(projectId, resourceTypeId, active);
+            var rowsAffected = await _projectionHoursRepository.ActiveInactiveResourceOfProjectionWithoutProjectAsync(groupProjection, resourceTypeId, active);
 
             if (rowsAffected == 0)
             {
-                throw new ServerFaultException($"Recurso {resourceTypeId} no encontrado en el projecto {projectId}");
+                throw new ServerFaultException($"Recurso {resourceTypeId} no encontrado en el projecto {groupProjection}");
             }
         }
 
-
-        public async Task<byte[]> ExportProjectionToExcelAsync(int projectId)
+        public async Task<byte[]> ExportProjectionWithoutProjectToExcelAsync(Guid groupProjectionId)
         {
-            // Trae la lista completa del SP
-            var data = await GetAllProjectionByProjectId(projectId);
+            // 🔹 Obtener todas las proyecciones asociadas al grupo
+            var data = await GetAllProjectionByProjectId(groupProjectionId);
 
             if (data == null || !data.Any())
-                throw new Exception("No hay proyección para este proyecto.");
+                throw new Exception("No hay proyecciones registradas para este grupo.");
 
-            var first = data.First(); // Aquí tomamos los campos generales
+            var first = data.First(); // usamos el primer registro para encabezados generales
 
             using var memoryStream = new MemoryStream();
 
@@ -170,18 +180,12 @@ namespace isc.time.report.be.application.Services.Projections
                 {
                     Id = workbookPart.GetIdOfPart(worksheetPart),
                     SheetId = 1,
-                    Name = "Projection Report"
+                    Name = $"Projection {first.projection_name}"
                 });
 
                 // -------------------------- TÍTULO PRINCIPAL --------------------------
                 var titleRow = new Row();
-
-                // Creamos una celda con el título y le aplicamos formato de cabecera (puedes usar CellFormatId = 1)
-                titleRow.Append(
-                    CreateCellModel("Distribución de Horas por Proyecto", 4)
-                );
-
-                // Agregamos la fila al SheetData
+                titleRow.Append(CreateCellModel($"Distribución de Horas - {first.projection_name}", 4));
                 sheetData.Append(titleRow);
 
                 // -------------------------- MERGE CELLS PARA EL TÍTULO --------------------------
@@ -192,16 +196,9 @@ namespace isc.time.report.be.application.Services.Projections
                     worksheetPart.Worksheet.InsertAfter(mergeCells, worksheetPart.Worksheet.Elements<SheetData>().First());
                 }
 
-                // Combinar de A1 a K1
-                mergeCells.Append(new MergeCell
-                {
-                    Reference = new StringValue("A1:K1")
-                });
+                mergeCells.Append(new MergeCell { Reference = new StringValue("A1:K1") });
 
-
-                // --------------------------
-                // CABECERA DINÁMICA
-                // --------------------------
+                // -------------------------- CABECERA --------------------------
                 bool isWeekly = first.period_type;
                 int periodQty = first.period_quantity;
 
@@ -222,29 +219,26 @@ namespace isc.time.report.be.application.Services.Projections
                 headerRow.Append(
                     CreateCellModel("Tiempo Total", 1),
                     CreateCellModel("Costo Recursos", 1),
-                    CreateCellModel("Porcentaje de Participacion", 1)
+                    CreateCellModel("Porcentaje de Participación", 1)
                 );
 
                 sheetData.Append(headerRow);
 
-                // --------------------------
-                // Inicializar totales
-                // --------------------------
+                // -------------------------- TOTALES --------------------------
                 int totalResourceQuantity = 0;
                 List<double> totalDistribution = Enumerable.Repeat(0.0, periodQty).ToList();
                 decimal totalTime = 0m;
                 decimal totalResourceCost = 0m;
                 decimal totalParticipation = 0m;
 
-                // --------------------------
-                // FILAS DE DATOS
-                // --------------------------
+                // -------------------------- FILAS DE DATOS --------------------------
                 foreach (var item in data)
                 {
                     var row = new Row();
                     row.Append(
+
                         CreateCellModel(item.ResourceTypeName, 2),
-                        CreateCellModel(item.resource_name, 2),
+                        CreateCellModel(item.resource_name.ToString(), 2),
                         CreateCellModel(item.hourly_cost.ToString("F2"), 2),
                         CreateCellModel(item.resource_quantity.ToString(), 2)
                     );
@@ -255,8 +249,6 @@ namespace isc.time.report.be.application.Services.Projections
                     {
                         double value = (i < distribution.Count) ? distribution[i] : 0;
                         row.Append(CreateCellModel(value.ToString(), 2));
-
-                        // 🔹 Acumular el total por periodo
                         totalDistribution[i] += value;
                     }
 
@@ -266,76 +258,52 @@ namespace isc.time.report.be.application.Services.Projections
                     );
 
                     decimal valorExcel = item.participation_percentage;
-                    row.Append(CreateNumberCell(valorExcel / 100, 3)); // Formato porcentaje
+                    row.Append(CreateNumberCell(valorExcel / 100, 3));
 
                     sheetData.Append(row);
 
-                    // 🔹 Acumular totales generales
+                    // 🔹 Acumular totales
                     totalResourceQuantity += item.resource_quantity;
                     totalTime += item.total_time;
                     totalResourceCost += item.resource_cost;
                     totalParticipation += item.participation_percentage;
+
                     if (totalParticipation > 99.90m && totalParticipation < 100.01m)
-                    {
                         totalParticipation = 100.00m;
-                    }
                     else if (totalParticipation > 100.00m)
-                    {
                         totalParticipation = 100.00m;
-                    }
-
-
                 }
 
-                // --------------------------
-                // Pie de página con totales
-                // --------------------------
+                // -------------------------- TOTAL GENERAL --------------------------
                 var totalRow = new Row();
                 totalRow.Append(
-                    CreateCellModel("Total", 1), // Tipo de recurso
-                    CreateCellModel("", 1),      // Nombre recurso
-                    CreateCellModel("", 1),      // Costo por hora
-                    CreateCellModel(totalResourceQuantity.ToString(), 1) // Cantidad de recursos
+                    CreateCellModel("Total", 1),
+                    CreateCellModel("", 1),
+                    CreateCellModel("", 1),
+                    CreateCellModel(totalResourceQuantity.ToString(), 1)
                 );
 
-                // Totales por periodo (time distribution)
                 for (int i = 0; i < periodQty; i++)
                     totalRow.Append(CreateCellModel(totalDistribution[i].ToString(), 1));
 
-                // Totales de tiempo y costo
                 totalRow.Append(
                     CreateCellModel(totalTime.ToString("F2"), 1),
                     CreateCellModel(totalResourceCost.ToString("F2"), 1),
-                    CreateNumberCell(totalParticipation / 100, 3) // porcentaje total
+                    CreateNumberCell(totalParticipation / 100, 3)
                 );
 
-                // Agregar la fila al SheetData
                 sheetData.Append(totalRow);
 
-
+                // 🔹 Merge para el total
                 uint totalRowIndex = (uint)sheetData.ChildElements.Count;
-
-                // Buscar o crear el contenedor de merges
-                if (mergeCells == null)
-                {
-                    mergeCells = new MergeCells();
-
-                    // Insertar mergeCells después del SheetData
-                    var lastSheetData = worksheetPart.Worksheet.Elements<SheetData>().FirstOrDefault();
-                    worksheetPart.Worksheet.InsertAfter(mergeCells, lastSheetData);
-                }
-
-                // Agregar el merge específico
                 mergeCells.Append(new MergeCell()
                 {
                     Reference = new StringValue($"A{totalRowIndex}:C{totalRowIndex}")
                 });
-
             }
+
             return memoryStream.ToArray();
-
         }
-
 
         // Helpers
         private Cell CreateCellModel(string value, uint styleIndex = 0)
@@ -493,15 +461,22 @@ namespace isc.time.report.be.application.Services.Projections
 
                 )
             );
+        } 
+        public async Task<List<List<ProjectionWithoutProjectResponse>>> GetAllProjectionWithoutProjectAsync()
+        {
+            var groupProjections = await _projectionHoursRepository.GetAllGroupProjectionsAsync();
+
+            var allGroups = new List<List<ProjectionWithoutProjectResponse>>();
+
+            foreach (var groupId in groupProjections)
+            {
+                var projections = await _projectionHoursRepository.GetProjectionsByGuidWithoutProjectAsync(groupId);
+
+                if (projections != null && projections.Any())
+                    allGroups.Add(projections);
+            }
+
+            return allGroups;
         }
-    }
+        }
 }
-
-
-
-
-
-
-
-
-

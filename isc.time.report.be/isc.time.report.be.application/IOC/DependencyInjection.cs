@@ -1,4 +1,5 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.InventoryApis;
+using isc.time.report.be.application.Interfaces.Repository.ProjectionHours;
 using isc.time.report.be.application.Interfaces.Service.Auth;
 using isc.time.report.be.application.Interfaces.Service.Catalogs;
 using isc.time.report.be.application.Interfaces.Service.Clients;
@@ -12,6 +13,7 @@ using isc.time.report.be.application.Interfaces.Service.Menus;
 using isc.time.report.be.application.Interfaces.Service.Permissions;
 using isc.time.report.be.application.Interfaces.Service.PermissionTypes;
 using isc.time.report.be.application.Interfaces.Service.Persons;
+using isc.time.report.be.application.Interfaces.Service.ProjectionHours;
 using isc.time.report.be.application.Interfaces.Service.Projections;
 using isc.time.report.be.application.Interfaces.Service.Projects;
 using isc.time.report.be.application.Interfaces.Service.TimeReports;
@@ -30,6 +32,7 @@ using isc.time.report.be.application.Services.Menus;
 using isc.time.report.be.application.Services.Permissions;
 using isc.time.report.be.application.Services.PermissionTypes;
 using isc.time.report.be.application.Services.Persons;
+using isc.time.report.be.application.Services.ProjectionHours;
 using isc.time.report.be.application.Services.Projections;
 using isc.time.report.be.application.Services.Projects;
 using isc.time.report.be.application.Services.TimeReports;
@@ -71,6 +74,7 @@ namespace isc.time.report.be.application.IOC
             services.AddScoped<IInventoryApiService, InventoryApiService>();
             services.AddScoped<IHolidayService, HolidayServices>();
             services.AddScoped<IProjectionHourProjectService, ProjectionHourProjectService>();
+            services.AddScoped<IProjectionHourService, ProjectionHourService>();
 
             services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
 
