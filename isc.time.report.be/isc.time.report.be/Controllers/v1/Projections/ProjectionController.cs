@@ -17,7 +17,6 @@ namespace isc.time.report.be.api.Controllers.v1.Projections
         {
            _service = service;
         }
-
         [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpGet("{projectId:int}/get-all-projection-by-projectId")]
         public async Task<ActionResult<List<ProjectionHoursProjectResponse>>> GetProjectionOfProject (int projectId)
