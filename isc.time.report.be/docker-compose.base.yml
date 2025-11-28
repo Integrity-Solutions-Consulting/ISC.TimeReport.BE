@@ -6,7 +6,7 @@ services:
     container_name: time-report-sqlserver
     restart: always
     environment:
-      SA_PASSWORD: "Zp8#kV42wLp@tR3m"
+      SA_PASSWORD: "Ayy@8#kV50wPp@tR11m"
       ACCEPT_EULA: "Y"
       MSSQL_AGENT_ENABLED: "true"
     ports:
