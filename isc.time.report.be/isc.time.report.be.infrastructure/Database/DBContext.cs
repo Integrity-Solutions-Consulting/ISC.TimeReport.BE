@@ -14,7 +14,7 @@ using isc.time.report.be.domain.Entity.Projections;
 using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Models.Response.Dashboards;
 using isc.time.report.be.domain.Models.Response.Projections;
-using isc.time.report.be.domain.Models.Response.Reporte;
+using isc.time.report.be.domain.Models.Response.Report;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using System;
@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static isc.time.report.be.domain.Models.Response.Reporte.ReporteRespose;
+using static isc.time.report.be.domain.Models.Response.Report.ReportResponse;
 
 namespace isc.time.report.be.infrastructure.Database
 {
@@ -788,8 +788,8 @@ namespace isc.time.report.be.infrastructure.Database
             modelBuilder.Entity<DashboardRecursosPendientesDto>().HasNoKey();
             modelBuilder.Entity<ProjectionHoursProjectResponse>().HasNoKey();
             modelBuilder.Entity<ProjectionWithoutProjectResponse>().HasNoKey();
-            modelBuilder.Entity<ReporteRecursosPorProyectoDto>().HasNoKey();
-            modelBuilder.Entity<CantidadRecursoHoraClienteDto>().HasNoKey();
+            modelBuilder.Entity<ProjectResourcesReportDto>().HasNoKey();
+            modelBuilder.Entity<ClientHourlyResourceAmountDto>().HasNoKey();
 
 
 
