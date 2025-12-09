@@ -12,6 +12,7 @@ namespace isc.time.report.be.domain.Models.Response.Reporte
         public record ReporteRecursosPorProyectoDto(
              string NombreCliente,
              DateTime FechaInicio,
+             DateTime FechaFin,
              string LiderProyecto,
              string NombreRecurso,
              string Cargo
