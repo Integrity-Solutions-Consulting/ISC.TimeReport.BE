@@ -13,7 +13,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__ConexionBD=Server=sqlserver,1433;Database=ISC_TimeReport_dev;User=app_backend;Password=Ayy@8#kV50wPp@tR11m;MultipleActiveResultSets=true;Trust Server Certificate=true
       - JWT__JWTSecretKey=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-      - Cors__AllowedOrigins=http://localhost:4200,https://localhost:4200,http://192.168.100.167/time-report.fe
+      - Cors__AllowedOrigins=http://localhost:4200,https://localhost:4200,http://192.168.100.167/time-report.fe,http://147.93.181.147:4200/
       - EmailSettings__SmtpServer=smtp.hostinger.com
       - EmailSettings__Port=465
       - EmailSettings__SenderName=TimeReport App
