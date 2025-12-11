@@ -26,7 +26,7 @@ jobs:
 
       - name: Copy project in VPS
         run: |
-          rsync -avz --delete --exclude '.git' ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:${{ secrets.VPS_DEPLOY_PATH }}/isc.time.report.be.dev/isc.time.report.be
+          rsync -avz --delete --exclude '.git' ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:${{ secrets.VPS_DEPLOY_PATH }}/isc.time.report.be.dev
 
       - name: Deploy on VPS
         run: |
