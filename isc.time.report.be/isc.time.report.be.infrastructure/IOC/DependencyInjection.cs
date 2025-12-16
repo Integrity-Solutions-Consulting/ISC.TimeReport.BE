@@ -14,6 +14,7 @@ using isc.time.report.be.application.Interfaces.Repository.Persons;
 using isc.time.report.be.application.Interfaces.Repository.ProjectionHours;
 using isc.time.report.be.application.Interfaces.Repository.Projections;
 using isc.time.report.be.application.Interfaces.Repository.Projects;
+using isc.time.report.be.application.Interfaces.Repository.Report;
 using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.application.Interfaces.Repository.Users;
 using isc.time.report.be.application.Interfaces.Service.DailyActivities;
@@ -35,6 +36,7 @@ using isc.time.report.be.infrastructure.Repositories.Persons;
 using isc.time.report.be.infrastructure.Repositories.ProjectionHours;
 using isc.time.report.be.infrastructure.Repositories.Projections;
 using isc.time.report.be.infrastructure.Repositories.Projects;
+using isc.time.report.be.infrastructure.Repositories.Report;
 using isc.time.report.be.infrastructure.Repositories.TimeReports;
 using isc.time.report.be.infrastructure.Repositories.Users;
 using isc.time.report.be.infrastructure.Utils;
@@ -76,7 +78,7 @@ namespace isc.time.report.be.infrastructure.IOC
             services.AddScoped<IHolidayRepository, HolidayRepository>();
             services.AddScoped<IProjectionHourProjectRepository, ProjectionHourProjectRepository>();
             services.AddScoped<IProjectionHoursRepository, ProjectionHourRepository>();
-
+            services.AddScoped<IReportRepository, ReportRepository>();
 
             services.AddSingleton<EmailUtils>();
             services.AddScoped<HttpUtils>();

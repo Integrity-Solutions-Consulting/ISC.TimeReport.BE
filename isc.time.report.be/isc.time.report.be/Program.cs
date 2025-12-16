@@ -128,11 +128,11 @@ app.ConfigureExcepcionHandler();
 
 //app.UseHttpsRedirection();
 
+app.UseCors("OrigenEspecificos");
+
 app.UseAuthentication();
 
 app.UseAuthorization();
-
-app.UseCors("OrigenEspecificos");
 
 app.MapControllers();
 

@@ -26,12 +26,16 @@ jobs:
 
       - name: Copy project in VPS
         run: |
-          rsync -avz --exclude '.git' ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:${{ secrets.VPS_DEPLOY_PATH }}
+          rsync -avz --delete --exclude '.git' ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:${{ secrets.VPS_DEPLOY_PATH }}/isc.time.report.be.dev
 
       - name: Deploy on VPS
         run: |
           ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }} << 'EOF'
-            cd ${{ secrets.VPS_DEPLOY_PATH }}/isc.time.report.be
+            cd ${{ secrets.VPS_DEPLOY_PATH }}/isc.time.report.be.dev/isc.time.report.be
+
+            rm -rf bin obj
+
             docker compose -f docker-compose.base.yml -f docker-compose.dev.yml down || true
-            docker compose -f docker-compose.base.yml -f docker-compose.dev.yml up -d --build
+            docker compose -f docker-compose.dev.yml build --no-cache
+            docker compose -f docker-compose.base.yml -f docker-compose.dev.yml up -d
           EOF
