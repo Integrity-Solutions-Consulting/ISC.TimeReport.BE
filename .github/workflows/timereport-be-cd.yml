@@ -30,7 +30,7 @@ jobs:
 
       - name: Deploy DEV to VPS
         run: |
-          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }} << 'EOF'
             cd ${{ secrets.VPS_DEPLOY_PATH }}/isc.time.report.be.dev/isc.time.report.be
 
             docker compose \
