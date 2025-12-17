@@ -24,7 +24,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Report
         {
             var resultado =  await _dbContext
                 .Set<ClientHourlyResourceAmountDto>()
-                .FromSqlRaw("EXEC dbo.sp_BEClientResourcesAndHoursSummary")
+                .FromSqlRaw("EXEC dbo.sp_TRClientResourcesAndHoursSummary")
                 .ToListAsync();
 
             return resultado;
@@ -34,7 +34,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Report
         {
             var resultado = await _dbContext
                 .Set<ProjectResourcesReportDto>()
-                .FromSqlRaw("EXEC dbo.sp_BEProjectResourcesReport")
+                .FromSqlRaw("EXEC dbo.sp_TRProjectResourcesReport")
                 .ToListAsync();
 
             return resultado;
