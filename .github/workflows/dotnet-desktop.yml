@@ -24,28 +24,26 @@ jobs:
       - name: Add VPS to known_hosts
         run: ssh-keyscan -H ${{ secrets.VPS_IP }} >> ~/.ssh/known_hosts
 
-      - name: Copy project to VPS
+      - name: Copy project PROD to VPS
         run: |
           rsync -avz --delete --exclude '.git' ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:${{ secrets.VPS_DEPLOY_PATH }}/isc.time.report.be.prod
 
-      - name: Deploy DEV to VPS
+      - name: Deploy PROD to VPS
         run: |
           ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             cd ${{ secrets.VPS_DEPLOY_PATH }}/isc.time.report.be.dev/isc.time.report.be
 
-            docker compose \
-              -f docker-compose.base.yml \
-              -f docker-compose.dev.yml \
-              down --remove-orphans
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+            cd ${{ secrets.VPS_DEPLOY_PATH }}/isc.time.report.be.prod/isc.time.report.be
 
             docker compose \
               -f docker-compose.base.yml \
-              -f docker-compose.dev.yml \
+              -f docker-compose.prod.yml \
               build --no-cache
 
             docker compose \
               -f docker-compose.base.yml \
-              -f docker-compose.dev.yml \
+              -f docker-compose.prod.yml \
               up -d --force-recreate
           EOF
 
