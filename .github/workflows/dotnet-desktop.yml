@@ -28,15 +28,25 @@ jobs:
         run: |
           rsync -avz --delete --exclude '.git' ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }}:${{ secrets.VPS_DEPLOY_PATH }}/isc.time.report.be.prod
 
-      - name: Deploy on VPS
+      - name: Deploy DEV to VPS
         run: |
-          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }} << 'EOF'
-            cd ${{ secrets.VPS_DEPLOY_PATH }}/isc.time.report.be.prod/isc.time.report.be
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+            cd ${{ secrets.VPS_DEPLOY_PATH }}/isc.time.report.be.dev/isc.time.report.be
 
-            rm -rf bin obj
+            docker compose \
+              -f docker-compose.base.yml \
+              -f docker-compose.dev.yml \
+              down --remove-orphans
 
-            docker compose -f docker-compose.base.yml -f docker-compose.prod.yml down || true
-            docker compose -f docker-compose.prod.yml build --no-cache
-            docker compose -f docker-compose.base.yml -f docker-compose.prod.yml up -d
+            docker compose \
+              -f docker-compose.base.yml \
+              -f docker-compose.dev.yml \
+              build --no-cache
+
+            docker compose \
+              -f docker-compose.base.yml \
+              -f docker-compose.dev.yml \
+              up -d --force-recreate
           EOF
+
           
