@@ -155,7 +155,7 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
             // Llamamos a tu ProjectService
             var fileBytes = await _projectService.GenerateProjectsExcelAsync();
 
-            // Definimos nombre dinámico con fecha
+            // Definimos nombre dinámico con fecha.
             var fileName = $"Projects_{DateTime.Now:yyyyMMdd_HHmm}.xlsx";
             const string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
