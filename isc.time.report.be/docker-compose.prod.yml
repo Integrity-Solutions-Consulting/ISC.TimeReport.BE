@@ -20,7 +20,7 @@ services:
       - EmailSettings__SenderEmail=siaft@siaft.net
       - EmailSettings__Username=siaft@siaft.net
       - EmailSettings__Password=Vrocoli23_
-      - Infrastructure__InventoryAPIUrlBase=https://api.inventory.integritysolutions.com.ec
+      - Infrastructure__InventoryAPIUrlBase=https://api.inv.dokploy.integritysolutions.com.ec
       - Infrastructure__InventoryAuthUrlBase=https://auth.inv.dokploy.integritysolutions.com.ec
       - InventoryCredentials__Email=kerly.jimenez@integritysolutions.com.ec
       - InventoryCredentials__Password=Password2@
