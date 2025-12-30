@@ -67,10 +67,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
                
             };
 
-            Console.WriteLine("=== INVENTORY LOGIN DEBUG ===");
-            Console.WriteLine($"Email: '{_configuration["InventoryCredentials:Email"]}'");
-            Console.WriteLine($"Password is null?: {_configuration["InventoryCredentials:Password"] == null}");
-            Console.WriteLine($"Password length: {_configuration["InventoryCredentials:Password"]?.Length}");
+
             var response = await _httpUtils.SendRequest<InventoryLoginResponse>("https://auth.inv.dokploy.integritysolutions.com.ec/api/v1/auth/login", HttpMethod.Post, request);
 
 
