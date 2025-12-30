@@ -55,6 +55,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
             try
             {
                 var existingUser = await _dbContext.Users
+
                     .FirstOrDefaultAsync(u => u.Username == user.Username); 
 
                 if (existingUser != null)
