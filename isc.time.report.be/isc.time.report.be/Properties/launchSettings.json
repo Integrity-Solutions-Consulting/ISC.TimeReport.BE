@@ -1,15 +1,7 @@
 ﻿{
   "$schema": "http://json.schemastore.org/launchsettings.json",
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:21780",
-      "sslPort": 44392
-    }
-  },
   "profiles": {
-    "http": {
+    "development": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
@@ -21,27 +13,5 @@
         "ISC_TIME_REPORT_BD_PASSWORD": "P@ssw0rd01"
       }
     },
-    "https": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:7094;http://localhost:5032",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ISC_TIME_REPORT_BD_USER": "timereport",
-        "ISC_TIME_REPORT_BD_PASSWORD": "P@ssw0rd01"
-      }
-    },
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ISC_TIME_REPORT_BD_USER": "timereport",
-        "ISC_TIME_REPORT_BD_PASSWORD": "P@ssw0rd01"
-      }
-    }
   }
 }
