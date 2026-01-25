@@ -17,8 +17,6 @@ using isc.time.report.be.application.Interfaces.Repository.Projects;
 using isc.time.report.be.application.Interfaces.Repository.Report;
 using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.application.Interfaces.Repository.Users;
-using isc.time.report.be.application.Interfaces.Service.DailyActivities;
-using isc.time.report.be.application.Interfaces.Service.Dashboards;
 using isc.time.report.be.infrastructure.Database;
 using isc.time.report.be.infrastructure.Repositories.Auth;
 using isc.time.report.be.infrastructure.Repositories.Catalogs;
@@ -42,15 +40,9 @@ using isc.time.report.be.infrastructure.Repositories.Users;
 using isc.time.report.be.infrastructure.Utils;
 using isc.time.report.be.infrastructure.Utils.Emails;
 using isc.time.report.be.infrastructure.Utils.Peticiones;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.infrastructure.IOC
 {
@@ -90,8 +82,10 @@ namespace isc.time.report.be.infrastructure.IOC
         public static IServiceCollection AddDbConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<DBContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("ConexionBD"))
-                       .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+            {
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+                options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            });
 
             return services;
         }
