@@ -1,6 +1,5 @@
 using isc.time.report.be.api.Extentions;
 using isc.time.report.be.application.Interfaces.Repository;
-using isc.time.report.be.application.Interfaces.Repository;
 using isc.time.report.be.application.Interfaces.Repository.Auth;
 using isc.time.report.be.application.Interfaces.Service.Auth;
 using isc.time.report.be.application.IOC;
@@ -10,7 +9,6 @@ using isc.time.report.be.domain.Entity.Emails;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Response.Shared;
 using isc.time.report.be.infrastructure.IOC;
-using isc.time.report.be.infrastructure.Repositories.Auth;
 using isc.time.report.be.infrastructure.Repositories.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
@@ -82,7 +80,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Introduce el token JWT aquí. Ejemplo: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+        Description = "Introduce el token JWT aquï¿½. Ejemplo: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6..."
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
