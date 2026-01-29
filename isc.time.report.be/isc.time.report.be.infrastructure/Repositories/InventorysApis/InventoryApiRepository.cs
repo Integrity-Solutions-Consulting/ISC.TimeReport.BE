@@ -68,7 +68,8 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
             };
 
 
-            var response = await _httpUtils.SendRequest<InventoryLoginResponse>($"{_configuration["Infrastructure:InventoryAPIUrlBase"]}/api/v1/auth/login", HttpMethod.Post, request);
+
+            var response = await _httpUtils.SendRequest<InventoryLoginResponse>($"{_configuration["Infrastructure:InventoryAuthUrlBase"]}/api/v1/auth/login", HttpMethod.Post, request);
 
 
             if (response?.data?.token == null)
