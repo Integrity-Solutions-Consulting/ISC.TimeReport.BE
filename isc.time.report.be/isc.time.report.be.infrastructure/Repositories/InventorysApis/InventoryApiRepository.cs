@@ -68,7 +68,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
             };
 
 
-            var response = await _httpUtils.SendRequest<InventoryLoginResponse>("https://auth.inv.dokploy.integritysolutions.com.ec/api/v1/auth/login", HttpMethod.Post, request);
+            var response = await _httpUtils.SendRequest<InventoryLoginResponse>($"{_configuration["Infrastructure:InventoryAPIUrlBase"]}/api/v1/auth/login", HttpMethod.Post, request);
 
 
             if (response?.data?.token == null)
