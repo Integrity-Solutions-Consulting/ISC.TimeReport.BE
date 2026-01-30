@@ -197,7 +197,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
                 .Include(c => c.Person)
                 .FirstOrDefaultAsync(c => c.Person.IdentificationNumber == client.Person.IdentificationNumber);
 
-            if (existingClient != null)
+            if (existingClient.Person.IdentificationNumber != null)
                 throw new ClientFaultException(
                     $"Ya existe un cliente con ese número de identificación '{client.Person.IdentificationNumber}'."
                 );
