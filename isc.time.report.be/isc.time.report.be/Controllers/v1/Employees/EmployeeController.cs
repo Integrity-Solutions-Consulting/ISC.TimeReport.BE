@@ -29,7 +29,7 @@ namespace isc.time.report.be.api.Controllers.v1.Employees
             var result = await _employeeService.GetAllEmployeesPaginated(paginationParams, search);
             return Ok(result);
         }
-        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
+        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpGet("GetEmployeeByID/{id}")]
         public async Task<ActionResult<SuccessResponse<GetEmployeeDetailsResponse>>> GetEmployeeById(int id)
         {
