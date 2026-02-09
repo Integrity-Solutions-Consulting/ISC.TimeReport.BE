@@ -11,6 +11,7 @@ using isc.time.report.be.domain.Models.Request.Auth;
 using isc.time.report.be.domain.Models.Response.Auth;
 using isc.time.report.be.domain.Models.Response.Menus;
 using isc.time.report.be.domain.Models.Response.Users;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,8 @@ namespace isc.time.report.be.application.Services.Auth
         private readonly JWTUtils jwtUtils;
         private readonly IUserRepository userRepository;
         private readonly IEmployeeRepository _employeeRepository;
-        public AuthService(IAuthRepository authRepository, PasswordUtils passwordUtils, JWTUtils jwtUtils, IMenuRepository menuRepository, IUserRepository userRepository, IEmployeeRepository employeeRepository)
+        private readonly IConfiguration _configuration; 
+        public AuthService(IAuthRepository authRepository, PasswordUtils passwordUtils, JWTUtils jwtUtils, IMenuRepository menuRepository, IUserRepository userRepository, IEmployeeRepository employeeRepository, IConfiguration configuration)
         {
             this.authRepository = authRepository;
             this.passwordUtils = passwordUtils;
@@ -36,6 +38,7 @@ namespace isc.time.report.be.application.Services.Auth
             this.menuRepository = menuRepository;
             this.userRepository = userRepository;
             _employeeRepository = employeeRepository;
+            _configuration = configuration; 
         }
         /// <summary>
         /// SI SE ESTA USANDO
@@ -268,8 +271,12 @@ namespace isc.time.report.be.application.Services.Auth
                 return;
 
             var token = jwtUtils.GenerateToken(user, 3 ,true);
-            var frontUrl = "https://app.timereport.integritysolutions.com.ec/auth/reset-password";
-            var link = $"{frontUrl}{"?token="}{token}";
+            //var frontUrl = "https://app.timereport.integritysolutions.com.ec/auth/reset-password";
+            //var link = $"{frontUrl}{"?token="}{token}";
+
+            var baseUrl = _configuration["Infrastructure:RecoveryPasswordUrlBase"];
+            var path = "/auth/reset-password";
+            var link = $"{baseUrl}{path}?token={token}";
 
             var html = $@"
                 <!DOCTYPE html>
