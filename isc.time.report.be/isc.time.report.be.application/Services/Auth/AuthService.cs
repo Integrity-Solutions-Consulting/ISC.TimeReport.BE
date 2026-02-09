@@ -275,7 +275,7 @@ namespace isc.time.report.be.application.Services.Auth
             //var link = $"{frontUrl}{"?token="}{token}";
 
             var baseUrl = _configuration["Infrastructure:RecoveryPasswordUrlBase"];
-            var path = "/auth/forgot-password";
+            var path = "/auth/reset-password";
             var link = $"{baseUrl}{path}?token={token}";
 
             var html = $@"
