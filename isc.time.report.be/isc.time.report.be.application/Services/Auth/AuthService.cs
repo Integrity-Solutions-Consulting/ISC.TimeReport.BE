@@ -271,8 +271,6 @@ namespace isc.time.report.be.application.Services.Auth
                 return;
 
             var token = jwtUtils.GenerateToken(user, 3 ,true);
-            //var frontUrl = "https://app.timereport.integritysolutions.com.ec/auth/reset-password";
-            //var link = $"{frontUrl}{"?token="}{token}";
 
             var baseUrl = _configuration["Infrastructure:RecoveryPasswordUrlBase"];
             var path = "/auth/reset-password";
