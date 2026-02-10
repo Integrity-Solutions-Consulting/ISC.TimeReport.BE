@@ -1,4 +1,5 @@
 using isc.time.report.be.api.Extentions;
+using isc.time.report.be.api.Security;
 using isc.time.report.be.application.Interfaces.Repository;
 using isc.time.report.be.application.Interfaces.Repository.Auth;
 using isc.time.report.be.application.Interfaces.Service.Auth;
@@ -72,7 +73,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "Time Report BE", Version = "v1" });
-
+    //options.SwaggerGeneratorOptions.
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -129,8 +130,9 @@ app.ConfigureExcepcionHandler();
 app.UseCors("OrigenEspecificos");
 
 app.UseAuthentication();
-
 app.UseAuthorization();
+
+app.UseMiddleware<ModuleAuthorizationMiddleware>();
 
 app.MapControllers();
 
