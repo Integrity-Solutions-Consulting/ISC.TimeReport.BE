@@ -21,6 +21,7 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
         {
             this.authService = authService;
         }
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<SuccessResponse<LoginResponse>>> Login(LoginRequest loginRequest)
         {
