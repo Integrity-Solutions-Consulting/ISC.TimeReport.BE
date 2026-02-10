@@ -1,4 +1,5 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.Employees;
+﻿using isc.time.report.be.api.Security;
+using isc.time.report.be.application.Interfaces.Repository.Employees;
 using isc.time.report.be.application.Interfaces.Service.Employees;
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Models.Dto;
@@ -12,6 +13,7 @@ namespace isc.time.report.be.api.Controllers.v1.Employees
     [ApiExplorerSettings(GroupName = "v1")]
     [Route("api/[controller]")]
     [ApiController]
+    [AuthorizeRoute("/employees")]
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
