@@ -49,7 +49,7 @@ namespace isc.time.report.be.api.Security
                 return;
             }
 
-            var roleId = user.FindFirst("roleId")?.Value;
+            var roleId = user.FindFirst("RoleID")?.Value;
 
             if (string.IsNullOrEmpty(roleId))
             {
