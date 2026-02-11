@@ -14,7 +14,7 @@ namespace isc.time.report.be.api.Controllers.v1.Employees
     [Route("api/[controller]")]
     [ApiController]
     //[AuthorizeRoute("/employees")]
-    [Authorize]
+    //[Authorize]
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
