@@ -96,16 +96,16 @@ namespace isc.time.report.be.application.Services.Auth
 
             }).ToList() ?? new List<ModuleResponse>();
 
-            //var modulePaths = accessibleBaseModule
-            //    .Select(m => m.ModulePath)
-            //    .Distinct()
-            //    .ToList();
+            var modulePaths = accessibleBaseModule
+                .Select(m => m.ModulePath)
+                .Distinct()
+                .ToList();
 
             return new LoginResponse
             {
                 UserID = user.Id,
                 EmployeeID = user.EmployeeID,
-                TOKEN = jwtUtils.GenerateToken(user/*, modulePaths*/),
+                TOKEN = jwtUtils.GenerateToken(user, null),// se pone null para no enviar el modulo porque la validacion se la hace desde el jwt
                 Roles = userRoles,
                 Modules = accessibleModules
             };
@@ -276,7 +276,7 @@ namespace isc.time.report.be.application.Services.Auth
             if (user == null || user.Employee == null || string.IsNullOrWhiteSpace(user.Employee.CorporateEmail))
                 return;
 
-            var token = jwtUtils.GenerateToken(user,/* new List<string>(),*/3 ,true);
+            var token = jwtUtils.GenerateToken(user, new List<string>(),3 ,true);
 
             var baseUrl = _configuration["Infrastructure:RecoveryPasswordUrlBase"];
             var path = "/auth/reset-password";

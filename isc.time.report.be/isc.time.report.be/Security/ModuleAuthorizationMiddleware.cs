@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 using System.Text.Json;
 
 namespace isc.time.report.be.api.Security
@@ -6,117 +7,167 @@ namespace isc.time.report.be.api.Security
     public class ModuleAuthorizationMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ModuleSecurityOptions _options;
+        private readonly ILogger<ModuleAuthorizationMiddleware> _logger;
 
-        public ModuleAuthorizationMiddleware(RequestDelegate next)
+        public ModuleAuthorizationMiddleware(
+            RequestDelegate next,
+            IOptions<ModuleSecurityOptions> options,
+            ILogger<ModuleAuthorizationMiddleware> logger)
         {
             _next = next;
+            _options = options.Value;
+            _logger = logger;
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
             var endpoint = context.GetEndpoint();
 
-            // Permitir endpoints públicos
+            // 1️⃣ Endpoints públicos
             if (endpoint?.Metadata?.GetMetadata<IAllowAnonymous>() != null)
             {
                 await _next(context);
                 return;
             }
 
-            Guid transacction = Guid.NewGuid();
-
             var user = context.User;
-
-            var path = context.Request.Path.Value?.ToLower() ?? "";
-            var method = context.Request.Method.ToUpper();
-            var request = context.Request; 
-            var headers = request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString());
-            var body = request.Body;
-            var query = request.QueryString.Value;
-            var ipAddress = context.Connection.RemoteIpAddress?.ToString();
 
             if (user?.Identity?.IsAuthenticated != true)
             {
-                context.Response.StatusCode = 401;
+                await Deny(context, 401, "No autenticado");
                 return;
             }
 
-            var modulesClaim = user.FindFirst("modules")?.Value;
+            var path = NormalizePath(context.Request.Path.Value);
+            var method = context.Request.Method.ToUpper();
 
-            if (string.IsNullOrWhiteSpace(modulesClaim))
+            // 2️⃣ Rutas ignoradas
+            if (_options.IgnoreRoutes.Any(r => path.StartsWith(r)))
             {
-                context.Response.StatusCode = 403;
+                await _next(context);
                 return;
             }
 
-            List<string>? allowedModules;
+            var roleId = user.FindFirst("roleId")?.Value;
 
-            try
+            if (string.IsNullOrEmpty(roleId))
             {
-                allowedModules = JsonSerializer.Deserialize<List<string>>(modulesClaim);
-            }
-            catch
-            {
-                context.Response.StatusCode = 403;
+                await Deny(context, 403, "Token inválido (sin rol)");
                 return;
             }
 
-            var requiredModule = ResolveModuleFromRequest(context);
+            if (!_options.RoleModules.TryGetValue(roleId, out var roleModules))
+            {
+                await Deny(context, 403, "Rol sin permisos");
+                return;
+            }
 
-            // Si no corresponde a un módulo protegido → permitir
+            // 3️⃣ Admin wildcard
+            if (roleModules.Contains("*"))
+            {
+                await _next(context);
+                return;
+            }
+
+            var requiredModule = ResolveModuleFromPath(path);
+
             if (string.IsNullOrEmpty(requiredModule))
             {
                 await _next(context);
                 return;
             }
 
-            var hasAccess = allowedModules!.Any(m =>
-                m.Equals(requiredModule, StringComparison.OrdinalIgnoreCase)
-            );
+            // 4️⃣ Validación módulo
+            var hasModuleAccess = roleModules.Contains(requiredModule);
 
-            if (!hasAccess)
+            if (!hasModuleAccess)
             {
-                context.Response.StatusCode = 403;
-                await context.Response.WriteAsync($"Acceso denegado al módulo {requiredModule}");
+                await Deny(context, 403, $"Sin acceso al módulo {requiredModule}");
                 return;
+            }
+
+            // 5️⃣ Validación recurso propio (muy importante para Employee)
+            if (IsOwnResourceEndpoint(context))
+            {
+                if (!IsAccessingOwnResource(context))
+                {
+                    await Deny(context, 403, "Solo puede acceder a su propio registro");
+                    return;
+                }
             }
 
             await _next(context);
         }
 
-        private string ResolveModuleFromRequest(HttpContext context)
+        private string NormalizePath(string? path)
         {
-            var path = context.Request.Path.Value?.ToLower() ?? "";
+            if (string.IsNullOrEmpty(path)) return "";
 
-            // quitar /api
+            path = path.ToLower();
+
             if (path.StartsWith("/api"))
                 path = path.Substring(4);
 
-            var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            return path;
+        }
 
-            if (segments.Length == 0)
-                return "";
-
-            var controller = segments[0];
-
-            // pluralización automática simple
-            var module = controller switch
+        private string ResolveModuleFromPath(string path)
+        {
+            foreach (var module in _options.ModuleRoutes)
             {
-                "employee" => "/employees",
-                "client" => "/clients",
-                "leader" => "/leaders",
-                "user" => "/users",
-                "holiday" => "/holidays",
-                "project" => "/projects",
-                "activity" => "/activities",
-                "dashboard" => "/dashboard",
-                "reports" => $"/reports/{segments.ElementAtOrDefault(1)}",
-                "requirements" => $"/requirements/{segments.ElementAtOrDefault(1)}",
-                "humanresources" => $"/humanresources/{segments.ElementAtOrDefault(1)}",
-                _ => "/" + controller
+                var moduleName = module.Key.ToLower();
+
+                foreach (var apiPrefix in module.Value)
+                {
+                    if (path.StartsWith(apiPrefix.ToLower()))
+                        return moduleName;
+                }
+            }
+
+            return "";
+        }
+
+        private bool IsOwnResourceEndpoint(HttpContext context)
+        {
+            var path = NormalizePath(context.Request.Path.Value);
+            var method = context.Request.Method.ToUpper();
+
+            // SOLO aplica a consulta por ID
+            return method == "GET" &&
+                   path.StartsWith("/employee/getemployeebyid/");
+        }
+
+        private bool IsAccessingOwnResource(HttpContext context)
+        {
+            var employeeIdClaim = context.User.FindFirst("EmployeeID")?.Value;
+
+            if (string.IsNullOrEmpty(employeeIdClaim))
+                return false;
+
+            var routeId = context.Request.RouteValues["id"]?.ToString();
+
+            if (string.IsNullOrEmpty(routeId))
+                return true; // endpoint "GetMyEmployee"
+
+            return routeId == employeeIdClaim;
+        }
+
+        private async Task Deny(HttpContext context, int status, string message)
+        {
+            _logger.LogWarning("Acceso denegado → {Path} | {Message}",
+                context.Request.Path, message);
+
+            context.Response.StatusCode = status;
+            context.Response.ContentType = "application/json";
+
+            var response = new
+            {
+                success = false,
+                message = message
             };
 
-            return module;
+            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
         }
     }
 }
