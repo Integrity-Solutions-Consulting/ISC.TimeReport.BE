@@ -25,24 +25,30 @@ namespace isc.time.report.be.application.Utils.Auth
         public string GenerateToken(User user, List<string> modulePaths, int expiryMinutes = 60, bool isRecovery = false)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:JWTSecretKey"]));
+            var securityKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(configuration["JWT:JWTSecretKey"])
+            );
+
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var normalizedModules = modulePaths
+            var normalizedModules = (modulePaths ?? new List<string>())
                 .Select(m => m.ToLower())
                 .Distinct()
                 .ToList();
 
             var roleId = user.UserRole?
-                .FirstOrDefault(r => r.Status)?.RoleID ?? 0;
+                .FirstOrDefault(r => r.Status)?.RoleID;
+
+            if (roleId == null)
+                throw new Exception("Usuario sin rol asignado");
 
             var claims = new List<Claim>
     {
         new Claim(ClaimTypes.Name, user.Username),
-        new Claim("userId", user.Id.ToString()),
-        new Claim("employeeId", user.EmployeeID.ToString()),
-        new Claim("personId", user.Employee?.PersonID.ToString() ?? "0"),
-        new Claim("roleId", roleId.ToString()),
+        new Claim("UserID", user.Id.ToString()),
+        new Claim("EmployeeID", user.EmployeeID.ToString()),
+        new Claim("PersonID", user.Employee?.PersonID.ToString() ?? "0"),
+        new Claim("roleId", roleId.Value.ToString()),
         new Claim("modules", JsonSerializer.Serialize(normalizedModules))
     };
 

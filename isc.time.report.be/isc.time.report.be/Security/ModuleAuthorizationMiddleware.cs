@@ -24,7 +24,6 @@ namespace isc.time.report.be.api.Security
         {
             var endpoint = context.GetEndpoint();
 
-            // 1️⃣ Endpoints públicos
             if (endpoint?.Metadata?.GetMetadata<IAllowAnonymous>() != null)
             {
                 await _next(context);
@@ -40,10 +39,11 @@ namespace isc.time.report.be.api.Security
             }
 
             var path = NormalizePath(context.Request.Path.Value);
-            var method = context.Request.Method.ToUpper();
 
-            // 2️⃣ Rutas ignoradas
-            if (_options.IgnoreRoutes.Any(r => path.StartsWith(r)))
+            // 🔹 NULL SAFE IgnoreRoutes
+            var ignoreRoutes = _options.IgnoreRoutes ?? new List<string>();
+
+            if (ignoreRoutes.Any(r => path.StartsWith(r)))
             {
                 await _next(context);
                 return;
@@ -57,13 +57,16 @@ namespace isc.time.report.be.api.Security
                 return;
             }
 
-            if (!_options.RoleModules.TryGetValue(roleId, out var roleModules))
+            // 🔹 NULL SAFE RoleModules
+            if (_options.RoleModules == null ||
+                !_options.RoleModules.TryGetValue(roleId, out var roleModules))
             {
                 await Deny(context, 403, "Rol sin permisos");
                 return;
             }
 
-            // 3️⃣ Admin wildcard
+            roleModules ??= new List<string>();
+
             if (roleModules.Contains("*"))
             {
                 await _next(context);
@@ -78,16 +81,12 @@ namespace isc.time.report.be.api.Security
                 return;
             }
 
-            // 4️⃣ Validación módulo
-            var hasModuleAccess = roleModules.Contains(requiredModule);
-
-            if (!hasModuleAccess)
+            if (!roleModules.Contains(requiredModule))
             {
                 await Deny(context, 403, $"Sin acceso al módulo {requiredModule}");
                 return;
             }
 
-            // 5️⃣ Validación recurso propio (muy importante para Employee)
             if (IsOwnResourceEndpoint(context))
             {
                 if (!IsAccessingOwnResource(context))
@@ -114,11 +113,14 @@ namespace isc.time.report.be.api.Security
 
         private string ResolveModuleFromPath(string path)
         {
-            foreach (var module in _options.ModuleRoutes)
+            var moduleRoutes = _options.ModuleRoutes ?? new Dictionary<string, List<string>>();
+
+            foreach (var module in moduleRoutes)
             {
                 var moduleName = module.Key.ToLower();
+                var routes = module.Value ?? new List<string>();
 
-                foreach (var apiPrefix in module.Value)
+                foreach (var apiPrefix in routes)
                 {
                     if (path.StartsWith(apiPrefix.ToLower()))
                         return moduleName;
