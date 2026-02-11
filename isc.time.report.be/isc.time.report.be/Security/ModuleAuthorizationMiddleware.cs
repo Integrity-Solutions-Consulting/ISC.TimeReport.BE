@@ -122,7 +122,12 @@ namespace isc.time.report.be.api.Security
 
                 foreach (var apiPrefix in routes)
                 {
-                    if (path.StartsWith(apiPrefix.ToLower()))
+                    // Limpiamos también el prefijo de la config para que coincida con 'path'
+                    var configPath = apiPrefix.ToLower();
+                    if (configPath.StartsWith("/api"))
+                        configPath = configPath.Substring(4);
+
+                    if (path.StartsWith(configPath))
                         return moduleName;
                 }
             }
