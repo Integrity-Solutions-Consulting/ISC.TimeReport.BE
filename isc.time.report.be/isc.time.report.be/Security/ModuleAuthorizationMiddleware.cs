@@ -23,7 +23,17 @@ namespace isc.time.report.be.api.Security
                 return;
             }
 
+            Guid transacction = Guid.NewGuid();
+
             var user = context.User;
+
+            var path = context.Request.Path.Value?.ToLower() ?? "";
+            var method = context.Request.Method.ToUpper();
+            var request = context.Request; 
+            var headers = request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString());
+            var body = request.Body;
+            var query = request.QueryString.Value;
+            var ipAddress = context.Connection.RemoteIpAddress?.ToString();
 
             if (user?.Identity?.IsAuthenticated != true)
             {

@@ -22,7 +22,7 @@ namespace isc.time.report.be.application.Utils.Auth
             this.configuration = configuration;
         }
 
-        public string GenerateToken(User user, List<string> modulePaths, int expiryMinutes = 60, bool isRecovery = false)
+        public string GenerateToken(User user,/* List<string> modulePaths,*/ int expiryMinutes = 60, bool isRecovery = false)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:JWTSecretKey"]));
@@ -34,7 +34,7 @@ namespace isc.time.report.be.application.Utils.Auth
                 new Claim("UserID", user.Id.ToString()),
                 new Claim("EmployeeID", user.EmployeeID.ToString()),
                 new Claim("PersonID", user.Employee?.PersonID.ToString() ?? "0"),
-                new Claim("modules", JsonSerializer.Serialize(modulePaths))
+                //new Claim("modules", JsonSerializer.Serialize(modulePaths))
             };
 
             // Roles
