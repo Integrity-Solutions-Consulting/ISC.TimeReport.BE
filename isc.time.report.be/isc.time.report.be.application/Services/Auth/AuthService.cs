@@ -105,7 +105,7 @@ namespace isc.time.report.be.application.Services.Auth
             {
                 UserID = user.Id,
                 EmployeeID = user.EmployeeID,
-                TOKEN = jwtUtils.GenerateToken(user, null),// se pone null para no enviar el modulo porque la validacion se la hace desde el jwt
+                TOKEN = jwtUtils.GenerateToken(user, new List<string>()),// se pone null para no enviar el modulo porque la validacion se la hace desde el jwt
                 Roles = userRoles,
                 Modules = accessibleModules
             };
