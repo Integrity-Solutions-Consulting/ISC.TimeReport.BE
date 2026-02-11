@@ -113,6 +113,9 @@ builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings")
 );
 
+builder.Services.Configure<ModuleSecurityOptions>(
+    builder.Configuration.GetSection("ModuleSecurity"));
+
 
 var app = builder.Build();
 
