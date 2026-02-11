@@ -132,7 +132,7 @@ app.UseCors("OrigenEspecificos");
 app.UseAuthentication();
 app.UseAuthorization();
 
-//app.UseMiddleware<ModuleAuthorizationMiddleware>();
+app.UseMiddleware<ModuleAuthorizationMiddleware>();
 
 app.MapControllers();
 

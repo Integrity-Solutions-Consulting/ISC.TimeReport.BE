@@ -22,22 +22,30 @@ namespace isc.time.report.be.application.Utils.Auth
             this.configuration = configuration;
         }
 
-        public string GenerateToken(User user,/* List<string> modulePaths,*/ int expiryMinutes = 60, bool isRecovery = false)
+        public string GenerateToken(User user, List<string> modulePaths, int expiryMinutes = 60, bool isRecovery = false)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:JWTSecretKey"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim("UserID", user.Id.ToString()),
-                new Claim("EmployeeID", user.EmployeeID.ToString()),
-                new Claim("PersonID", user.Employee?.PersonID.ToString() ?? "0"),
-                //new Claim("modules", JsonSerializer.Serialize(modulePaths))
-            };
+            var normalizedModules = modulePaths
+                .Select(m => m.ToLower())
+                .Distinct()
+                .ToList();
 
-            // Roles
+            var roleId = user.UserRole?
+                .FirstOrDefault(r => r.Status)?.RoleID ?? 0;
+
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, user.Username),
+        new Claim("userId", user.Id.ToString()),
+        new Claim("employeeId", user.EmployeeID.ToString()),
+        new Claim("personId", user.Employee?.PersonID.ToString() ?? "0"),
+        new Claim("roleId", roleId.ToString()),
+        new Claim("modules", JsonSerializer.Serialize(normalizedModules))
+    };
+
             if (user.UserRole != null)
             {
                 foreach (var ur in user.UserRole.Where(ur => ur.Status))
@@ -60,6 +68,7 @@ namespace isc.time.report.be.application.Utils.Auth
                 Expires = DateTime.UtcNow.AddMinutes(expiryMinutes),
                 SigningCredentials = credentials
             };
+
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
