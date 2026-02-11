@@ -10,6 +10,7 @@ namespace isc.time.report.be.api.Controllers.v1.Holidays
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class HolidayController : ControllerBase
     {
         private readonly IHolidayService _service;
@@ -23,16 +24,15 @@ namespace isc.time.report.be.api.Controllers.v1.Holidays
             var result = await _service.GetHolidayByIdAsync(id);
             return Ok(new SuccessResponse<GetHolidayByIdResponse>(200, "Feriado obtenido correctamente", result));
         }
-        [HttpGet("get-all-holiday")]
 
+        [HttpGet("get-all-holiday")]
         public async Task<ActionResult<SuccessResponse<List<GetAllHolidayResponse>>>> GetAll() 
         { 
             var result = await _service.GetAllHolidayAsync();
             return Ok(new SuccessResponse<List<GetAllHolidayResponse>>(200, "Lista de feriados obtenidos correctamente", result));
-
         }
 
-        [Authorize (Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
+        //[Authorize (Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpPost("create-holiday")]
         public async Task<ActionResult<SuccessResponse<CreateHolidayResponse>>>Create([FromBody] CreateHolidayRequest request)
         {
@@ -40,9 +40,8 @@ namespace isc.time.report.be.api.Controllers.v1.Holidays
             return Ok(new SuccessResponse<CreateHolidayResponse>(201, "Feriado creado correctamente", result));
         }
 
-        [Authorize ( Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
+        //[Authorize ( Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpPut("update-holiday/{id}")]
-
         public async Task<ActionResult<SuccessResponse<UpdateHolidayResponse>>>Update(int id, [FromBody] UpdateHolidayRequest request)
         {
             var result = await _service.UpdateHolidayAsync(request, id);
@@ -55,6 +54,7 @@ namespace isc.time.report.be.api.Controllers.v1.Holidays
             var result = await _service.ActivateHolidayAsync(id);
             return Ok(new SuccessResponse<ActiveInactiveHolidayResponse>(200, "Feriado activado correctamente", result));
         }
+
         [HttpDelete("inactivate-holiday/{id}")]
         public async Task<ActionResult<SuccessResponse<ActiveInactiveHolidayResponse>>> Inactive(int id)
         {
