@@ -77,7 +77,7 @@ namespace isc.time.report.be.api.Security
 
             if (string.IsNullOrEmpty(requiredModule))
             {
-                await _next(context);
+                await Deny(context, 403, "Endpoint no protegido");
                 return;
             }
 
