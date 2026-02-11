@@ -48,7 +48,7 @@ namespace isc.time.report.be.application.Utils.Auth
         new Claim("UserID", user.Id.ToString()),
         new Claim("EmployeeID", user.EmployeeID.ToString()),
         new Claim("PersonID", user.Employee?.PersonID.ToString() ?? "0"),
-        new Claim("roleId", roleId.Value.ToString()),
+        new Claim("RoleID", roleId.Value.ToString()),
         new Claim("modules", JsonSerializer.Serialize(normalizedModules))
     };
 
