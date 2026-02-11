@@ -11,6 +11,7 @@ namespace isc.time.report.be.api.Controllers.v1.PermissionTypes
     [ApiController]
     [Route("api/[controller]")]
     [ApiExplorerSettings(GroupName = "v1")]
+    [Authorize]
     public class PermissionTypeController : ControllerBase
     {
         private readonly IPermissionTypeService _service;
@@ -20,7 +21,7 @@ namespace isc.time.report.be.api.Controllers.v1.PermissionTypes
             _service = service;
         }
 
-        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
+        //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
         [HttpGet("GetAllPermissionTypes")]
         public async Task<ActionResult<SuccessResponse<List<GetPermissionTypeResponse>>>> GetAll()
         {
@@ -28,7 +29,7 @@ namespace isc.time.report.be.api.Controllers.v1.PermissionTypes
             return Ok(new SuccessResponse<List<GetPermissionTypeResponse>>(200, "Tipos de permiso obtenidos correctamente", result));
         }
 
-        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
+        //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
         [HttpGet("GetPermissionTypeByID/{id}")]
         public async Task<ActionResult<SuccessResponse<GetPermissionTypeResponse>>> GetById(int id)
         {
@@ -36,7 +37,7 @@ namespace isc.time.report.be.api.Controllers.v1.PermissionTypes
             return Ok(new SuccessResponse<GetPermissionTypeResponse>(200, $"Tipo de permiso con ID {id} obtenido correctamente", result));
         }
 
-        [Authorize(Roles = "Administrador,Gerente")]
+        //[Authorize(Roles = "Administrador,Gerente")]
         [HttpPost("CreatePermissionType")]
         public async Task<ActionResult<SuccessResponse<CreatePermissionTypeResponse>>> Create([FromBody] CreatePermissionTypeRequest request)
         {
@@ -44,7 +45,7 @@ namespace isc.time.report.be.api.Controllers.v1.PermissionTypes
             return Ok(new SuccessResponse<CreatePermissionTypeResponse>(201, "Tipo de permiso creado exitosamente", result));
         }
 
-        [Authorize(Roles = "Administrador,Gerente")]
+        //[Authorize(Roles = "Administrador,Gerente")]
         [HttpPut("UpdatePermissionType/{id}")]
         public async Task<ActionResult<SuccessResponse<UpdatePermissionTypeResponse>>> Update(int id, [FromBody] UpdatePermissionTypeRequest request)
         {
@@ -52,7 +53,7 @@ namespace isc.time.report.be.api.Controllers.v1.PermissionTypes
             return Ok(new SuccessResponse<UpdatePermissionTypeResponse>(200, $"Tipo de permiso con ID {id} actualizado correctamente", result));
         }
 
-        [Authorize(Roles = "Administrador,Gerente")]
+        //[Authorize(Roles = "Administrador,Gerente")]
         [HttpDelete("InactivatePermissionType/{id}")]
         public async Task<ActionResult<SuccessResponse<ActiveInactivePermissionTypeResponse>>> Inactivate(int id)
         {
@@ -60,7 +61,7 @@ namespace isc.time.report.be.api.Controllers.v1.PermissionTypes
             return Ok(new SuccessResponse<ActiveInactivePermissionTypeResponse>(200, $"Tipo de permiso con ID {id} inactivado correctamente", result));
         }
 
-        [Authorize(Roles = "Administrador,Gerente")]
+        //[Authorize(Roles = "Administrador,Gerente")]
         [HttpDelete("ActivatePermissionType/{id}")]
         public async Task<ActionResult<SuccessResponse<ActiveInactivePermissionTypeResponse>>> Activate(int id)
         {

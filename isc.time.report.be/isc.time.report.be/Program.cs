@@ -117,6 +117,7 @@ builder.Services.Configure<ModuleSecurityOptions>(
     builder.Configuration.GetSection("ModuleSecurity"));
 
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
