@@ -86,13 +86,24 @@ namespace isc.time.report.be.api.Security
                 await Deny(context, 403, $"Sin acceso al módulo {requiredModule}");
                 return;
             }
-
             if (IsOwnResourceEndpoint(context))
             {
-                if (!IsAccessingOwnResource(context))
+                var selfOnlyRoles = _options.ResourceScope?.SelfOnlyRoles ?? new List<string>();
+                var fullAccessRoles = _options.ResourceScope?.FullAccessRoles ?? new List<string>();
+
+                if (fullAccessRoles.Contains(roleId))
                 {
-                    await Deny(context, 403, "Solo puede acceder a su propio registro");
+                    await _next(context);
                     return;
+                }
+
+                if (selfOnlyRoles.Contains(roleId))
+                {
+                    if (!IsAccessingOwnResource(context))
+                    {
+                        await Deny(context, 403, "Solo puede acceder a su propio registro");
+                        return;
+                    }
                 }
             }
 
