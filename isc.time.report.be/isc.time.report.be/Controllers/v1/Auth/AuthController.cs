@@ -31,11 +31,11 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
         {
             try
             {
-                // 🔓 1. Descifrar texto
                 var json = crypto.Decrypt(request.Data);
-
-                // 🔄 2. Convertir a LoginRequest
                 var loginRequest = System.Text.Json.JsonSerializer.Deserialize<LoginRequest>(json);
+
+                Console.WriteLine("USERNAME: " + loginRequest?.Username);
+                Console.WriteLine("PASSWORD: " + loginRequest?.Password);
 
                 if (loginRequest == null)
                     return BadRequest("Payload inválido");
