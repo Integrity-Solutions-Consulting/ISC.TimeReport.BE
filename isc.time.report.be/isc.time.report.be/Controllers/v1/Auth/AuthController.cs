@@ -29,29 +29,27 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
         [HttpPost("login")]
         public async Task<ActionResult<SuccessResponse<LoginResponse>>> Login([FromBody] EncryptedRequest request)
         {
-            if (string.IsNullOrWhiteSpace(request?.Data))
-                return BadRequest("Payload cifrado inválido.");
-
-            string json;
-
             try
             {
-                json = crypto.Decrypt(request.Data);
+                // 🔓 1. Descifrar texto
+                var json = crypto.Decrypt(request.Data);
+
+                // 🔄 2. Convertir a LoginRequest
+                var loginRequest = System.Text.Json.JsonSerializer.Deserialize<LoginRequest>(json);
+
+                if (loginRequest == null)
+                    return BadRequest("Payload inválido");
+
+                // 🚀 3. Continuar flujo normal
+                var login = await authService.Login(loginRequest);
+
+                return Ok(new SuccessResponse<LoginResponse>(200, "Operacion Exitosa.", login));
             }
-            catch
+            catch (Exception ex)
             {
-                return BadRequest("No se pudo descifrar la información.");
+                return StatusCode(500, "Error al descifrar credenciales: " + ex.Message);
             }
-
-            var loginRequest = System.Text.Json.JsonSerializer
-                .Deserialize<LoginRequest>(json);
-
-            if (loginRequest == null)
-                return BadRequest("Credenciales inválidas.");
-
-            var login = await authService.Login(loginRequest);
-
-            return Ok(new SuccessResponse<LoginResponse>(200, "Operacion Exitosa.", login));
+       
         }
 
         [HttpPost("roles")]
