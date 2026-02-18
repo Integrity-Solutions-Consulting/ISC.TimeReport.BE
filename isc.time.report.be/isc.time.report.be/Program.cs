@@ -11,6 +11,7 @@ using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Response.Shared;
 using isc.time.report.be.infrastructure.IOC;
 using isc.time.report.be.infrastructure.Repositories.Auth;
+using isc.time.report.be.infrastructure.Utils.Secutiry;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Data.SqlClient;
@@ -65,6 +66,8 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["JWT:JWTSecretKey"]))
     };
 });
+
+builder.Services.AddScoped<CryptoHelper>(); // registro de la depencia 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
