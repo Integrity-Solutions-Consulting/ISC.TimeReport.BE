@@ -31,26 +31,39 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
         {
             try
             {
+                // 🔓 1. Descifrar
                 var json = crypto.Decrypt(request.Data);
-                var loginRequest = System.Text.Json.JsonSerializer.Deserialize<LoginRequest>(json);
+                Console.WriteLine("JSON DESCIFRADO: " + json);
 
-                Console.WriteLine("USERNAME: " + loginRequest?.Username);
-                Console.WriteLine("PASSWORD: " + loginRequest?.Password);
+                // 🔄 2. Deserializar correctamente
+                var loginRequest = System.Text.Json.JsonSerializer.Deserialize<LoginRequest>(
+                    json,
+                    new System.Text.Json.JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
 
-                if (loginRequest == null)
-                    return BadRequest("Payload inválido");
+                if (loginRequest == null ||
+                    string.IsNullOrWhiteSpace(loginRequest.Username) ||
+                    string.IsNullOrWhiteSpace(loginRequest.Password))
+                {
+                    return BadRequest("Credenciales incompletas");
+                }
 
-                // 🚀 3. Continuar flujo normal
+                Console.WriteLine("USERNAME: " + loginRequest.Username);
+
+                // 🚀 3. Login normal
                 var login = await authService.Login(loginRequest);
 
                 return Ok(new SuccessResponse<LoginResponse>(200, "Operacion Exitosa.", login));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error al descifrar credenciales: " + ex.Message);
+                Console.WriteLine("ERROR LOGIN: " + ex.Message);
+                return StatusCode(500, "Error al procesar credenciales");
             }
-       
         }
+
 
         [HttpPost("roles")]
         //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
