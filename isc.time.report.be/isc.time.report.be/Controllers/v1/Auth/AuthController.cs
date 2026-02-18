@@ -1,9 +1,11 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.Auth;
 using isc.time.report.be.domain.Models.Request.Auth;
+using isc.time.report.be.domain.Models.Request.EncryptedRequest;
 using isc.time.report.be.domain.Models.Response.Auth;
 using isc.time.report.be.domain.Models.Response.Auth;
 using isc.time.report.be.domain.Models.Response.Shared;
 using isc.time.report.be.domain.Models.Response.Users;
+using isc.time.report.be.infrastructure.Utils.Secutiry;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,26 +19,39 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
     {
 
         private readonly IAuthService authService;
-        public AuthController(IAuthService authService)
+        private readonly CryptoHelper crypto;
+        public AuthController(IAuthService authService, CryptoHelper crypto)
         {
             this.authService = authService;
+            this.crypto = crypto;
         }
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult<SuccessResponse<LoginResponse>>> Login(LoginRequest loginRequest)
+        public async Task<ActionResult<SuccessResponse<LoginResponse>>> Login([FromBody] EncryptedRequest request)
         {
+            if (string.IsNullOrWhiteSpace(request?.Data))
+                return BadRequest("Payload cifrado inválido.");
+
+            string json;
+
+            try
+            {
+                json = crypto.Decrypt(request.Data);
+            }
+            catch
+            {
+                return BadRequest("No se pudo descifrar la información.");
+            }
+
+            var loginRequest = System.Text.Json.JsonSerializer
+                .Deserialize<LoginRequest>(json);
+
+            if (loginRequest == null)
+                return BadRequest("Credenciales inválidas.");
+
             var login = await authService.Login(loginRequest);
 
             return Ok(new SuccessResponse<LoginResponse>(200, "Operacion Exitosa.", login));
-        }
-
-        [HttpPost("register")]
-        //[Authorize(Roles = "Administrador")]
-        public async Task<ActionResult<SuccessResponse<RegisterResponse>>> Register(RegisterRequest registerRequest)
-        {
-            var register = await authService.Register(registerRequest);
-
-            return Ok(new SuccessResponse<RegisterResponse>(200, "Operacion Exitosa.", register));
         }
 
         [HttpPost("roles")]
