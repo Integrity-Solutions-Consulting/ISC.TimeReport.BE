@@ -65,7 +65,7 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
                 return StatusCode(500, ex.ToString());
             }
         }
-        }
+        
 
 
         [HttpPost("roles")]
