@@ -31,11 +31,10 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
         {
             try
             {
-                // 🔓 1. Descifrar
+                
                 var json = crypto.Decrypt(request.Data);
                 Console.WriteLine("JSON DESCIFRADO: " + json);
 
-                // 🔄 2. Deserializar correctamente
                 var loginRequest = System.Text.Json.JsonSerializer.Deserialize<LoginRequest>(
                     json,
                     new System.Text.Json.JsonSerializerOptions
@@ -50,9 +49,7 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
                     return BadRequest("Credenciales incompletas");
                 }
 
-                Console.WriteLine("USERNAME: " + loginRequest.Username);
-
-                // 🚀 3. Login normal
+             
                 var login = await authService.Login(loginRequest);
 
                 return Ok(new SuccessResponse<LoginResponse>(200, "Operacion Exitosa.", login));
@@ -60,8 +57,7 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
             catch (Exception ex)
             
             {
-                Console.WriteLine("🔥 ERROR REAL LOGIN 🔥");
-                Console.WriteLine(ex.ToString());
+
                 return StatusCode(500, ex.ToString());
             }
         }
