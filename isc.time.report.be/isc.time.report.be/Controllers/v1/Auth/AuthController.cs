@@ -58,10 +58,13 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
                 return Ok(new SuccessResponse<LoginResponse>(200, "Operacion Exitosa.", login));
             }
             catch (Exception ex)
+            
             {
-                Console.WriteLine("ERROR LOGIN: " + ex.Message);
-                return StatusCode(500, "Error al procesar credenciales");
+                Console.WriteLine("🔥 ERROR REAL LOGIN 🔥");
+                Console.WriteLine(ex.ToString());
+                return StatusCode(500, ex.ToString());
             }
+        }
         }
 
 
