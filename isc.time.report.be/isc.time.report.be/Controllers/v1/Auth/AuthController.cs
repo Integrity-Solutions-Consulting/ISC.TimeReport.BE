@@ -31,16 +31,13 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
         {
             try
             {
-                
-                var json = crypto.Decrypt(request.Data);
-                Console.WriteLine("JSON DESCIFRADO: " + json);
+                // Desencriptamos usando la IV enviada
+                var json = crypto.Decrypt(request.Data, request.Iv);
 
                 var loginRequest = System.Text.Json.JsonSerializer.Deserialize<LoginRequest>(
                     json,
-                    new System.Text.Json.JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
+                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                );
 
                 if (loginRequest == null ||
                     string.IsNullOrWhiteSpace(loginRequest.Username) ||
@@ -49,19 +46,18 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
                     return BadRequest("Credenciales incompletas");
                 }
 
-             
                 var login = await authService.Login(loginRequest);
 
-                return Ok(new SuccessResponse<LoginResponse>(200, "Operacion Exitosa.", login));
+                return Ok(new SuccessResponse<LoginResponse>(200, "Operación exitosa.", login));
             }
             catch (Exception ex)
-            
             {
-
+                Console.WriteLine("ERROR LOGIN: " + ex);
                 return StatusCode(500, ex.ToString());
             }
         }
-        
+
+
 
 
         [HttpPost("roles")]
