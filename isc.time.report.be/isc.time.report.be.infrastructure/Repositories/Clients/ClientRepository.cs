@@ -1,10 +1,6 @@
-﻿using DocumentFormat.OpenXml.InkML;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using isc.time.report.be.application.Interfaces.Repository.Clients;
-using isc.time.report.be.application.Interfaces.Repository.InventoryApis;
+﻿using isc.time.report.be.application.Interfaces.Repository.Clients;
 using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Persons;
-using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysCustomers;
@@ -12,11 +8,6 @@ using isc.time.report.be.infrastructure.Database;
 using isc.time.report.be.infrastructure.Repositories.InventorysApis;
 using isc.time.report.be.infrastructure.Utils.Pagination;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.infrastructure.Repositories.Clients
 {
@@ -49,7 +40,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
                         (c.Person.IdentificationNumber != null && c.Person.IdentificationNumber.ToLower().Contains(normalizedSearch)) ||
                         (c.Person.Email != null && c.Person.Email.ToLower().Contains(normalizedSearch)) ||
                         (c.Person.LastName != null && c.Person.LastName.ToLower().Contains(normalizedSearch))
-                    )));                       
+                    )));
             }
 
             query = query.OrderBy(p => p.Status ? 0 : 1)
@@ -443,7 +434,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
                 throw new ClientFaultException("El ID del empleado no puede ser menor a 0.");
             }
 
-            var clients =  await _dbContext.EmployeeProjects
+            var clients = await _dbContext.EmployeeProjects
                 .Where(ep => ep.EmployeeID == employeeId)
                 .Select(ep => ep.Project.Client)
                 .Distinct()

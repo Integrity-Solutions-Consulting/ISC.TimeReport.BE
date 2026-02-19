@@ -1,20 +1,11 @@
 ﻿using AutoMapper;
 using isc.time.report.be.application.Interfaces.Repository.Employees;
-using isc.time.report.be.application.Interfaces.Repository.Persons;
 using isc.time.report.be.application.Interfaces.Service.Employees;
-using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.Employees;
 using isc.time.report.be.domain.Models.Response.Employees;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using entityEmployee = isc.time.report.be.domain.Entity.Employees;
-using entityPerson = isc.time.report.be.domain.Entity.Persons;
 
 namespace isc.time.report.be.application.Services.Employees
 {

@@ -1,16 +1,14 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.Auth;
 using isc.time.report.be.domain.Models.Request.Auth;
 using isc.time.report.be.domain.Models.Response.Auth;
-using isc.time.report.be.domain.Models.Response.Auth;
 using isc.time.report.be.domain.Models.Response.Shared;
 using isc.time.report.be.domain.Models.Response.Users;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isc.time.report.be.api.Controllers.v1.Auth
 {
-    [ApiExplorerSettings(GroupName = "v1")] 
+    [ApiExplorerSettings(GroupName = "v1")]
     [ApiController]
     [Route("api/auth")]
     public class AuthController : ControllerBase

@@ -1,19 +1,10 @@
 ﻿using AutoMapper;
-using DocumentFormat.OpenXml.InkML;
 using isc.time.report.be.application.Interfaces.Repository.Holidays;
-using isc.time.report.be.application.Interfaces.Repository.PermissionTypes;
 using isc.time.report.be.application.Interfaces.Service.Holidays;
 using isc.time.report.be.domain.Entity.Holidays;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.Holidays;
-using isc.time.report.be.domain.Models.Response.Catalogs;
 using isc.time.report.be.domain.Models.Response.Holidays;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.application.Services.Holidays
 {
@@ -30,7 +21,7 @@ namespace isc.time.report.be.application.Services.Holidays
         }
 
 
-        public async Task<GetHolidayByIdResponse>GetHolidayByIdAsync(int id)
+        public async Task<GetHolidayByIdResponse> GetHolidayByIdAsync(int id)
         {
             if (id <= 0)
                 throw new ClientFaultException("El ID debe ser mayor a 0");
@@ -42,13 +33,13 @@ namespace isc.time.report.be.application.Services.Holidays
 
         public async Task<List<GetAllHolidayResponse>> GetAllHolidayAsync()
         {
-            var list = await holidayRepository.GetAllHolidayAsync(); 
+            var list = await holidayRepository.GetAllHolidayAsync();
             var holiday = _mapper.Map<List<GetAllHolidayResponse>>(list);
             return holiday;
         }
 
 
-        public async Task<CreateHolidayResponse>CreateHolidayAsync(CreateHolidayRequest CreateHoliday)
+        public async Task<CreateHolidayResponse> CreateHolidayAsync(CreateHolidayRequest CreateHoliday)
         {
             //esto es un test 
             var entity = _mapper.Map<Holiday>(CreateHoliday);
@@ -64,7 +55,7 @@ namespace isc.time.report.be.application.Services.Holidays
             var response = await holidayRepository.UpdateHolidayAsync(entity);
             var TrueResponse = _mapper.Map<UpdateHolidayResponse>(response);
             return TrueResponse;
-    
+
         }
 
         public async Task<ActiveInactiveHolidayResponse> ActivateHolidayAsync(int id)

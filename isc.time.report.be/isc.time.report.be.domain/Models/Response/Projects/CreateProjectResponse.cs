@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace isc.time.report.be.domain.Models.Response.Projects
+﻿namespace isc.time.report.be.domain.Models.Response.Projects
 {
     public class CreateProjectResponse
     {
@@ -21,6 +15,7 @@ namespace isc.time.report.be.domain.Models.Response.Projects
         public DateTime? ActualEndDate { get; set; }
         public decimal? Budget { get; set; }
         public decimal Hours { get; set; }
+        public int? LeaderID { get; set; }
         public bool? Status { get; set; }
         public DateTime? WaitingStartDate { get; set; }
         public DateTime? WaitingEndDate { get; set; }

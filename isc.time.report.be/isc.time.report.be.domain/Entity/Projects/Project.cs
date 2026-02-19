@@ -3,11 +3,6 @@ using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Leaders;
 using isc.time.report.be.domain.Entity.Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.domain.Entity.Projects
 {
@@ -29,7 +24,8 @@ namespace isc.time.report.be.domain.Entity.Projects
         public decimal? Budget { get; set; } = 0;
         public decimal? Hours { get; set; } = 0;
         public List<EmployeeProject> EmployeeProject { get; set; }
-        public List<Leader> Leader { get; set; }
+        public int? LeaderID { get; set; }
+        public Leader? Leader { get; set; }
         public DateTime? WaitingStartDate { get; set; }
         public DateTime? WaitingEndDate { get; set; }
         public string? Observation { get; set; }

@@ -1,24 +1,17 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.ProjectionHours;
-using isc.time.report.be.application.Interfaces.Repository.Projections;
 using isc.time.report.be.domain.Entity.ProjectionHours;
-using isc.time.report.be.domain.Entity.Projections;
 using isc.time.report.be.domain.Models.Response.Projections;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Security;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.infrastructure.Repositories.ProjectionHours
 {
     public class ProjectionHourRepository : IProjectionHoursRepository
     {
         private readonly DBContext _dbContext;
-        public ProjectionHourRepository(DBContext dBContext) {
+        public ProjectionHourRepository(DBContext dBContext)
+        {
             _dbContext = dBContext;
         }
         public async Task<List<Guid>> GetAllGroupProjectionsAsync()

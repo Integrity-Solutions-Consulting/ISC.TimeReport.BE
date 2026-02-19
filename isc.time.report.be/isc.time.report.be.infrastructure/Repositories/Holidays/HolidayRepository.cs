@@ -3,11 +3,6 @@ using isc.time.report.be.domain.Entity.Holidays;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.infrastructure.Repositories.Holidays
 {
@@ -40,9 +35,9 @@ namespace isc.time.report.be.infrastructure.Repositories.Holidays
             }
             return list;
         }
-        public async Task<Holiday> CreateHolidayAsync (Holiday holiday)
+        public async Task<Holiday> CreateHolidayAsync(Holiday holiday)
         {
-           
+
             holiday.CreationDate = DateTime.Now;
             holiday.CreationUser = holiday.CreationUser ?? "SYSTEM";
             holiday.CreationIp = holiday.CreationIp ?? "0.0.0.0";
@@ -52,7 +47,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Holidays
             return holiday;
         }
 
-        public async Task<Holiday> UpdateHolidayAsync (Holiday holiday)
+        public async Task<Holiday> UpdateHolidayAsync(Holiday holiday)
         {
             var existing = await GetHolidayByIdAsync(holiday.Id);
             if (existing == null) throw new ClientFaultException("Feriado no encontrado");
@@ -64,7 +59,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Holidays
             existing.Description = holiday.Description;
 
             existing.ModificationDate = DateTime.Now;
-            existing.ModificationUser = holiday.ModificationUser ?? "SYSTEM"; 
+            existing.ModificationUser = holiday.ModificationUser ?? "SYSTEM";
             existing.ModificationIp = holiday.ModificationIp ?? "0.0.0.0";
 
             _dbContext.Entry(existing).State = EntityState.Modified;

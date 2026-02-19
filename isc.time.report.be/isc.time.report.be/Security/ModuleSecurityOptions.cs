@@ -2,8 +2,8 @@
 {
     public class ModuleSecurityOptions
     {
-        public Dictionary<string, List<string>> RoleModules { get; set; } 
-        public Dictionary<string, List<string>> ModuleRoutes { get; set; } 
+        public Dictionary<string, List<string>> RoleModules { get; set; }
+        public Dictionary<string, List<string>> ModuleRoutes { get; set; }
         public List<string> IgnoreRoutes { get; set; }
 
         public ResourceScopeOptions ResourceScope { get; set; }

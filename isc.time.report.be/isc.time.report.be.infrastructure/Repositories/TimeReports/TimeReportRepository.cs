@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.InkML;
-using isc.time.report.be.application.Interfaces.Repository.TimeReports;
-using isc.time.report.be.domain.Entity.Clients;
+﻿using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.domain.Entity.DailyActivities;
 using isc.time.report.be.domain.Entity.Holidays;
 using isc.time.report.be.domain.Exceptions;
@@ -8,11 +6,6 @@ using isc.time.report.be.domain.Models.Response.Dashboards;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.infrastructure.Repositories.TimeReports
 {
@@ -88,24 +81,24 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
 
         public async Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteAsync(int? month = null, int? year = null, bool mesCompleto = false)
         {
-                var parameters = new[]
-                {
+            var parameters = new[]
+            {
                     new SqlParameter("@Mes", month ?? (object)DBNull.Value),
                     new SqlParameter("@Anio", year ?? (object)DBNull.Value),
                     new SqlParameter("@MesCompleto", mesCompleto ? 1 : 0)
                 };
 
-                var list = await _dbContext.Set<DashboardRecursosPendientesDto>()
-                    .FromSqlRaw("EXEC dbo.sp_RecursosTimeReportPendiente @Mes, @Anio, @MesCompleto", parameters)
-                    .ToListAsync();
+            var list = await _dbContext.Set<DashboardRecursosPendientesDto>()
+                .FromSqlRaw("EXEC dbo.sp_RecursosTimeReportPendiente @Mes, @Anio, @MesCompleto", parameters)
+                .ToListAsync();
 
-                if (!list.Any())
-                {
-                    throw new ServerFaultException("No se encontraron recursos pendientes para el Time Report");
-                }
-
-                return list;
+            if (!list.Any())
+            {
+                throw new ServerFaultException("No se encontraron recursos pendientes para el Time Report");
             }
+
+            return list;
+        }
 
         public async Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteFiltradoAsync(int? month = null, int? year = null, bool mesCompleto = false, byte bancoGuayaquil = 0)
         {

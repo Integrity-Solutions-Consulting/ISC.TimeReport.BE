@@ -1,14 +1,4 @@
-﻿using isc.time.report.be.domain.Entity.Auth;
-using isc.time.report.be.domain.Entity.Catalogs;
-using isc.time.report.be.domain.Entity.Clients;
-using isc.time.report.be.domain.Entity.DailyActivities;
-using isc.time.report.be.domain.Entity.Employees;
-using isc.time.report.be.domain.Entity.Projects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using isc.time.report.be.domain.Entity.Catalogs;
 
 namespace isc.time.report.be.domain.Models.Dto.TimeReports
 {

@@ -1,6 +1,5 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.Dashboards;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isc.time.report.be.api.Controllers.v1.Dashboards
@@ -30,7 +29,8 @@ namespace isc.time.report.be.api.Controllers.v1.Dashboards
             return Ok(result);
         }
 
-        [HttpGet("recursos-por-cliente")] public async Task<IActionResult> GetRecursosPorCliente()
+        [HttpGet("recursos-por-cliente")]
+        public async Task<IActionResult> GetRecursosPorCliente()
         {
             var result = await _service.GetRecursosPorClienteAsync();
             return Ok(result);

@@ -1,12 +1,6 @@
 ﻿using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Models.Request.Employees;
 using isc.time.report.be.domain.Models.Response.Employees;
-using isc.time.report.be.domain.Models.Response.Employees;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.application.Interfaces.Service.Employees
 {

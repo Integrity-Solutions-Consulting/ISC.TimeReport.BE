@@ -2,7 +2,6 @@
 using isc.time.report.be.domain.Models.Request.Permissions;
 using isc.time.report.be.domain.Models.Response.Permissions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isc.time.report.be.api.Controllers.v1.Permission

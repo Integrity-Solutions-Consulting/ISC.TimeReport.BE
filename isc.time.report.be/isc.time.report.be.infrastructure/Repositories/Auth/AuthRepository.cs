@@ -4,13 +4,7 @@ using isc.time.report.be.domain.Entity.Modules;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.infrastructure.Database;
 using isc.time.report.be.infrastructure.Utils.Emails;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.infrastructure.Repositories.Auth
 {
@@ -56,7 +50,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
             {
                 var existingUser = await _dbContext.Users
 
-                    .FirstOrDefaultAsync(u => u.Username == user.Username); 
+                    .FirstOrDefaultAsync(u => u.Username == user.Username);
 
                 if (existingUser != null)
                 {
@@ -79,7 +73,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
 
                 await _dbContext.Users.AddAsync(user);
                 await _dbContext.SaveChangesAsync();
-                
+
                 await _emailUtils.SendEmailAsync(destinatarioCorreo, "Credenciales de acceso", htmlCorreo);
 
                 await transaction.CommitAsync();
@@ -204,7 +198,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
 
         public async Task<List<Role>> GetAllRolesWithModulesAsync()
         {
-            var roles =  await _dbContext.Roles
+            var roles = await _dbContext.Roles
                 .Include(r => r.RoleModule.Where(rm => rm.Status == true))
                     .ThenInclude(rm => rm.Module)
                 .ToListAsync();
@@ -224,7 +218,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
             return await _dbContext.Roles
                 .Include(r => r.RoleModule)
                 .FirstOrDefaultAsync(r => r.Id == id);
-            
+
         }
 
         public async Task UpdateRoleModulesAsync(Role role, List<int> newModuleIds)

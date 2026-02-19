@@ -4,7 +4,6 @@ using isc.time.report.be.domain.Models.Dto;
 using isc.time.report.be.domain.Models.Request.Clients;
 using isc.time.report.be.domain.Models.Response.Clients;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isc.time.report.be.api.Controllers.v1.Clients

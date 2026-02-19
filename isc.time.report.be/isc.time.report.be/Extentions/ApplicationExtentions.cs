@@ -1,11 +1,8 @@
-﻿using System.Text.Json;
-using Azure;
-using isc.time.report.be.domain.Exceptions;
+﻿using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Dto;
-using isc.time.report.be.domain.Models.Response.Shared;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Text.Json;
 
 namespace isc.time.report.be.api.Extentions
 {

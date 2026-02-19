@@ -1,36 +1,20 @@
 ﻿using AutoMapper;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Office.CustomUI;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using isc.time.report.be.application.Interfaces.Repository.Auth;
 using isc.time.report.be.application.Interfaces.Repository.Clients;
 using isc.time.report.be.application.Interfaces.Repository.Leaders;
-using isc.time.report.be.application.Interfaces.Repository.Menus;
 using isc.time.report.be.application.Interfaces.Repository.Projects;
 using isc.time.report.be.application.Interfaces.Service.Projects;
-using isc.time.report.be.application.Utils.Auth;
-using isc.time.report.be.domain.Entity.Auth;
 using isc.time.report.be.domain.Entity.Catalogs;
-using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.Projects;
-using isc.time.report.be.domain.Models.Response.Auth;
 using isc.time.report.be.domain.Models.Response.Employees;
-using isc.time.report.be.domain.Models.Response.Leaders;
 using isc.time.report.be.domain.Models.Response.Persons;
 using isc.time.report.be.domain.Models.Response.Projects;
-using isc.time.report.be.domain.Models.Response.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.application.Services.Projects
 {
@@ -54,7 +38,24 @@ namespace isc.time.report.be.application.Services.Projects
 
             var responseItems = _mapper.Map<List<GetAllProjectsResponse>>(result.Items);
 
-            //foreach (var project in result) 
+            // Manual mapping for Leader object as AutoMapper might not handle the nested object automatically or if it's missing in the source
+            // Assuming result.Items (Project entities) have the Leader navigation property populated
+            for (int i = 0; i < result.Items.Count; i++)
+            {
+                var project = result.Items[i];
+                var response = responseItems[i];
+                if (project.Leader != null)
+                {
+                    response.LeaderID = project.LeaderID;
+                    response.Leader = new Lider
+                    {
+                        Id = project.Leader.Id,
+                        FirstName = project.Leader.FirstName,
+                        LastName = project.Leader.LastName,
+                        Email = project.Leader.Email
+                    };
+                }
+            }
 
             return new PagedResult<GetAllProjectsResponse>
             {
@@ -71,12 +72,30 @@ namespace isc.time.report.be.application.Services.Projects
             int employeeId,
             bool active)
         {
-            if(active == true)
+            if (active == true)
             {
                 // Obtiene solo los proyectos asignados al empleado
                 var result = await projectRepository.GetAssignedProjectsForEmployeeActiveAsync(paginationParams, search, employeeId);
-           
+
                 var responseItems = _mapper.Map<List<GetAllProjectsResponse>>(result.Items);
+
+                // Manual mapping for Leader
+                for (int i = 0; i < result.Items.Count; i++)
+                {
+                    var project = result.Items[i];
+                    var response = responseItems[i];
+                    if (project.Leader != null)
+                    {
+                        response.LeaderID = project.LeaderID;
+                        response.Leader = new Lider
+                        {
+                            Id = project.Leader.Id,
+                            FirstName = project.Leader.FirstName,
+                            LastName = project.Leader.LastName,
+                            Email = project.Leader.Email
+                        };
+                    }
+                }
 
                 return new PagedResult<GetAllProjectsResponse>
                 {
@@ -92,6 +111,24 @@ namespace isc.time.report.be.application.Services.Projects
                 var result = await projectRepository.GetAssignedProjectsForEmployeeAsync(paginationParams, search, employeeId);
 
                 var responseItems = _mapper.Map<List<GetAllProjectsResponse>>(result.Items);
+
+                // Manual mapping for Leader
+                for (int i = 0; i < result.Items.Count; i++)
+                {
+                    var project = result.Items[i];
+                    var response = responseItems[i];
+                    if (project.Leader != null)
+                    {
+                        response.LeaderID = project.LeaderID;
+                        response.Leader = new Lider
+                        {
+                            Id = project.Leader.Id,
+                            FirstName = project.Leader.FirstName,
+                            LastName = project.Leader.LastName,
+                            Email = project.Leader.Email
+                        };
+                    }
+                }
 
                 return new PagedResult<GetAllProjectsResponse>
                 {
@@ -115,14 +152,37 @@ namespace isc.time.report.be.application.Services.Projects
 
             var responseProject = _mapper.Map<GetProjectByIDResponse>(project);
 
+            if (project.Leader != null)
+            {
+                responseProject.LeaderID = project.LeaderID;
+                responseProject.Leader = new isc.time.report.be.domain.Models.Response.Projects.Lider // Explicit namespace if needed to avoid confusion with GetAllProjectsResponse.Lider
+                {
+                    Id = project.Leader.Id,
+                    FirstName = project.Leader.FirstName,
+                    LastName = project.Leader.LastName,
+                    Email = project.Leader.Email
+                };
+            }
+
             return responseProject;
         }
 
         public async Task<CreateProjectResponse> CreateProject(CreateProjectRequest projectRequest)
         {
+            var projectEntity = _mapper.Map<Project>(projectRequest);
+            
+            // Validar que el líder exista (si se proporcionó)
+            if (projectRequest.LeaderID.HasValue)
+            {
+                var leader = await _leaderRepository.GetLeaderByIDAsync(projectRequest.LeaderID.Value);
+                if (leader == null)
+                {
+                   throw new ClientFaultException("El líder especificado no existe.", 404);
+                }
+            }
+            projectEntity.LeaderID = projectRequest.LeaderID;
 
-
-            var projectNew = await projectRepository.CreateProject(_mapper.Map<Project>(projectRequest));
+            var projectNew = await projectRepository.CreateProject(projectEntity);
 
             if (projectNew.StartDate > projectNew.EndDate)
             {
@@ -141,6 +201,16 @@ namespace isc.time.report.be.application.Services.Projects
                 throw new ClientFaultException("No existe el proyecto", 401);
             }
 
+            // Validar que el líder exista si se está cambiando y no es nulo
+            if (projectParaUpdate.LeaderID.HasValue && projectGet.LeaderID != projectParaUpdate.LeaderID)
+            {
+                var leader = await _leaderRepository.GetLeaderByIDAsync(projectParaUpdate.LeaderID.Value);
+                if (leader == null)
+                {
+                    throw new ClientFaultException("El líder especificado no existe.", 404);
+                }
+            }
+
             projectGet.ClientID = projectParaUpdate.ClientID;
             projectGet.ProjectStatusID = projectParaUpdate.ProjectStatusID;
             projectGet.ProjectTypeID = projectParaUpdate.ProjectTypeID;
@@ -156,6 +226,7 @@ namespace isc.time.report.be.application.Services.Projects
             projectGet.WaitingStartDate = projectParaUpdate.WaitingStartDate;
             projectGet.WaitingEndDate = projectParaUpdate.WaitingEndDate;
             projectGet.Observation = projectParaUpdate.Observation;
+            projectGet.LeaderID = projectParaUpdate.LeaderID; // Actualizar LeaderID
 
             if (projectGet.StartDate > projectGet.EndDate)
             {
@@ -193,7 +264,7 @@ namespace isc.time.report.be.application.Services.Projects
 
             DateTime now = DateTime.UtcNow;
 
-            
+
             foreach (var dto in request.EmployeeProjectMiddle)
             {
                 bool tieneEmpleado = dto.EmployeeId.HasValue;
@@ -293,7 +364,16 @@ namespace isc.time.report.be.application.Services.Projects
                 Budget = project.Budget,
                 WaitingEndDate = project.WaitingEndDate,
                 WaitingStartDate = project.WaitingStartDate,
+
                 Observation = project.Observation,
+                LeaderID = project.LeaderID,
+                Leader = project.Leader != null ? new isc.time.report.be.domain.Models.Response.Projects.Lider 
+                { 
+                    Id = project.Leader.Id,
+                    FirstName = project.Leader.FirstName,
+                    LastName = project.Leader.LastName,
+                    Email = project.Leader.Email
+                } : null,
 
                 EmployeeProjects = project.EmployeeProject.Select(ep => new GetEmployeeProjectResponse
                 {
@@ -321,7 +401,7 @@ namespace isc.time.report.be.application.Services.Projects
                         LastName = e.Person.LastName,
                         Status = e.Status
                     }).ToList()
-            };  
+            };
 
             return response;
         }
@@ -350,20 +430,24 @@ namespace isc.time.report.be.application.Services.Projects
             // 4️ Mapear a DTO listo para Excel
             var result = projects.Select((p, index) =>
             {
-                var projectLeaders = leaders
-                    .Where(l => l.ProjectID == p.Id)
-                    .Select(l => new LiderData
+                // Logic simplificada: 1 Proyecto -> 1 Líder (p.Leader, que viene incluido por GetAllProjectsAsync)
+                var currentLeader = p.Leader;
+                var leaderList = new List<LiderData>();
+                
+                if (currentLeader != null)
+                {
+                    leaderList.Add(new LiderData
                     {
-                        Id = l.Id,
+                        Id = currentLeader.Id,
                         GetPersonResponse = new GetPersonResponse
                         {
-                            Id = l.Person.Id,
-                            FirstName = l.Person.FirstName,
-                            LastName = l.Person.LastName,
-                            Email = l.Person.Email
+                            FirstName = currentLeader.FirstName,
+                            LastName = currentLeader.LastName,
+                            Email = currentLeader.Email,
+                            Phone = currentLeader.Phone
                         }
-                    })
-                    .ToList();
+                    });
+                }
 
                 var projectClients = clients
                     .Where(c => c.Id == p.ClientID)
@@ -393,7 +477,7 @@ namespace isc.time.report.be.application.Services.Projects
                     WaitingStartDate = p.WaitingStartDate,
                     WaitingEndDate = p.WaitingEndDate,
                     Observation = p.Observation,
-                    LiderData = projectLeaders,
+                    LiderData = leaderList,
                     ClientData = projectClients,
 
                 };
@@ -401,9 +485,6 @@ namespace isc.time.report.be.application.Services.Projects
 
             return result;
         }
-
-
-
 
         public async Task<byte[]> GenerateProjectsExcelAsync()
         {

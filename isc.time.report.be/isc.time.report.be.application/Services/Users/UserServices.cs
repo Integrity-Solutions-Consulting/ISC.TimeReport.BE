@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using isc.time.report.be.application.Interfaces.Repository.Auth;
 using isc.time.report.be.application.Interfaces.Repository.Users;
 using isc.time.report.be.application.Interfaces.Service.Users;
 using isc.time.report.be.application.Utils.Auth;
@@ -8,12 +7,6 @@ using isc.time.report.be.domain.Entity.Modules;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.Users;
 using isc.time.report.be.domain.Models.Response.Users;
-using isc.time.report.be.domain.Models.Response.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.application.Services.Users
 {

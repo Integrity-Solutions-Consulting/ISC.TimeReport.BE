@@ -1,6 +1,5 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.Catalogs;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isc.time.report.be.api.Controllers.v1.Catalogs

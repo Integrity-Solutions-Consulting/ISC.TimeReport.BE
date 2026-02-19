@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
-using isc.time.report.be.application.Interfaces.Repository.InventoryApis;
+﻿using isc.time.report.be.application.Interfaces.Repository.InventoryApis;
 using isc.time.report.be.domain.Entity.Catalogs;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysCustomers;
@@ -11,11 +10,6 @@ using isc.time.report.be.infrastructure.Utils;
 using isc.time.report.be.infrastructure.Utils.Peticiones;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
 {
@@ -53,7 +47,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
                     var expirationDate = _jwtInventoryUtils.GetExpirationDateFromToken(inventoryToken.Token);
 
                     if (expirationDate > DateTime.UtcNow)
-                        return inventoryToken.Token; 
+                        return inventoryToken.Token;
                 }
                 catch
                 {
@@ -64,7 +58,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
             {
                 email = _configuration["InventoryCredentials:Email"],
                 password = _configuration["InventoryCredentials:Password"],
-               
+
             };
 
 
@@ -125,7 +119,7 @@ namespace isc.time.report.be.infrastructure.Repositories.InventorysApis
 
             var response = await _httpUtils.SendRequest<SupplierResponseDto>($"{_configuration["Infrastructure:InventoryAPIUrlBase"]}/api/v1/supplier/supplierType/2", HttpMethod.Get, null, token);
 
-            return response ;
+            return response;
         }
         public async Task<bool> CreateCustomerInventoryAsync(InventoryCreateCustomerRequest request)
         {

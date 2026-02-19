@@ -1,12 +1,8 @@
-﻿using isc.time.report.be.application.Interfaces.Service.Auth;
-using isc.time.report.be.application.Interfaces.Service.Users;
-using isc.time.report.be.application.Services.Users;
-using isc.time.report.be.domain.Entity.Auth;
+﻿using isc.time.report.be.application.Interfaces.Service.Users;
 using isc.time.report.be.domain.Models.Dto;
 using isc.time.report.be.domain.Models.Request.Users;
 using isc.time.report.be.domain.Models.Response.Users;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isc.time.report.be.api.Controllers.v1.Users

@@ -1,10 +1,8 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.DailyActivities;
-using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Models.Request.DailyActivities;
 using isc.time.report.be.domain.Models.Response.DailyActivities;
 using isc.time.report.be.domain.Models.Response.Shared;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isc.time.report.be.api.Controllers.v1.DailyActivities

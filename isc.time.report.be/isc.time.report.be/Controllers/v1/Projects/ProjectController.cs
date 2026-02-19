@@ -1,13 +1,9 @@
-﻿using isc.time.report.be.application.Interfaces.Service.Persons;
-using isc.time.report.be.application.Interfaces.Service.Projects;
-using isc.time.report.be.application.Services.Persons;
+﻿using isc.time.report.be.application.Interfaces.Service.Projects;
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Models.Dto;
 using isc.time.report.be.domain.Models.Request.Projects;
-using isc.time.report.be.domain.Models.Response.Persons;
 using isc.time.report.be.domain.Models.Response.Projects;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -121,7 +117,7 @@ namespace isc.time.report.be.api.Controllers.v1.Projects
 
         //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo,Colaborador")]
         [HttpGet("get-projects-by-employee")]
-        public async Task<ActionResult<SuccessResponse<List<GetProjectsByEmployeeIDResponse>>>>GetProjectsByEmployee()
+        public async Task<ActionResult<SuccessResponse<List<GetProjectsByEmployeeIDResponse>>>> GetProjectsByEmployee()
         {
             int employeeId = GetEmployeeIdFromToken();
 

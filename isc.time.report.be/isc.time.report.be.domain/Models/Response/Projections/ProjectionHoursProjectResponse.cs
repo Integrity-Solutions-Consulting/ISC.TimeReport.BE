@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace isc.time.report.be.domain.Models.Response.Projections
+﻿namespace isc.time.report.be.domain.Models.Response.Projections
 {
     public record ProjectionHoursProjectResponse(
 
@@ -18,9 +12,9 @@ namespace isc.time.report.be.domain.Models.Response.Projections
     decimal total_time,
     decimal resource_cost,
     decimal participation_percentage,
-    bool period_type,  
+    bool period_type,
     int period_quantity,
-    int ProjectID    
+    int ProjectID
 
     );
 }

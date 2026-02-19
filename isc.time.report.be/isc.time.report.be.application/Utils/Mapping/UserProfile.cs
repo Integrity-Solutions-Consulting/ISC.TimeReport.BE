@@ -4,11 +4,6 @@ using isc.time.report.be.domain.Entity.Modules;
 using isc.time.report.be.domain.Models.Request.Auth;
 using isc.time.report.be.domain.Models.Response.Auth;
 using isc.time.report.be.domain.Models.Response.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.application.Utils.Mapping
 {
@@ -36,7 +31,7 @@ namespace isc.time.report.be.application.Utils.Mapping
 
             CreateMap<Module, ModuleResponse>();
             CreateMap<ModuleResponse, Module>();
-            
+
             CreateMap<User, UserResponse>();
             CreateMap<UserResponse, User>();
 

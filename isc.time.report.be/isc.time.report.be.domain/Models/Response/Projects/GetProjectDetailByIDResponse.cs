@@ -1,12 +1,4 @@
-﻿using isc.time.report.be.domain.Entity.Clients;
-using isc.time.report.be.domain.Entity.Employees;
-using isc.time.report.be.domain.Entity.Projects;
-using isc.time.report.be.domain.Models.Response.Employees;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using isc.time.report.be.domain.Models.Response.Employees;
 
 namespace isc.time.report.be.domain.Models.Response.Projects
 {
@@ -28,6 +20,8 @@ namespace isc.time.report.be.domain.Models.Response.Projects
         public DateTime? WaitingStartDate { get; set; }
         public DateTime? WaitingEndDate { get; set; }
         public string? Observation { get; set; }
+        public int? LeaderID { get; set; }
+        public Lider? Leader { get; set; }
 
         public List<GetEmployeeProjectResponse> EmployeeProjects { get; set; }
         public List<GetEmployeesPersonInfoResponse> EmployeesPersonInfo { get; set; }
