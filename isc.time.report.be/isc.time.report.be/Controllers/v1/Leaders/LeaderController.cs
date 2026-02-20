@@ -3,9 +3,7 @@ using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Models.Dto;
 using isc.time.report.be.domain.Models.Request.Leaders;
 using isc.time.report.be.domain.Models.Response.Leaders;
-using isc.time.report.be.domain.Models.Response.Persons;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isc.time.report.be.api.Controllers.v1.Leader
@@ -42,60 +40,19 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
         }
 
         //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
-        [HttpGet("get-leadership-by-person-id")]
-        public async Task<ActionResult<SuccessResponse<GetAllLeaderProjectByPersonIdResponse>>> GetLeadershipByPerson(int id)
+        [HttpPost("CreateLeader")]
+        public async Task<ActionResult<SuccessResponse<CreateLeaderResponse>>> CreateLeader([FromBody] CreateLeaderRequest request)
         {
-            var result = await _leaderService.GetLeadershipByPersonId(id);
+            var result = await _leaderService.CreateLeader(request);
             return Ok(result);
         }
 
         //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
-        [HttpGet("get-all-leaders-grouped")]
-        public async Task<ActionResult<SuccessResponse<List<GetAllLeaderProjectByPersonIdResponse>>>> GetAllLeadersGrouped()
-        {
-            var result = await _leaderService.GetAllLeadersRegisterGrouped();
-            return Ok(result);
-        }
-
-        //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
-        [HttpPost("CreateLeaderWithPersonID")]
-        public async Task<ActionResult<SuccessResponse<CreateLeaderResponse>>> CreateLeaderWithPersonID([FromBody] CreateLeaderWithPersonIDRequest request)
-        {
-            var result = await _leaderService.CreateLeaderWithPersonID(request);
-            return Ok(result);
-        }
-
-        //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
-        [HttpPost("CreateLeaderWithPerson")]
-        public async Task<ActionResult<SuccessResponse<CreateLeaderResponse>>> CreateLeaderWithPerson([FromBody] CreateLeaderWithPersonOBJRequest request)
-        {
-            var result = await _leaderService.CreateLeaderWithPerson(request);
-            return Ok(result);
-        }
-
-        //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
-        [HttpPut("UpdateLeaderWithPersonID/{id}")]
-        public async Task<ActionResult<SuccessResponse<UpdateLeaderResponse>>> UpdateLeaderWithPersonID(int id, [FromBody] UpdateLeaderWithPersonIDRequest request)
+        [HttpPut("UpdateLeader/{id}")]
+        public async Task<ActionResult<SuccessResponse<UpdateLeaderResponse>>> UpdateLeader(int id, [FromBody] UpdateLeaderRequest request)
         {
             var result = await _leaderService.UpdateLeader(id, request);
             return Ok(result);
-        }
-
-        //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
-        [HttpPut("UpdateLeaderWithPerson/{id}")]
-        public async Task<ActionResult<SuccessResponse<UpdateLeaderResponse>>> UpdateLeaderWithPerson(int id, [FromBody] UpdateLeaderWithPersonOBJRequest request)
-        {
-            var result = await _leaderService.UpdateLeaderWithPerson(id, request);
-            return Ok(result);
-        }
-
-        //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
-        [HttpPost("assign-leader-to-project")]
-        public async Task<ActionResult> AssignedLeaderToProject ([FromBody] AssignPersonToProjectRequest request)
-        {
-            await _leaderService.AssignPersonToProject(request);
-            return Ok(new { message = "Lideres asignados correctamente."});
-
         }
 
         //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
@@ -105,12 +62,20 @@ namespace isc.time.report.be.api.Controllers.v1.Leader
             var result = await _leaderService.InactivateLeader(id);
             return Ok(result);
         }
-
+        
         //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpDelete("ActivateLeaderByID/{id}")]
         public async Task<ActionResult<SuccessResponse<ActivateInactivateLeaderResponse>>> ActivateLeader(int id)
         {
             var result = await _leaderService.ActivateLeader(id);
+            return Ok(result);
+        }
+
+        //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
+        [HttpPost("assign-leader-to-project")]
+        public async Task<ActionResult<SuccessResponse<AssignLeaderToProjectResponse>>> AssignLeaderToProject([FromBody] AssignLeaderToProjectRequest request)
+        {
+            var result = await _leaderService.AssignLeaderToProject(request);
             return Ok(result);
         }
 

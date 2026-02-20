@@ -1,7 +1,5 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.Report;
-using isc.time.report.be.domain.Entity.Projects;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isc.time.report.be.api.Controllers.v1.Report
@@ -30,7 +28,7 @@ namespace isc.time.report.be.api.Controllers.v1.Report
 
         //[Authorize(Roles = "Administrador,Gerente,Lider,Administrativo")]
         [HttpGet("project-resource")]
-        public async Task<IActionResult>GetReportAsync()
+        public async Task<IActionResult> GetReportAsync()
         {
             var result = await _service.GetProjectReportAsync();
             return Ok(result);

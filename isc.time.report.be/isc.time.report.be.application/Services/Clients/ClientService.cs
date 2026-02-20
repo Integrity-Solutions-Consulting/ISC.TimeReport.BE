@@ -2,18 +2,10 @@
 using isc.time.report.be.application.Interfaces.Repository.Clients;
 using isc.time.report.be.application.Interfaces.Service.Clients;
 using isc.time.report.be.domain.Entity.Clients;
-using isc.time.report.be.domain.Entity.Persons;
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.Clients;
 using isc.time.report.be.domain.Models.Response.Clients;
-using Org.BouncyCastle.Asn1.Ocsp;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.application.Services.Clients
 {

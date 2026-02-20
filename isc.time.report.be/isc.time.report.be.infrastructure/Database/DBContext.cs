@@ -14,19 +14,12 @@ using isc.time.report.be.domain.Entity.Projections;
 using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Models.Response.Dashboards;
 using isc.time.report.be.domain.Models.Response.Projections;
-using isc.time.report.be.domain.Models.Response.Report;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static isc.time.report.be.domain.Models.Response.Report.ReportResponse;
 
 namespace isc.time.report.be.infrastructure.Database
 {
-    
+
     public class DBContext : DbContext
     {
         public DBContext(DbContextOptions<DBContext> options) : base(options) { }
@@ -106,7 +99,8 @@ namespace isc.time.report.be.infrastructure.Database
 
             modelBuilder.Entity<Person>(entity =>
             {
-                entity.ToTable("Persons");
+                //entity.ToTable("Persons");
+                entity.ToTable("Persons", tb => tb.HasTrigger("tr_Persons_Audit_Global"));
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id).HasColumnName("PersonID");
 
@@ -139,7 +133,8 @@ namespace isc.time.report.be.infrastructure.Database
 
             modelBuilder.Entity<Client>(entity =>
             {
-                entity.ToTable("Clients");
+                //entity.ToTable("Clients");
+                entity.ToTable("Clients", tb => tb.HasTrigger("tr_Clients_Audit_Global"));
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id).HasColumnName("ClientID");
 
@@ -180,7 +175,8 @@ namespace isc.time.report.be.infrastructure.Database
 
             modelBuilder.Entity<Project>(entity =>
             {
-                entity.ToTable("Projects");
+                //entity.ToTable("Projects");
+                entity.ToTable("Projects", tb => tb.HasTrigger("tr_Projects_Audit_Global"));
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id).HasColumnName("ProjectID");
 
@@ -199,6 +195,7 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.WaitingStartDate).HasColumnName("waiting_start_date");
                 entity.Property(e => e.WaitingEndDate).HasColumnName("waiting_end_date");
                 entity.Property(e => e.Observation).HasColumnName("observation");
+                entity.Property(e => e.LeaderID).HasColumnName("LeaderID");
 
                 entity.Property(e => e.Status).HasColumnName("status");
                 entity.Property(e => e.CreationUser).HasColumnName("creation_user");
@@ -211,11 +208,13 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.HasOne(e => e.Client).WithMany().HasForeignKey(e => e.ClientID);
                 entity.HasOne(e => e.ProjectStatus).WithMany().HasForeignKey(e => e.ProjectStatusID);
                 entity.HasOne(e => e.ProjectType).WithMany().HasForeignKey(e => e.ProjectTypeID);
+                entity.HasOne(e => e.Leader).WithMany().HasForeignKey(e => e.LeaderID);
             });
 
             modelBuilder.Entity<Employee>(entity =>
             {
-                entity.ToTable("Employees");
+                //entity.ToTable("Employees");
+                entity.ToTable("Employees", tb => tb.HasTrigger("tr_Employees_Audit_Global"));
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id).HasColumnName("EmployeeID");
 
@@ -368,15 +367,16 @@ namespace isc.time.report.be.infrastructure.Database
 
             modelBuilder.Entity<Leader>(entity =>
             {
-                entity.ToTable("Leaders");
+                //entity.ToTable("Leaders");
+                entity.ToTable("Leaders", tb => tb.HasTrigger("tr_Leaders_Audit_Global"));
+
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id).HasColumnName("LeaderID");
-                entity.Property(e => e.PersonID).HasColumnName("PersonID");
-                entity.Property(e => e.ProjectID).HasColumnName("ProjectID");
+                entity.Property(e => e.FirstName).HasColumnName("first_name");
+                entity.Property(e => e.LastName).HasColumnName("last_name");
+                entity.Property(e => e.Phone).HasColumnName("phone");
+                entity.Property(e => e.Email).HasColumnName("email");
                 entity.Property(e => e.LeadershipType).HasColumnName("leadership_type");
-                entity.Property(e => e.StartDate).HasColumnName("start_date");
-                entity.Property(e => e.EndDate).HasColumnName("end_date");
-                entity.Property(e => e.Responsibilities).HasColumnName("responsibilities");
                 entity.Property(e => e.Status).HasColumnName("status");
                 entity.Property(e => e.CreationUser).HasColumnName("creation_user");
                 entity.Property(e => e.ModificationUser).HasColumnName("modification_user");
@@ -384,9 +384,6 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(e => e.ModificationDate).HasColumnName("modification_date");
                 entity.Property(e => e.CreationIp).HasColumnName("creation_ip");
                 entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
-
-                entity.HasOne(e => e.Person).WithMany(e => e.Leader).HasForeignKey(e => e.PersonID);
-                entity.HasOne(e => e.Project).WithMany(e => e.Leader).HasForeignKey(e => e.ProjectID);
             });
 
             modelBuilder.Entity<PermissionType>(entity =>
@@ -802,7 +799,7 @@ namespace isc.time.report.be.infrastructure.Database
         public DbSet<Nationality> Nationality { get; set; }
         public DbSet<Gender> Genders { get; set; }
         public DbSet<IdentificationType> IdentificationTypes { get; set; }
-        public DbSet<Position> Positions {  get; set; }
+        public DbSet<Position> Positions { get; set; }
         public DbSet<Person> Persons { get; set; }
         public DbSet<Client> Clients { get; set; }
         public DbSet<ProjectStatus> ProjectStatus { get; set; }

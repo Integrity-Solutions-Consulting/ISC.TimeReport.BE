@@ -1,13 +1,10 @@
-﻿using isc.time.report.be.api.Security;
-using isc.time.report.be.application.Interfaces.Repository.Employees;
-using isc.time.report.be.application.Interfaces.Service.Employees;
+﻿using isc.time.report.be.application.Interfaces.Service.Employees;
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Models.Dto;
 using isc.time.report.be.domain.Models.Request.Employees;
 using isc.time.report.be.domain.Models.Response.Employees;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Buffers.Text;
 
 namespace isc.time.report.be.api.Controllers.v1.Employees
 {
@@ -35,7 +32,7 @@ namespace isc.time.report.be.api.Controllers.v1.Employees
         //[Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpGet("GetEmployeeByID/{id}")]
         public async Task<ActionResult<SuccessResponse<GetEmployeeDetailsResponse>>> GetEmployeeById(int id)
-        { 
+        {
             var result = await _employeeService.GetEmployeeByID(id);
             return Ok(result);
         }

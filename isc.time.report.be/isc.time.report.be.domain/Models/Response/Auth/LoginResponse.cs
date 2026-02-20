@@ -1,11 +1,4 @@
-﻿using isc.time.report.be.domain.Entity.Auth;
-using isc.time.report.be.domain.Models.Response.Menus;
-using isc.time.report.be.domain.Models.Response.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using isc.time.report.be.domain.Models.Response.Users;
 
 namespace isc.time.report.be.domain.Models.Response.Auth
 {

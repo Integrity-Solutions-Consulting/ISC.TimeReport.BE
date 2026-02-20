@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using isc.time.report.be.domain.Entity.Catalogs;
 using isc.time.report.be.domain.Entity.Shared;
-using isc.time.report.be.domain.Entity.Catalogs;
-using isc.time.report.be.domain.Entity.Leaders;
 
 namespace isc.time.report.be.domain.Entity.Persons
 {
@@ -26,6 +19,6 @@ namespace isc.time.report.be.domain.Entity.Persons
         public string? Email { get; set; }
         public string? Phone { get; set; }
         public string? Address { get; set; }
-        public List<Leader> Leader {  get; set; }
+
     }
 }

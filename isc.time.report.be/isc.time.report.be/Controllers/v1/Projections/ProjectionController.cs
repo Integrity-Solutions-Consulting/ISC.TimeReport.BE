@@ -1,5 +1,4 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.Projections;
-using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Models.Request.Projections;
 using isc.time.report.be.domain.Models.Response.Projections;
 using Microsoft.AspNetCore.Authorization;
@@ -14,14 +13,14 @@ namespace isc.time.report.be.api.Controllers.v1.Projections
     public class ProjectionController : ControllerBase
     {
         private readonly IProjectionHourProjectService _service;
-        public ProjectionController (IProjectionHourProjectService service)
+        public ProjectionController(IProjectionHourProjectService service)
         {
-           _service = service;
+            _service = service;
         }
 
         //[Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpGet("{projectId:int}/get-all-projection-by-projectId")]
-        public async Task<ActionResult<List<ProjectionHoursProjectResponse>>> GetProjectionOfProject (int projectId)
+        public async Task<ActionResult<List<ProjectionHoursProjectResponse>>> GetProjectionOfProject(int projectId)
         {
             var result = await _service.GetAllProjectionByProjectId(projectId);
             return Ok(result);
@@ -54,7 +53,7 @@ namespace isc.time.report.be.api.Controllers.v1.Projections
             [FromQuery] bool active)
         {
             await _service.ActivateInactiveResourceAsync(projectId, resourceTypeId, active);
-            return NoContent(); 
+            return NoContent();
         }
 
         //[Authorize(Roles = "Administrador,Gerente,Lider")]

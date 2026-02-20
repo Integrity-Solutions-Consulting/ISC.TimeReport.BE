@@ -1,30 +1,25 @@
 ﻿using AutoMapper;
 using isc.time.report.be.application.Interfaces.Repository.Leaders;
+using isc.time.report.be.application.Interfaces.Repository.Projects;
 using isc.time.report.be.application.Interfaces.Service.Leaders;
 using isc.time.report.be.domain.Entity.Leaders;
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.Leaders;
 using isc.time.report.be.domain.Models.Response.Leaders;
-using isc.time.report.be.domain.Models.Response.Persons;
-using isc.time.report.be.domain.Models.Response.Projects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using entityPerson = isc.time.report.be.domain.Entity.Persons;
 
 namespace isc.time.report.be.application.Services.Leaders
 {
     public class LeaderService : ILeaderService
     {
         private readonly ILeaderRepository _leaderRepository;
+        private readonly IProjectRepository _projectRepository;
         private readonly IMapper _mapper;
 
-        public LeaderService(ILeaderRepository leaderRepository, IMapper mapper)
+        public LeaderService(ILeaderRepository leaderRepository, IProjectRepository projectRepository, IMapper mapper)
         {
             _leaderRepository = leaderRepository;
+            _projectRepository = projectRepository;
             _mapper = mapper;
         }
 
@@ -48,46 +43,14 @@ namespace isc.time.report.be.application.Services.Leaders
             return _mapper.Map<GetLeaderDetailsResponse>(leader);
         }
 
-        public async Task<CreateLeaderResponse> CreateLeaderWithPersonID(CreateLeaderWithPersonIDRequest request)
+        public async Task<CreateLeaderResponse> CreateLeader(CreateLeaderRequest request)
         {
             var leader = _mapper.Map<Leader>(request);
             var created = await _leaderRepository.CreateLeaderAsync(leader);
-            created = await _leaderRepository.GetLeaderByIDAsync(leader.Id);
             return _mapper.Map<CreateLeaderResponse>(created);
         }
 
-        public async Task<CreateLeaderResponse> CreateLeaderWithPerson(CreateLeaderWithPersonOBJRequest request)
-        {
-
-            //ESTO HAY QUE CAMBIARLO CUANDO EL FRONTEND AREGLE LO DE NATIONALITY
-            if (request.Person.NationalityId == null || request.Person.NationalityId == 0)
-            {
-                request.Person.NationalityId = 5;
-            }
-
-            if (request.LeadershipType == null)
-            {
-                throw new ClientFaultException("El tipo de liderazgo no puede ser nulo", 400);
-            }
-
-            if (request.LeadershipType == false)
-            {
-                var random = new Random();
-                var numerosAleatorios = random.Next(100_000_000, 1_000_000_000);
-                request.Person.IdentificationNumber = $"L{numerosAleatorios}";
-            }
-
-            if (request.LeadershipType == true && string.IsNullOrEmpty(request.Person.IdentificationNumber))
-            {
-                throw new ClientFaultException("El numero de cedula de un lider interno no puede ser null o estar vacio", 400);
-            }
-
-            var leader = _mapper.Map<Leader>(request);
-            var created = await _leaderRepository.CreateLeaderWithPersonAsync(leader);
-            return _mapper.Map<CreateLeaderResponse>(created);
-        }
-
-        public async Task<UpdateLeaderResponse> UpdateLeader(int leaderId, UpdateLeaderWithPersonIDRequest request)
+        public async Task<UpdateLeaderResponse> UpdateLeader(int leaderId, UpdateLeaderRequest request)
         {
             var leader = await _leaderRepository.GetLeaderByIDAsync(leaderId);
             if (leader == null)
@@ -95,23 +58,6 @@ namespace isc.time.report.be.application.Services.Leaders
 
             _mapper.Map(request, leader);
             var updated = await _leaderRepository.UpdateLeaderAsync(leader);
-            updated = await _leaderRepository.GetLeaderByIDAsync(leader.Id);
-            return _mapper.Map<UpdateLeaderResponse>(updated);
-        }
-
-        public async Task<UpdateLeaderResponse> UpdateLeaderWithPerson(int leaderId, UpdateLeaderWithPersonOBJRequest request)
-        {
-            var leader = await _leaderRepository.GetLeaderByIDAsync(leaderId);
-            if (leader == null)
-                throw new ClientFaultException("No existe el líder", 401);
-            if (request.LeadershipType == false)
-            {
-                request.Person.IdentificationNumber = leader.Person.IdentificationNumber;
-            }
-
-            _mapper.Map(request, leader);
-            var updated = await _leaderRepository.UpdateLeaderWithPersonAsync(leader);
-            updated = await _leaderRepository.GetLeaderByIDAsync(updated.Id);
             return _mapper.Map<UpdateLeaderResponse>(updated);
         }
 
@@ -127,150 +73,29 @@ namespace isc.time.report.be.application.Services.Leaders
             return _mapper.Map<ActivateInactivateLeaderResponse>(activated);
         }
 
-
-        public async Task<List<GetAllLeaderProjectByPersonIdResponse>> GetAllLeadersRegisterGrouped()
+        public async Task<AssignLeaderToProjectResponse> AssignLeaderToProject(AssignLeaderToProjectRequest request)
         {
-            var leaders = await _leaderRepository.GetAllLeaderProjectByPersonIdAsync();
-
-            var response = leaders
-                .GroupBy(l => l.PersonID)
-                .Select(g =>
-                {
-                    var firstLeader = g.First();
-                    return new GetAllLeaderProjectByPersonIdResponse
-                    {
-                        Person = firstLeader.Person != null ? new GetPersonResponse
-                        {
-                            Id = firstLeader.Person.Id,
-                            IdentificationNumber = firstLeader.Person.IdentificationNumber,
-                            GenderId = firstLeader.Person.GenderID,
-                            NationalityId = firstLeader.Person.NationalityId,
-                            IdentificationTypeId = firstLeader.Person.IdentificationTypeId,
-                            FirstName = firstLeader.Person.FirstName,
-                            LastName = firstLeader.Person.LastName,
-                            Email = firstLeader.Person.Email,
-                            Phone = firstLeader.Person.Phone,
-                            Address = firstLeader.Person.Address,
-                            Status = firstLeader.Person.Status
-                        } : null,
-                        LeaderMiddle = g.Select(l => new LeaderData
-                        {
-                            Id = l.ProjectID,
-                            Responsibility = l.Responsibilities,
-                            LeadershipType = l.LeadershipType,
-                            StartDate = l.StartDate,
-                            EndDate = l.EndDate,
-                            Status = l.Status
-                        }).ToList()
-                    };
-                })
-                .ToList();
-
-            return response;
-        }
-
-        public async Task AssignPersonToProject(AssignPersonToProjectRequest request)
-        {
-            // Traemos todos los Leader actuales para esa persona
-            var existing = await _leaderRepository.GetLeaderProjectByIdAsync(request.PersonID);
-            var now = DateTime.UtcNow;
-            var finalList = new List<Leader>();
-
-            foreach (var dto in request.PersonProjectMiddle)
+            var project = await _projectRepository.GetProjectByIDAsync(request.ProjectID);
+            if (project == null)
             {
-                var match = existing.FirstOrDefault(l => l.ProjectID == dto.ProjectID);
-
-                if (match == null)
-                {
-                    // No existe → creamos un nuevo Leader
-                    var leader = new Leader
-                    {
-                        PersonID = request.PersonID,
-                        ProjectID = dto.ProjectID,
-                        LeadershipType = dto.LeadershipType,
-                        Responsibilities = dto.Responsibilities,
-                        StartDate = dto.StartDate,
-                        Status = true,
-                        CreationUser = "SYSTEM",
-                        CreationIp = "0.0.0.0",
-                        CreationDate = now
-                    };
-
-                    finalList.Add(leader);
-                }
-                else
-                {
-                    // Ya existe → opcional, puedes actualizar atributos si cambian
-                    match.LeadershipType = dto.LeadershipType;
-                    match.Responsibilities = dto.Responsibilities;
-                    match.ModificationUser = "SYSTEM";
-                    match.ModificationIp = "0.0.0.0";
-                    match.ModificationDate = now;
-                    match.Status = true;
-
-                    finalList.Add(match);
-                }
+                throw new ClientFaultException("El proyecto no existe.", 404);
             }
 
-            // (Opcional) desactivar proyectos que ya no estén en la request
-            var requestProjectIds = request.PersonProjectMiddle.Select(p => p.ProjectID).ToList();
-            var toDisable = existing.Where(l => !requestProjectIds.Contains(l.ProjectID)).ToList();
-
-            foreach (var leader in toDisable)
+            var leader = await _leaderRepository.GetLeaderByIDAsync(request.LeaderID);
+            if (leader == null)
             {
-                leader.Status = false;
-                leader.EndDate = DateOnly.FromDateTime(DateTime.UtcNow);
-                leader.ModificationUser = "SYSTEM";
-                leader.ModificationIp = "0.0.0.0";
-                leader.ModificationDate = now;
-                finalList.Add(leader);
+                throw new ClientFaultException("El líder no existe.", 404);
             }
 
-            // Guardamos cambios
-            await _leaderRepository.SaveLeadersAsync(finalList);
-        }
+            project.LeaderID = request.LeaderID;
+            await _projectRepository.UpdateProjectAsync(project);
 
-
-        public async Task<GetAllLeaderProjectByPersonIdResponse?> GetLeadershipByPersonId(int personId)
-        {
-            var leadership = await _leaderRepository.GetLeadershipByPersonId(personId);
-
-            if (leadership == null)
-                return null;
-
-                    var response = new GetAllLeaderProjectByPersonIdResponse
-                    {
-                        Person = leadership != null ? new GetPersonResponse
-                        {
-                            Id = leadership.Id,
-                            IdentificationNumber = leadership.IdentificationNumber,
-                            GenderId = (int)leadership.GenderID,
-                            NationalityId = (int)leadership.NationalityId,
-                            IdentificationTypeId = (int)leadership.IdentificationTypeId,
-                            FirstName = leadership.FirstName,
-                            LastName = leadership.LastName,
-                            Email = leadership.Email,
-                            Phone = leadership.Phone,
-                            Address = leadership.Address,
-                            Status = leadership.Status
-                        } : null,
-                        LeaderMiddle = leadership.Leader.Select(l => new LeaderData
-                        {
-                            Id = l.ProjectID,
-                            Responsibility = l.Responsibilities,
-                            LeadershipType = l.LeadershipType,
-                            StartDate = l.StartDate,
-                            EndDate = l.EndDate,
-                            Status = l.Status,
-                            Projectos = l.Project != null ? new GetAllProjectsResponse
-                            {
-                                Id = l.Project.Id,
-                                Name = l.Project.Name
-                            } : null
-                        }).ToList()
-                    };
-
-            return response;
+            return new AssignLeaderToProjectResponse
+            {
+                ProjectID = project.Id,
+                LeaderID = leader.Id,
+                Message = "Líder asignado correctamente."
+            };
         }
 
     }

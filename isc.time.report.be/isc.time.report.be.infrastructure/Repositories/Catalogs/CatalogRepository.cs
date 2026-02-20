@@ -3,11 +3,6 @@ using isc.time.report.be.domain.Entity.Catalogs;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.infrastructure.Repositories.Catalogs
 {
@@ -52,11 +47,11 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
 
         public async Task<List<ApprovalStatus>> GetApprovalStatusActivosAsync()
         {
-            var approval =  await _dbContext.ApprovalStatus
+            var approval = await _dbContext.ApprovalStatus
                 .Where(e => e.Status)
                 .OrderBy(e => e.StatusName)
                 .ToListAsync();
-            
+
             if (!approval.Any())
             {
                 throw new ClientFaultException("No se encontraron estados aprobados que esten activos");
@@ -105,7 +100,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Catalogs
         }
         public async Task<List<Nationality>> GetNationalityActivosAsync()
         {
-            var nationalities =  await _dbContext.Nationality
+            var nationalities = await _dbContext.Nationality
                 .Where(e => e.Status)
                 .OrderBy(e => e.Description)
                 .ToListAsync();

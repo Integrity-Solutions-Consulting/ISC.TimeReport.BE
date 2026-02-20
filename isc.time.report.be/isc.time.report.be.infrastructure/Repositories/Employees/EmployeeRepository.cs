@@ -1,22 +1,13 @@
 ﻿using isc.time.report.be.application.Interfaces.Repository.Employees;
-using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Employees;
-using isc.time.report.be.domain.Entity.Persons;
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
-using isc.time.report.be.domain.Models.Dto.InventorysApis;
 using isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysEmployee;
 using isc.time.report.be.infrastructure.Database;
 using isc.time.report.be.infrastructure.Repositories.InventorysApis;
 using isc.time.report.be.infrastructure.Utils.Pagination;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.infrastructure.Repositories.Employees
 {
@@ -59,7 +50,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
 
         public async Task<Employee> GetEmployeeByIDAsync(int employeeId)
         {
-            if(employeeId <= 0)
+            if (employeeId <= 0)
             {
                 throw new ClientFaultException("La ID del empleado no puede ser negativa");
             }
@@ -230,7 +221,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                 if (!invEmpInsert)
                     throw new ClientFaultException("No se pudo crear el empleado en el sistema de inventario.");
 
-               
+
                 await transaction.CommitAsync();
                 return employee;
             }
@@ -489,7 +480,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
             return await _dbContext.EmployeeProjects
                 .Where(ep => ep.Employee.EmployeeCode == employeeCode
                              && ep.Project.ClientID == 10)
-                .Select(ep => (int?)ep.ProjectID) 
+                .Select(ep => (int?)ep.ProjectID)
                 .FirstOrDefaultAsync();
         }
 

@@ -3,11 +3,6 @@ using isc.time.report.be.domain.Models.Response.Dashboards;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.infrastructure.Repositories.Dashboards
 {

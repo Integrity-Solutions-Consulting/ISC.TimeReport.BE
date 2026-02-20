@@ -1,15 +1,8 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.Auth;
-using isc.time.report.be.application.Interfaces.Repository.Menus;
-using isc.time.report.be.domain.Entity.Auth;
+﻿using isc.time.report.be.application.Interfaces.Repository.Menus;
 using isc.time.report.be.domain.Entity.Modules;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.infrastructure.Repositories.Menus
 {
@@ -140,7 +133,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Menus
 
         public async Task<List<Module>> GetMenuByRolIdAsync(int rolId)
         {
-            if(rolId <= 0)
+            if (rolId <= 0)
             {
                 throw new ClientFaultException("El ID de rol no puede ser negativo");
             }
@@ -148,7 +141,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Menus
                 .Where(mr => mr.RoleID == rolId)
                 .Select(mr => mr.Module)
                 .ToListAsync();
-            if(!menus.Any())
+            if (!menus.Any())
             {
                 throw new ServerFaultException($"No se encontró un Rol con ID {rolId}.");
             }

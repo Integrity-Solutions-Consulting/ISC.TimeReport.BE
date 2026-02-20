@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace isc.time.report.be.domain.Models.Request.Projects
+﻿namespace isc.time.report.be.domain.Models.Request.Projects
 {
     public class UpdateProjectRequest
     {
         public int ClientID { get; set; }
         public int ProjectStatusID { get; set; }
         public int? ProjectTypeID { get; set; }
+        public int? LeaderID { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }

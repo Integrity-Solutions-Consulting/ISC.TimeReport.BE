@@ -1,18 +1,9 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
-using isc.time.report.be.application.Interfaces.Repository.Auth;
-using isc.time.report.be.application.Interfaces.Repository.Users;
+﻿using isc.time.report.be.application.Interfaces.Repository.Users;
 using isc.time.report.be.domain.Entity.Auth;
 using isc.time.report.be.domain.Entity.Modules;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.infrastructure.Database;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Entity = isc.time.report.be.domain.Entity.Auth;
 
 namespace isc.time.report.be.infrastructure.Repositories.Users
 {

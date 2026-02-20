@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace isc.time.report.be.domain.Models.Response.DailyActivities
+﻿namespace isc.time.report.be.domain.Models.Response.DailyActivities
 {
     public class CreateDailyActivityFromBGResponse
     {
@@ -16,6 +10,6 @@ namespace isc.time.report.be.domain.Models.Response.DailyActivities
         public string Username { get; set; }
         public string Hours { get; set; }
         public string EmployeeCode { get; set; }
-        public string Status { get; set; } 
+        public string Status { get; set; }
     }
 }

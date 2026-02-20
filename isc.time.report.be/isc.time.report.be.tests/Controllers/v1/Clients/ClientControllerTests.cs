@@ -1,12 +1,4 @@
-﻿using Xunit;
-using isc.time.report.be.api.Controllers.v1.Clients;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace isc.time.report.be.api.Controllers.v1.Clients.Tests
+﻿namespace isc.time.report.be.api.Controllers.v1.Clients.Tests
 {
     public class ClientControllerTests
     {

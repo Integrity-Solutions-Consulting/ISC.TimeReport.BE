@@ -1,13 +1,7 @@
 ﻿using AutoMapper;
 using isc.time.report.be.domain.Entity.Permisions;
 using isc.time.report.be.domain.Models.Request.Permissions;
-using isc.time.report.be.domain.Models.Response.Clients;
 using isc.time.report.be.domain.Models.Response.Permissions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.application.Utils.Mapping
 {

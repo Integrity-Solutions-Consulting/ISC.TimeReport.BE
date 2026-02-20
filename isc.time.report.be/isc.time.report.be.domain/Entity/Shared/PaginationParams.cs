@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace isc.time.report.be.domain.Entity.Shared
+﻿namespace isc.time.report.be.domain.Entity.Shared
 {
     public class PaginationParams
     {
@@ -19,8 +13,8 @@ namespace isc.time.report.be.domain.Entity.Shared
         //    set => _pageSize = (value > MaxPageSize) ? MaxPageSize : value;
         //}
 
-            public int PageNumber { get; set; } = 1;
-            public int PageSize { get; set; } = 10;
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 10;
 
     }
 }

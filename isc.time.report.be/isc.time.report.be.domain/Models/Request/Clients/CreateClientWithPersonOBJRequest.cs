@@ -1,10 +1,4 @@
-﻿using isc.time.report.be.domain.Entity.Persons;
-using isc.time.report.be.domain.Models.Request.Persons;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using isc.time.report.be.domain.Models.Request.Persons;
 
 namespace isc.time.report.be.domain.Models.Request.Clients
 {
