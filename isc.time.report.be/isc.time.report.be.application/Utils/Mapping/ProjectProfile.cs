@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using isc.time.report.be.domain.Entity.Leaders;
 using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Models.Request.Projects;
 using isc.time.report.be.domain.Models.Response.Projects;
@@ -27,6 +28,9 @@ namespace isc.time.report.be.application.Utils.Mapping
             CreateMap<CreateProjectResponse, Project>();
 
 
+
+            // Leader entity -> Lider DTO (nested in project responses)
+            CreateMap<Leader, Lider>();
 
             CreateMap<Project, GetAllProjectsResponse>();
             CreateMap<GetAllProjectsResponse, Project>();

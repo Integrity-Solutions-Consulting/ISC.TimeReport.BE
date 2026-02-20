@@ -38,25 +38,6 @@ namespace isc.time.report.be.application.Services.Projects
 
             var responseItems = _mapper.Map<List<GetAllProjectsResponse>>(result.Items);
 
-            // Manual mapping for Leader object as AutoMapper might not handle the nested object automatically or if it's missing in the source
-            // Assuming result.Items (Project entities) have the Leader navigation property populated
-            for (int i = 0; i < result.Items.Count; i++)
-            {
-                var project = result.Items[i];
-                var response = responseItems[i];
-                if (project.Leader != null)
-                {
-                    response.LeaderID = project.LeaderID;
-                    response.Leader = new Lider
-                    {
-                        Id = project.Leader.Id,
-                        FirstName = project.Leader.FirstName,
-                        LastName = project.Leader.LastName,
-                        Email = project.Leader.Email
-                    };
-                }
-            }
-
             return new PagedResult<GetAllProjectsResponse>
             {
                 Items = responseItems,
@@ -150,22 +131,9 @@ namespace isc.time.report.be.application.Services.Projects
                 return null;
             }
 
-            var responseProject = _mapper.Map<GetProjectByIDResponse>(project);
-
-            if (project.Leader != null)
-            {
-                responseProject.LeaderID = project.LeaderID;
-                responseProject.Leader = new isc.time.report.be.domain.Models.Response.Projects.Lider // Explicit namespace if needed to avoid confusion with GetAllProjectsResponse.Lider
-                {
-                    Id = project.Leader.Id,
-                    FirstName = project.Leader.FirstName,
-                    LastName = project.Leader.LastName,
-                    Email = project.Leader.Email
-                };
-            }
-
-            return responseProject;
+            return _mapper.Map<GetProjectByIDResponse>(project);
         }
+
 
         public async Task<CreateProjectResponse> CreateProject(CreateProjectRequest projectRequest)
         {

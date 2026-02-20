@@ -6,6 +6,7 @@
         public int ClientID { get; set; }
         public int ProjectStatusID { get; set; }
         public int? ProjectTypeID { get; set; }
+        public int? LeaderID { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
@@ -15,7 +16,6 @@
         public DateTime? ActualEndDate { get; set; }
         public decimal? Budget { get; set; }
         public decimal Hours { get; set; }
-        public int? LeaderID { get; set; }
         public bool? Status { get; set; }
         public DateTime? WaitingStartDate { get; set; }
         public DateTime? WaitingEndDate { get; set; }
