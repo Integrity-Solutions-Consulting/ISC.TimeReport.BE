@@ -3,6 +3,8 @@ using isc.time.report.be.api.Security;
 using isc.time.report.be.application.IOC;
 using isc.time.report.be.domain.Entity.Emails;
 using isc.time.report.be.infrastructure.IOC;
+using isc.time.report.be.infrastructure.Repositories.Auth;
+using isc.time.report.be.infrastructure.Repositories.Sync;
 using isc.time.report.be.infrastructure.Utils.Secutiry;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -96,6 +98,8 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddDbConfiguration(builder.Configuration);
 builder.Services.AddInfraestructure(builder.Configuration);
+builder.Services.AddScoped<OutboxPositionRepository>();
+builder.Services.AddHostedService<isc.time.report.be.infrastructure.Workers.PositionSyncWorker>();
 
 
 

@@ -12,6 +12,7 @@ using isc.time.report.be.domain.Entity.Persons;
 using isc.time.report.be.domain.Entity.ProjectionHours;
 using isc.time.report.be.domain.Entity.Projections;
 using isc.time.report.be.domain.Entity.Projects;
+using isc.time.report.be.domain.Entity.Sync;
 using isc.time.report.be.domain.Models.Response.Dashboards;
 using isc.time.report.be.domain.Models.Response.Projections;
 using Microsoft.EntityFrameworkCore;
@@ -775,6 +776,20 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(p => p.ModificationIp).HasColumnName("modification_ip");
             });
 
+            modelBuilder.Entity<OutboxPosition>(entity =>
+            {
+                entity.ToTable("OutboxPosition");
+                entity.HasKey(e => e.OutboxId);
+                entity.Property(e => e.OutboxId).HasColumnName("OutboxId");
+                entity.Property(e => e.AggregateKey).HasColumnName("AggregateKey");
+                entity.Property(e => e.Operation).HasColumnName("Operation");
+                entity.Property(e => e.PayloadJson).HasColumnName("PayloadJson");
+                entity.Property(e => e.Attempts).HasColumnName("Attempts");
+                entity.Property(e => e.NextAttemptAt).HasColumnName("NextAttemptAt");
+                entity.Property(e => e.ProcessedAt).HasColumnName("ProcessedAt");
+                entity.Property(e => e.ErrorMessage).HasColumnName("ErrorMessage");
+                entity.Property(e => e.CreatedAt).HasColumnName("CreatedAt");
+            });
 
 
 
@@ -828,5 +843,7 @@ namespace isc.time.report.be.infrastructure.Database
         public DbSet<EmployeeCategory> EmployeeCategories { get; set; }
         public DbSet<ProjectionHourProject> ProjectionHoursProjects { get; set; }
         public DbSet<ProjectionHour> ProjectionHour { get; set; }
+        public DbSet<OutboxPosition> OutboxPositions { get; set; }
+
     }
 }
