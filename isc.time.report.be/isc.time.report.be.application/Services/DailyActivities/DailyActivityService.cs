@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using isc.time.report.be.application.Interfaces.Repository.Catalogs;
@@ -10,17 +9,9 @@ using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.application.Interfaces.Service.DailyActivities;
 using isc.time.report.be.application.Utils.Auth;
 using isc.time.report.be.domain.Entity.DailyActivities;
-using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.DailyActivities;
-using isc.time.report.be.domain.Models.Response.Clients;
 using isc.time.report.be.domain.Models.Response.DailyActivities;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.application.Services.DailyActivities
 {
@@ -188,7 +179,7 @@ namespace isc.time.report.be.application.Services.DailyActivities
             return _mapper.Map<List<GetDailyActivityResponse>>(updatedActivities);
         }
 
-     
+
         public async Task<CreateListOfDailyActivityFromBG> ImportActivitiesAsync(List<CreateDailyActivityFromBGResponse> excelRows)
         {
             var results = new CreateListOfDailyActivityFromBG();
@@ -198,12 +189,12 @@ namespace isc.time.report.be.application.Services.DailyActivities
 
             // 2️⃣ Insertar en bulk
             if (activitiesToInsert.Any())
-            await _repository.AddRangeAsync(activitiesToInsert);
+                await _repository.AddRangeAsync(activitiesToInsert);
 
             return results;
         }
 
-   
+
 
         private async Task<List<DailyActivity>> MapAndValidateRowsAsync(
                     List<CreateDailyActivityFromBGResponse> excelRows,
@@ -249,7 +240,7 @@ namespace isc.time.report.be.application.Services.DailyActivities
 
 
 
-            
+
             // 3 ActivityDescription
             if (string.IsNullOrWhiteSpace(row.Title) && string.IsNullOrWhiteSpace(row.Comment))
                 throw new ClientFaultException("Debe existir al menos un Título o un Comentario", 400);
@@ -297,7 +288,7 @@ namespace isc.time.report.be.application.Services.DailyActivities
             return new DailyActivity
             {
                 EmployeeID = employee.Id,
-                ProjectID = projectId.Value,        
+                ProjectID = projectId.Value,
                 ActivityTypeID = 4002,
                 ActivityDate = activityDate,
                 HoursQuantity = hours,

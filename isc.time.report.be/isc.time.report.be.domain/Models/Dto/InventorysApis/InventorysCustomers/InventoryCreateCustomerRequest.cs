@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysCustomers
+﻿namespace isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysCustomers
 {
     public class InventoryCreateCustomerRequest
     {

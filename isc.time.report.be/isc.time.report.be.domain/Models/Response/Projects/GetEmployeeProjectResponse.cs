@@ -1,12 +1,4 @@
-﻿using isc.time.report.be.domain.Entity.Employees;
-using isc.time.report.be.domain.Entity.Projects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace isc.time.report.be.domain.Models.Response.Projects
+﻿namespace isc.time.report.be.domain.Models.Response.Projects
 {
     public class GetEmployeeProjectResponse
     {

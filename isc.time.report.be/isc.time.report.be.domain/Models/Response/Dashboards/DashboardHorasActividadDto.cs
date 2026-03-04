@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace isc.time.report.be.domain.Models.Response.Dashboards
+﻿namespace isc.time.report.be.domain.Models.Response.Dashboards
 {
     public record DashboardHorasActividadDto(string TipoActividad, decimal TotalHoras);
     public record DashboardRecursosClienteDto(string ClientName, int TotalRecursos, decimal Porcentaje);
@@ -27,7 +21,7 @@ namespace isc.time.report.be.domain.Models.Response.Dashboards
        int AnioConsulta,
        string TipoConsulta
    );
-   public class DashboardResumenGeneralDto
+    public class DashboardResumenGeneralDto
     {
         public int TotalProyectosActivos { get; set; }
         public int TotalClientes { get; set; }

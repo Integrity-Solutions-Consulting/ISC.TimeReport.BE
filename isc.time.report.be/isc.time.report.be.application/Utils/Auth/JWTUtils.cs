@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using isc.time.report.be.domain.Entity.Auth;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using isc.time.report.be.domain.Entity.Auth;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
 using System.Text.Json;
 
 namespace isc.time.report.be.application.Utils.Auth
@@ -22,21 +18,36 @@ namespace isc.time.report.be.application.Utils.Auth
             this.configuration = configuration;
         }
 
-        public string GenerateToken(User user, int expiryMinutes = 60, bool isRecovery = false)
+        public string GenerateToken(User user, List<string> modulePaths, int expiryMinutes = 60, bool isRecovery = false)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:JWTSecretKey"]));
+            var securityKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(configuration["JWT:JWTSecretKey"])
+            );
+
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim("UserID", user.Id.ToString()),
-                new Claim("EmployeeID", user.EmployeeID.ToString()),
-                new Claim("PersonID", user.Employee?.PersonID.ToString() ?? "0")
-            };
+            var normalizedModules = (modulePaths ?? new List<string>())
+                .Select(m => m.ToLower())
+                .Distinct()
+                .ToList();
 
-            // Roles
+            var roleId = user.UserRole?
+                .FirstOrDefault(r => r.Status)?.RoleID;
+
+            if (roleId == null)
+                throw new Exception("Usuario sin rol asignado");
+
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, user.Username),
+        new Claim("UserID", user.Id.ToString()),
+        new Claim("EmployeeID", user.EmployeeID.ToString()),
+        new Claim("PersonID", user.Employee?.PersonID.ToString() ?? "0"),
+        new Claim("RoleID", roleId.Value.ToString()),
+        new Claim("modules", JsonSerializer.Serialize(normalizedModules))
+    };
+
             if (user.UserRole != null)
             {
                 foreach (var ur in user.UserRole.Where(ur => ur.Status))
@@ -59,6 +70,7 @@ namespace isc.time.report.be.application.Utils.Auth
                 Expires = DateTime.UtcNow.AddMinutes(expiryMinutes),
                 SigningCredentials = credentials
             };
+
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }

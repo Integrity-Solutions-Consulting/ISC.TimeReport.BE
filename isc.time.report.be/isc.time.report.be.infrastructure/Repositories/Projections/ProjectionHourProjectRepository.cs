@@ -1,20 +1,9 @@
-﻿using Azure.Core;
-using DocumentFormat.OpenXml.InkML;
-using isc.time.report.be.application.Interfaces.Repository.Projections;
-using isc.time.report.be.domain.Entity.DailyActivities;
+﻿using isc.time.report.be.application.Interfaces.Repository.Projections;
 using isc.time.report.be.domain.Entity.Projections;
-using isc.time.report.be.domain.Entity.Projects;
-using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Response.Projections;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.infrastructure.Repositories.Projections
 {
@@ -36,7 +25,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Projections
             return await _dbContext.Set<ProjectionHoursProjectResponse>()
                 .FromSqlRaw("EXEC dbo.sp_ProyeccionHorasPorProyecto @ProjectID", parameters)
                 .ToListAsync();
-        } 
+        }
         public async Task<ProjectionHourProject> CreateProjectionAsync(ProjectionHourProject entity)
         {
             entity.CreationDate = DateTime.Now;
@@ -71,7 +60,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Projections
             return resource;
         }
 
-        
+
     }
 
 

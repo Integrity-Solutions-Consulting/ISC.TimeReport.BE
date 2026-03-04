@@ -1,13 +1,4 @@
-﻿using isc.time.report.be.domain.Entity.Auth;
-using isc.time.report.be.domain.Entity.Employees;
-using isc.time.report.be.domain.Entity.Persons;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace isc.time.report.be.domain.Models.Request.Employees
+﻿namespace isc.time.report.be.domain.Models.Request.Employees
 {
     public class CreateEmployeeWithPersonIDRequest
     {

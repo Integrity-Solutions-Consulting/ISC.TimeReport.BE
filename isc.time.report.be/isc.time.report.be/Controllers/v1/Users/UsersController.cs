@@ -1,12 +1,8 @@
-﻿using isc.time.report.be.application.Interfaces.Service.Auth;
-using isc.time.report.be.application.Interfaces.Service.Users;
-using isc.time.report.be.application.Services.Users;
-using isc.time.report.be.domain.Entity.Auth;
+﻿using isc.time.report.be.application.Interfaces.Service.Users;
 using isc.time.report.be.domain.Models.Dto;
 using isc.time.report.be.domain.Models.Request.Users;
 using isc.time.report.be.domain.Models.Response.Users;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isc.time.report.be.api.Controllers.v1.Users
@@ -23,7 +19,6 @@ namespace isc.time.report.be.api.Controllers.v1.Users
             this.userService = userService;
         }
 
-        [Authorize(Roles = "Administrador")]
         [HttpPut("UpdateUser/{id}")]
         public async Task<ActionResult<SuccessResponse<UserResponse>>> Update(int id, [FromBody] UpdateUserRequest request)
         {
@@ -35,7 +30,6 @@ namespace isc.time.report.be.api.Controllers.v1.Users
             });
         }
 
-        [Authorize(Roles = "Administrador")]
         [HttpPut("SuspendUser/{id}")]
         public async Task<ActionResult<SuccessResponse<UserResponse>>> Suspend(int id)
         {
@@ -47,7 +41,6 @@ namespace isc.time.report.be.api.Controllers.v1.Users
             });
         }
 
-        [Authorize(Roles = "Administrador")]
         [HttpPut("UnSuspendUser/{id}")]
         public async Task<ActionResult<SuccessResponse<UserResponse>>> UnSuspend(int id)
         {
@@ -59,7 +52,6 @@ namespace isc.time.report.be.api.Controllers.v1.Users
             });
         }
 
-        [Authorize]
         [HttpPut("ChangePassword")]
         public async Task<ActionResult<SuccessResponse<string>>> ChangePassword([FromBody] UpdatePasswordRequest request)
         {
@@ -79,7 +71,6 @@ namespace isc.time.report.be.api.Controllers.v1.Users
             });
         }
 
-        [Authorize(Roles = "Administrador")]
         [HttpGet("GetAllUsers")]
         public async Task<ActionResult<SuccessResponse<List<GetAllUsersResponse>>>> GetAllUsers()
         {
@@ -91,7 +82,6 @@ namespace isc.time.report.be.api.Controllers.v1.Users
             });
         }
 
-        [Authorize(Roles = "Administrador")]
         [HttpPost("AssignRolesToUser")]
         public async Task<IActionResult> AssignRolesToUser([FromBody] AssignRolesToUserRequest request)
         {
@@ -99,7 +89,6 @@ namespace isc.time.report.be.api.Controllers.v1.Users
             return Ok(new { message = "Roles actualizados correctamente." });
         }
 
-        [Authorize(Roles = "Administrador")]
         [HttpPost("AssignModulesToUser")]
         public async Task<IActionResult> AssignModulesToUser([FromBody] AssignModuleToUserRequest request)
         {
@@ -108,7 +97,6 @@ namespace isc.time.report.be.api.Controllers.v1.Users
         }
 
         [HttpGet("GetRolesOfUser/{id}")]
-        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult<SuccessResponse<GetRolesOfUserResponse>>> GetRolesOfUser(int id)
         {
             var userRoles = await userService.GetRolesOfUser(id);
@@ -120,7 +108,6 @@ namespace isc.time.report.be.api.Controllers.v1.Users
         }
 
         [HttpGet("GetAccessibleModules/{id}")]
-        [Authorize]
         public async Task<ActionResult<SuccessResponse<GetModulesOfUserResponse>>> GetAccessibleModules(int id)
         {
             var modules = await userService.GetModulesOfUser(id);

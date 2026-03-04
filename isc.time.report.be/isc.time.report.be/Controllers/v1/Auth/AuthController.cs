@@ -1,36 +1,61 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.Auth;
 using isc.time.report.be.domain.Models.Request.Auth;
-using isc.time.report.be.domain.Models.Response.Auth;
+using isc.time.report.be.domain.Models.Request.EncryptedRequest;
 using isc.time.report.be.domain.Models.Response.Auth;
 using isc.time.report.be.domain.Models.Response.Shared;
 using isc.time.report.be.domain.Models.Response.Users;
+using isc.time.report.be.infrastructure.Utils.Secutiry;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isc.time.report.be.api.Controllers.v1.Auth
 {
-    [ApiExplorerSettings(GroupName = "v1")] 
+    [ApiExplorerSettings(GroupName = "v1")]
     [ApiController]
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
 
         private readonly IAuthService authService;
-        public AuthController(IAuthService authService)
+        private readonly CryptoHelper crypto;
+        public AuthController(IAuthService authService, CryptoHelper crypto)
         {
             this.authService = authService;
+            this.crypto = crypto;
         }
+        [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult<SuccessResponse<LoginResponse>>> Login(LoginRequest loginRequest)
+        public async Task<ActionResult<SuccessResponse<LoginResponse>>> Login([FromBody] EncryptedRequest request)
         {
-            var login = await authService.Login(loginRequest);
+            try
+            {
+                // Desencriptamos usando la IV enviada
+                var json = crypto.Decrypt(request.Data, request.Iv);
 
-            return Ok(new SuccessResponse<LoginResponse>(200, "Operacion Exitosa.", login));
+                var loginRequest = System.Text.Json.JsonSerializer.Deserialize<LoginRequest>(
+                    json,
+                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                );
+
+                if (loginRequest == null ||
+                    string.IsNullOrWhiteSpace(loginRequest.Username) ||
+                    string.IsNullOrWhiteSpace(loginRequest.Password))
+                {
+                    return BadRequest("Credenciales incompletas");
+                }
+
+                var login = await authService.Login(loginRequest);
+
+                return Ok(new SuccessResponse<LoginResponse>(200, "Operación exitosa.", login));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR LOGIN: " + ex);
+                return StatusCode(500, ex.ToString());
+            }
         }
 
         [HttpPost("register")]
-        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult<SuccessResponse<RegisterResponse>>> Register(RegisterRequest registerRequest)
         {
             var register = await authService.Register(registerRequest);
@@ -39,7 +64,6 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
         }
 
         [HttpPost("roles")]
-        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         public async Task<ActionResult<SuccessResponse<RoleResponse>>> CreateRole([FromBody] CreateRoleRequest request)
         {
             var role = await authService.CreateRoleAsync(request);
@@ -47,7 +71,6 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
         }
 
         [HttpGet("GetRoles")]
-        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         public async Task<ActionResult<SuccessResponse<List<GetRolesResponse>>>> GetAllRoles()
         {
             var roles = await authService.GetAllRolesAsync();
@@ -55,7 +78,6 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
         }
 
         [HttpPut("UpdateRole/{id}")]
-        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         public async Task<ActionResult<SuccessResponse<RoleResponse>>> UpdateRole(int id, [FromBody] UpdateRoleRequest request)
         {
             var role = await authService.UpdateRoleAsync(id, request);

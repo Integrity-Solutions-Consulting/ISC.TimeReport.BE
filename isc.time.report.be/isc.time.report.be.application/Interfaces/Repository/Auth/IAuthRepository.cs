@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using isc.time.report.be.domain.Entity.Auth;
+﻿using isc.time.report.be.domain.Entity.Auth;
 
 namespace isc.time.report.be.application.Interfaces.Repository.Auth
 {

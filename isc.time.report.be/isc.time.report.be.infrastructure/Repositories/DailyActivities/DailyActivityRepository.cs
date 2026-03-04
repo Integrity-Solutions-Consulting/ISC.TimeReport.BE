@@ -1,17 +1,8 @@
-﻿using DocumentFormat.OpenXml.Office2010.PowerPoint;
-using isc.time.report.be.application.Interfaces.Repository.DailyActivities;
+﻿using isc.time.report.be.application.Interfaces.Repository.DailyActivities;
 using isc.time.report.be.domain.Entity.DailyActivities;
-using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
-using isc.time.report.be.domain.Models.Request.DailyActivities;
 using isc.time.report.be.infrastructure.Database;
-using isc.time.report.be.infrastructure.Utils.Pagination;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.infrastructure.Repositories.DailyActivities
 {
@@ -124,26 +115,26 @@ namespace isc.time.report.be.infrastructure.Repositories.DailyActivities
                         DateTime from,
                         DateTime to,
                         int approverId)
-                        {
-                            var query = _context.DailyActivities
-                                .Where(a => a.ActivityDate >= DateOnly.FromDateTime(from)
-                                            && a.ActivityDate <= DateOnly.FromDateTime(to));
+        {
+            var query = _context.DailyActivities
+                .Where(a => a.ActivityDate >= DateOnly.FromDateTime(from)
+                            && a.ActivityDate <= DateOnly.FromDateTime(to));
 
-                            if (employeeId > 0)
-                                query = query.Where(a => a.EmployeeID == employeeId);
+            if (employeeId > 0)
+                query = query.Where(a => a.EmployeeID == employeeId);
 
-                            if (projectId > 0)
-                                query = query.Where(a => a.ProjectID == projectId);
+            if (projectId > 0)
+                query = query.Where(a => a.ProjectID == projectId);
 
-                            if (activityIds != null && activityIds.Any())
-                                query = query.Where(a => activityIds.Contains(a.Id));
+            if (activityIds != null && activityIds.Any())
+                query = query.Where(a => activityIds.Contains(a.Id));
 
-                            await query.ExecuteUpdateAsync(a => a
-                                .SetProperty(x => x.ApprovedByID, approverId)
-                                .SetProperty(x => x.ApprovalDate, DateTime.Now)
-                                .SetProperty(x => x.ModificationDate, DateTime.Now)
-                                .SetProperty(x => x.ModificationUser, "SYSTEM")
-                            );
+            await query.ExecuteUpdateAsync(a => a
+                .SetProperty(x => x.ApprovedByID, approverId)
+                .SetProperty(x => x.ApprovalDate, DateTime.Now)
+                .SetProperty(x => x.ModificationDate, DateTime.Now)
+                .SetProperty(x => x.ModificationUser, "SYSTEM")
+            );
         }
 
         public async Task<List<DailyActivity>> GetActivitiesForApprovalAsync(
@@ -152,20 +143,20 @@ namespace isc.time.report.be.infrastructure.Repositories.DailyActivities
                     int projectId,
                     DateTime from,
                     DateTime to)
-                    {
-                        var query = _context.DailyActivities
-                            .Where(a => a.ActivityDate >= DateOnly.FromDateTime(from)
-                                        && a.ActivityDate <= DateOnly.FromDateTime(to));
+        {
+            var query = _context.DailyActivities
+                .Where(a => a.ActivityDate >= DateOnly.FromDateTime(from)
+                            && a.ActivityDate <= DateOnly.FromDateTime(to));
 
-                        if (employeeId > 0)
-                            query = query.Where(a => a.EmployeeID == employeeId);
+            if (employeeId > 0)
+                query = query.Where(a => a.EmployeeID == employeeId);
 
-                        if (projectId > 0)
-                            query = query.Where(a => a.ProjectID == projectId);
+            if (projectId > 0)
+                query = query.Where(a => a.ProjectID == projectId);
 
 
-                        return await query.ToListAsync();
-                    }
+            return await query.ToListAsync();
+        }
 
 
 

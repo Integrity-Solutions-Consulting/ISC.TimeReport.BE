@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace isc.time.report.be.tests
 {
     public class UnitTest1

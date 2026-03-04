@@ -1,7 +1,7 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.ProjectionHours;
 using isc.time.report.be.domain.Models.Request.Projections;
 using isc.time.report.be.domain.Models.Response.Projections;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace isc.time.report.be.api.Controllers.v1.ProjectionHours
@@ -9,6 +9,7 @@ namespace isc.time.report.be.api.Controllers.v1.ProjectionHours
     [ApiExplorerSettings(GroupName = "v1")]
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProjectionHourController : ControllerBase
     {
         private readonly IProjectionHourService _service;
@@ -36,7 +37,7 @@ namespace isc.time.report.be.api.Controllers.v1.ProjectionHours
         public async Task<ActionResult<CreateProjectionWithoutProjectResponse>> CreateProjectionWithoutProject(
             [FromBody] CreateProjectionWithoutProjectRequest request)
         {
-            
+
             var result = await _service.CreateAsync(request);
 
             return CreatedAtAction(nameof(CreateProjectionWithoutProject), new { groupProjection = result.GroupProjection }, result);

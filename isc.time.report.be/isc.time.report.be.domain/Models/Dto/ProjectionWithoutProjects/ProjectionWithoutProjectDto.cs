@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace isc.time.report.be.domain.Models.Dto.ProjectionWithoutProjects
+﻿namespace isc.time.report.be.domain.Models.Dto.ProjectionWithoutProjects
 {
     public class ProjectionWithoutProjectDto
     {

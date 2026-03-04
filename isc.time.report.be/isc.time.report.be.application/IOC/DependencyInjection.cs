@@ -1,6 +1,4 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.InventoryApis;
-using isc.time.report.be.application.Interfaces.Repository.ProjectionHours;
-using isc.time.report.be.application.Interfaces.Service.Auth;
+﻿using isc.time.report.be.application.Interfaces.Service.Auth;
 using isc.time.report.be.application.Interfaces.Service.Catalogs;
 using isc.time.report.be.application.Interfaces.Service.Clients;
 using isc.time.report.be.application.Interfaces.Service.DailyActivities;
@@ -19,7 +17,6 @@ using isc.time.report.be.application.Interfaces.Service.Projects;
 using isc.time.report.be.application.Interfaces.Service.Report;
 using isc.time.report.be.application.Interfaces.Service.TimeReports;
 using isc.time.report.be.application.Interfaces.Service.Users;
-using isc.time.report.be.application.Services;
 using isc.time.report.be.application.Services.Auth;
 using isc.time.report.be.application.Services.Catalogs;
 using isc.time.report.be.application.Services.Clients;
@@ -43,17 +40,12 @@ using isc.time.report.be.application.Utils.Auth;
 using isc.time.report.be.domain.Entity.Emails;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.application.IOC
 {
     public static class DependencyInjection
     {
-        
+
         public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<PasswordUtils>();
@@ -69,7 +61,7 @@ namespace isc.time.report.be.application.IOC
             services.AddScoped<IClientService, ClientService>();
             services.AddScoped<IPermissionService, PermissionService>();
             services.AddScoped<IPermissionTypeService, PermissionTypeService>();
-            services.AddScoped<IDailyActivityService,DailyActivityService>();
+            services.AddScoped<IDailyActivityService, DailyActivityService>();
             services.AddScoped<ITimeReportService, TimeReportService>();
             services.AddScoped<ICatalogService, CatalogService>();
             services.AddScoped<IDashboardService, DashboardService>();
