@@ -10,6 +10,7 @@ using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Response.Shared;
 using isc.time.report.be.infrastructure.IOC;
 using isc.time.report.be.infrastructure.Repositories.Auth;
+using isc.time.report.be.infrastructure.Repositories.Sync;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Data.SqlClient;
@@ -105,6 +106,8 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddDbConfiguration(builder.Configuration);
 builder.Services.AddInfraestructure(builder.Configuration);
+builder.Services.AddScoped<OutboxPositionRepository>();
+builder.Services.AddHostedService<isc.time.report.be.infrastructure.Workers.PositionSyncWorker>();
 
 
 
