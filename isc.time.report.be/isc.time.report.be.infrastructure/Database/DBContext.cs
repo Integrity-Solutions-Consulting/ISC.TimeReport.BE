@@ -781,7 +781,7 @@ namespace isc.time.report.be.infrastructure.Database
 
             modelBuilder.Entity<OutboxPosition>(entity =>
             {
-                entity.ToTable("OutboxPosition");
+                entity.ToTable("Outbox_Positions");
                 entity.HasKey(e => e.OutboxId);
                 entity.Property(e => e.OutboxId).HasColumnName("OutboxId");
                 entity.Property(e => e.AggregateKey).HasColumnName("AggregateKey");
