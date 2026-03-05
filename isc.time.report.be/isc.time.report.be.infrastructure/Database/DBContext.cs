@@ -779,6 +779,8 @@ namespace isc.time.report.be.infrastructure.Database
                 entity.Property(p => p.ModificationIp).HasColumnName("modification_ip");
             });
 
+
+            //Tabla Outbox para sincronización de posiciones con el sistema de administración
             modelBuilder.Entity<OutboxPosition>(entity =>
             {
                 entity.ToTable("Outbox_Positions");
