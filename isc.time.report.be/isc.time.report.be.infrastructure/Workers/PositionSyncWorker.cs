@@ -135,7 +135,7 @@ namespace isc.time.report.be.infrastructure.Workers
             cmd.Parameters.AddWithValue("@id", data.GetProperty("id").GetInt32());
             cmd.Parameters.AddWithValue("@name", data.GetProperty("name").GetString() ?? "");
             cmd.Parameters.AddWithValue("@description", data.GetProperty("description").GetString() ?? "");
-            cmd.Parameters.AddWithValue("@status", GetStatusValue(data));
+            cmd.Parameters.AddWithValue("@status", GetStatusBool(data));
             cmd.Parameters.AddWithValue("@creation_user", data.GetProperty("creation_user").GetString() ?? "");
             cmd.Parameters.AddWithValue("@modification_user", GetStringOrNull(data, "modification_user"));
             cmd.Parameters.AddWithValue("@creation_date", data.GetProperty("creation_date").GetDateTime());
@@ -171,18 +171,16 @@ namespace isc.time.report.be.infrastructure.Workers
             return DBNull.Value;
         }
 
-        private static int GetStatusValue(JsonElement data)
+        private static bool GetStatusBool(JsonElement data)
         {
-            // Intentar obtener la propiedad "status"
             if (!data.TryGetProperty("status", out var statusProp))
                 throw new InvalidOperationException("La propiedad 'status' no existe en el payload.");
 
-            // Determinar el tipo y convertir
             return statusProp.ValueKind switch
             {
-                JsonValueKind.Number => statusProp.GetInt32(),           // Si es número, lo usa directamente
-                JsonValueKind.True => 1,                                // Si es true, devuelve 1
-                JsonValueKind.False => 0,                                // Si es false, devuelve 0
+                JsonValueKind.True => true,
+                JsonValueKind.False => false,
+                JsonValueKind.Number => statusProp.GetInt32() != 0, // 0 = false, cualquier otro = true
                 _ => throw new InvalidOperationException($"Tipo no soportado para 'status': {statusProp.ValueKind}")
             };
         }
