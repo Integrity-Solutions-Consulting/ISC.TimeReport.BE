@@ -28,27 +28,29 @@ namespace isc.time.report.be.infrastructure.Repositories.Sync
 
         public async Task MarkAsProcessedAsync(Guid outboxId)
         {
-            var record = await _dbContext.OutboxPositions.FindAsync(outboxId);
-            if (record is null) return;
-
-            record.ProcessedAt = DateTime.UtcNow;
-            record.ErrorMessage = null;
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.OutboxPositions
+                .Where(x => x.OutboxId == outboxId)
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(x => x.ProcessedAt, DateTime.UtcNow)
+                    .SetProperty(x => x.ErrorMessage, (string?)null));
         }
 
         public async Task MarkAsFailedAsync(Guid outboxId, string errorMessage)
         {
-            var record = await _dbContext.OutboxPositions.FindAsync(outboxId);
+            var record = await _dbContext.OutboxPositions
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.OutboxId == outboxId);
             if (record is null) return;
 
             record.Attempts++;
-            record.ErrorMessage = errorMessage;
-
-            // Reintento: 5min → 10min → 20min → 40min...
             var minutesDelay = Math.Pow(2, record.Attempts) * 5;
-            record.NextAttemptAt = DateTime.UtcNow.AddMinutes(minutesDelay);
 
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.OutboxPositions
+                .Where(x => x.OutboxId == outboxId)
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(x => x.Attempts, record.Attempts)
+                    .SetProperty(x => x.ErrorMessage, errorMessage)
+                    .SetProperty(x => x.NextAttemptAt, DateTime.UtcNow.AddMinutes(minutesDelay)));
         }
 
     }
