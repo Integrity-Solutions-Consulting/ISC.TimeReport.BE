@@ -1,0 +1,6 @@
+@isc_tmr_backend_HostAddress = http://localhost:5188
+
+GET {{isc_tmr_backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
