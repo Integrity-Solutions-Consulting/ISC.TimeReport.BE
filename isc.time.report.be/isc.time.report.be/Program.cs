@@ -3,7 +3,6 @@ using isc.time.report.be.api.Security;
 using isc.time.report.be.application.IOC;
 using isc.time.report.be.domain.Entity.Emails;
 using isc.time.report.be.infrastructure.IOC;
-using isc.time.report.be.infrastructure.Repositories.Auth;
 using isc.time.report.be.infrastructure.Repositories.Sync;
 using isc.time.report.be.infrastructure.Utils.Secutiry;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,6 +11,15 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var moduleSecurityJson = Environment.GetEnvironmentVariable("MODULE_SECURITY_JSON");
+
+if (!string.IsNullOrWhiteSpace(moduleSecurityJson))
+{
+    var formattedJson = $"{{\"ModuleSecurity\": {moduleSecurityJson} }}";
+    var stream = new MemoryStream(Encoding.UTF8.GetBytes(formattedJson));
+    builder.Configuration.AddJsonStream(stream);
+}
 
 // Add services to the container.
 
