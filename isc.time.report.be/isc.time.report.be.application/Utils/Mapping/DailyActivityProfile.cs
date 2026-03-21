@@ -2,11 +2,6 @@
 using isc.time.report.be.domain.Entity.DailyActivities;
 using isc.time.report.be.domain.Models.Request.DailyActivities;
 using isc.time.report.be.domain.Models.Response.DailyActivities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.application.Utils.Mapping
 {

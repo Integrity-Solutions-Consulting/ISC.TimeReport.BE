@@ -6,12 +6,6 @@ using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.Persons;
 using isc.time.report.be.domain.Models.Response.Persons;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using entityPerson = isc.time.report.be.domain.Entity.Persons;
 
 namespace isc.time.report.be.application.Services.Persons
 {
@@ -26,7 +20,7 @@ namespace isc.time.report.be.application.Services.Persons
             _mapper = mapper;
         }
 
-        public async Task<PagedResult<GetPersonResponse>>GetAllPersonsPaginated(PaginationParams paginationParams, string? search)
+        public async Task<PagedResult<GetPersonResponse>> GetAllPersonsPaginated(PaginationParams paginationParams, string? search)
         {
             var result = await _personRepository.GetAllPersonsPaginatedAsync(paginationParams, search);
             var mapped = _mapper.Map<List<GetPersonResponse>>(result.Items);

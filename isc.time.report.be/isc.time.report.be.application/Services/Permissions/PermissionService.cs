@@ -4,17 +4,11 @@ using isc.time.report.be.application.Interfaces.Service.Permissions;
 using isc.time.report.be.domain.Entity.Permisions;
 using isc.time.report.be.domain.Models.Request.Permissions;
 using isc.time.report.be.domain.Models.Response.Permissions;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.application.Services.Permissions
 {
-    public class PermissionService: IPermissionService
+    public class PermissionService : IPermissionService
     {
         private readonly IPermissionRepository permissionRepository;
         private readonly IMapper _mapper;
@@ -35,8 +29,8 @@ namespace isc.time.report.be.application.Services.Permissions
             permission.CreationDate = DateTime.Now;
             permission.CreationUser = "SYSTEM";
             permission.Status = true;
-            permission.TotalDays = Math.Round((decimal)(request.EndDate.Date - request.StartDate.Date).TotalDays + 1, 2 );
-            permission.TotalHours = Math.Round((decimal)(request.EndDate - request.StartDate).TotalHours, 2 );
+            permission.TotalDays = Math.Round((decimal)(request.EndDate.Date - request.StartDate.Date).TotalDays + 1, 2);
+            permission.TotalHours = Math.Round((decimal)(request.EndDate - request.StartDate).TotalHours, 2);
 
             var created = await permissionRepository.CreateAsync(permission);
             return _mapper.Map<CreatePermissionResponse>(created);

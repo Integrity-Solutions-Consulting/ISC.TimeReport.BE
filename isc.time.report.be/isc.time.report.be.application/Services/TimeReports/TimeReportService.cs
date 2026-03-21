@@ -11,13 +11,7 @@ using isc.time.report.be.application.Interfaces.Service.TimeReports;
 using isc.time.report.be.domain.Entity.DailyActivities;
 using isc.time.report.be.domain.Models.Dto.TimeReports;
 using isc.time.report.be.domain.Models.Response.Dashboards;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using A = DocumentFormat.OpenXml.Drawing;
 using Xdr = DocumentFormat.OpenXml.Drawing.Spreadsheet;
 
@@ -1022,16 +1016,16 @@ namespace isc.time.report.be.application.Services.TimeReports
             var activities = await timeReportRepository.GetActivitiesByEmployeeAndProjectsAsync(
                 employeeId, projectIds, year, month, fullMonth) ?? new List<DailyActivity>();
 
-            var leaders = await leaderRepository.GetActiveLeadersByProjectIdsAsync(projectIds);
+            var leadersDict = await leaderRepository.GetLeadersByProjectIdsDictionaryAsync(projectIds);
 
             var activityDtos = activities.Select(a =>
             {
-                var leader = leaders.FirstOrDefault(l => l.ProjectID == a.ProjectID);
-                var leaderName = leader != null ? $"{leader.Person.FirstName} {leader.Person.LastName}" : string.Empty;
+                var leader = (a.ProjectID.HasValue && leadersDict.ContainsKey(a.ProjectID.Value)) ? leadersDict[a.ProjectID.Value] : null;
+                var leaderName = leader != null ? $"{leader.FirstName} {leader.LastName}" : string.Empty;
 
                 return new TimeReportActivityDto
                 {
-                    LeaderId = leader?.PersonID ?? 0,
+                    LeaderId = leader?.Id ?? 0,
                     LeaderName = leaderName,
                     ActivityTypeID = a.ActivityTypeID,
                     ActivityType = a.ActivityType,
@@ -1131,7 +1125,7 @@ namespace isc.time.report.be.application.Services.TimeReports
         }
         public async Task<byte[]> GenerateExcelModelAsync()
         {
-           await using (var memoryStream = new MemoryStream())
+            await using (var memoryStream = new MemoryStream())
             {
                 using (var spreadsheetDocument = SpreadsheetDocument.Create(memoryStream, SpreadsheetDocumentType.Workbook))
                 {

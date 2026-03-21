@@ -2,11 +2,6 @@
 using isc.time.report.be.domain.Entity.Persons;
 using isc.time.report.be.domain.Models.Request.Persons;
 using isc.time.report.be.domain.Models.Response.Persons;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.application.Utils.Mapping
 {

@@ -3,21 +3,13 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using isc.time.report.be.application.Interfaces.Repository.ProjectionHours;
-using isc.time.report.be.application.Interfaces.Repository.Projections;
 using isc.time.report.be.application.Interfaces.Service.ProjectionHours;
 using isc.time.report.be.domain.Entity.ProjectionHours;
-using isc.time.report.be.domain.Entity.Projections;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.Projections;
 using isc.time.report.be.domain.Models.Response.Projections;
-using Org.BouncyCastle.Asn1.Ocsp;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.application.Services.ProjectionHours
 {
@@ -461,7 +453,7 @@ namespace isc.time.report.be.application.Services.ProjectionHours
 
                 )
             );
-        } 
+        }
         public async Task<List<List<ProjectionWithoutProjectResponse>>> GetAllProjectionWithoutProjectAsync()
         {
             var groupProjections = await _projectionHoursRepository.GetAllGroupProjectionsAsync();
@@ -478,5 +470,5 @@ namespace isc.time.report.be.application.Services.ProjectionHours
 
             return allGroups;
         }
-        }
+    }
 }

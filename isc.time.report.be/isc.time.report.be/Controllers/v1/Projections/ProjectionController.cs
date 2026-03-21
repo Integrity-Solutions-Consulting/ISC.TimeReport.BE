@@ -1,5 +1,4 @@
 ﻿using isc.time.report.be.application.Interfaces.Service.Projections;
-using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Models.Request.Projections;
 using isc.time.report.be.domain.Models.Response.Projections;
 using Microsoft.AspNetCore.Authorization;
@@ -10,23 +9,22 @@ namespace isc.time.report.be.api.Controllers.v1.Projections
     [ApiController]
     [Route("api/[controller]")]
     [ApiExplorerSettings(GroupName = "v1")]
+    [Authorize]
     public class ProjectionController : ControllerBase
     {
         private readonly IProjectionHourProjectService _service;
-        public ProjectionController (IProjectionHourProjectService service)
+        public ProjectionController(IProjectionHourProjectService service)
         {
-           _service = service;
+            _service = service;
         }
-        [Authorize(Roles = "Administrador,Gerente,Lider")]
+
         [HttpGet("{projectId:int}/get-all-projection-by-projectId")]
-        public async Task<ActionResult<List<ProjectionHoursProjectResponse>>> GetProjectionOfProject (int projectId)
+        public async Task<ActionResult<List<ProjectionHoursProjectResponse>>> GetProjectionOfProject(int projectId)
         {
             var result = await _service.GetAllProjectionByProjectId(projectId);
             return Ok(result);
         }
 
-
-        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpPost("create")]
         public async Task<ActionResult<ProjectionHoursProjectRequest>> CreateProjection([FromBody] ProjectionHoursProjectRequest request, [FromRoute] int projectId)
         {
@@ -34,8 +32,6 @@ namespace isc.time.report.be.api.Controllers.v1.Projections
             return CreatedAtAction(nameof(CreateProjection), new { projectId = result.ProjecId }, result);
         }
 
-
-        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpPut("{projectId:int}/update/{resourceTypeId:int}")]
         public async Task<ActionResult<UpdateProjectionHoursProjectRequest>> UpdateProjection(
             int projectId,
@@ -46,7 +42,6 @@ namespace isc.time.report.be.api.Controllers.v1.Projections
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpPut("{projectId:int}/activate-inactivate/{resourceTypeId:int}")]
         public async Task<IActionResult> ActivateInactivateResource(
             int projectId,
@@ -54,10 +49,9 @@ namespace isc.time.report.be.api.Controllers.v1.Projections
             [FromQuery] bool active)
         {
             await _service.ActivateInactiveResourceAsync(projectId, resourceTypeId, active);
-            return NoContent(); 
+            return NoContent();
         }
 
-        [Authorize(Roles = "Administrador,Gerente,Lider")]
         [HttpGet("{projectId:int}/export-excel")]
         public async Task<IActionResult> ExportProjectionExcel(int projectId)
         {

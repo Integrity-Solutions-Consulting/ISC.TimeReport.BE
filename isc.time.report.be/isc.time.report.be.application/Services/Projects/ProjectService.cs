@@ -1,36 +1,20 @@
 ﻿using AutoMapper;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Office.CustomUI;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using isc.time.report.be.application.Interfaces.Repository.Auth;
 using isc.time.report.be.application.Interfaces.Repository.Clients;
 using isc.time.report.be.application.Interfaces.Repository.Leaders;
-using isc.time.report.be.application.Interfaces.Repository.Menus;
 using isc.time.report.be.application.Interfaces.Repository.Projects;
 using isc.time.report.be.application.Interfaces.Service.Projects;
-using isc.time.report.be.application.Utils.Auth;
-using isc.time.report.be.domain.Entity.Auth;
 using isc.time.report.be.domain.Entity.Catalogs;
-using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.Projects;
-using isc.time.report.be.domain.Models.Response.Auth;
 using isc.time.report.be.domain.Models.Response.Employees;
-using isc.time.report.be.domain.Models.Response.Leaders;
 using isc.time.report.be.domain.Models.Response.Persons;
 using isc.time.report.be.domain.Models.Response.Projects;
-using isc.time.report.be.domain.Models.Response.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.application.Services.Projects
 {
@@ -54,8 +38,6 @@ namespace isc.time.report.be.application.Services.Projects
 
             var responseItems = _mapper.Map<List<GetAllProjectsResponse>>(result.Items);
 
-            //foreach (var project in result) 
-
             return new PagedResult<GetAllProjectsResponse>
             {
                 Items = responseItems,
@@ -71,12 +53,28 @@ namespace isc.time.report.be.application.Services.Projects
             int employeeId,
             bool active)
         {
-            if(active == true)
+            if (active == true)
             {
-                // Obtiene solo los proyectos asignados al empleado
                 var result = await projectRepository.GetAssignedProjectsForEmployeeActiveAsync(paginationParams, search, employeeId);
-           
+
                 var responseItems = _mapper.Map<List<GetAllProjectsResponse>>(result.Items);
+
+                for (int i = 0; i < result.Items.Count; i++)
+                {
+                    var project = result.Items[i];
+                    var response = responseItems[i];
+                    if (project.Leader != null)
+                    {
+                        response.LeaderID = project.LeaderID;
+                        response.Leader = new Lider
+                        {
+                            Id = project.Leader.Id,
+                            FirstName = project.Leader.FirstName,
+                            LastName = project.Leader.LastName,
+                            Email = project.Leader.Email
+                        };
+                    }
+                }
 
                 return new PagedResult<GetAllProjectsResponse>
                 {
@@ -88,10 +86,26 @@ namespace isc.time.report.be.application.Services.Projects
             }
             else
             {
-                // Obtiene solo los proyectos asignados al empleado
                 var result = await projectRepository.GetAssignedProjectsForEmployeeAsync(paginationParams, search, employeeId);
 
                 var responseItems = _mapper.Map<List<GetAllProjectsResponse>>(result.Items);
+
+                for (int i = 0; i < result.Items.Count; i++)
+                {
+                    var project = result.Items[i];
+                    var response = responseItems[i];
+                    if (project.Leader != null)
+                    {
+                        response.LeaderID = project.LeaderID;
+                        response.Leader = new Lider
+                        {
+                            Id = project.Leader.Id,
+                            FirstName = project.Leader.FirstName,
+                            LastName = project.Leader.LastName,
+                            Email = project.Leader.Email
+                        };
+                    }
+                }
 
                 return new PagedResult<GetAllProjectsResponse>
                 {
@@ -113,16 +127,25 @@ namespace isc.time.report.be.application.Services.Projects
                 return null;
             }
 
-            var responseProject = _mapper.Map<GetProjectByIDResponse>(project);
-
-            return responseProject;
+            return _mapper.Map<GetProjectByIDResponse>(project);
         }
+
 
         public async Task<CreateProjectResponse> CreateProject(CreateProjectRequest projectRequest)
         {
+            var projectEntity = _mapper.Map<Project>(projectRequest);
 
+            if (projectRequest.LeaderID.HasValue)
+            {
+                var leader = await _leaderRepository.GetLeaderByIDAsync(projectRequest.LeaderID.Value);
+                if (leader == null)
+                {
+                    throw new ClientFaultException("El líder especificado no existe.", 404);
+                }
+            }
+            projectEntity.LeaderID = projectRequest.LeaderID;
 
-            var projectNew = await projectRepository.CreateProject(_mapper.Map<Project>(projectRequest));
+            var projectNew = await projectRepository.CreateProject(projectEntity);
 
             if (projectNew.StartDate > projectNew.EndDate)
             {
@@ -141,6 +164,15 @@ namespace isc.time.report.be.application.Services.Projects
                 throw new ClientFaultException("No existe el proyecto", 401);
             }
 
+            if (projectParaUpdate.LeaderID.HasValue && projectGet.LeaderID != projectParaUpdate.LeaderID)
+            {
+                var leader = await _leaderRepository.GetLeaderByIDAsync(projectParaUpdate.LeaderID.Value);
+                if (leader == null)
+                {
+                    throw new ClientFaultException("El líder especificado no existe.", 404);
+                }
+            }
+
             projectGet.ClientID = projectParaUpdate.ClientID;
             projectGet.ProjectStatusID = projectParaUpdate.ProjectStatusID;
             projectGet.ProjectTypeID = projectParaUpdate.ProjectTypeID;
@@ -156,6 +188,7 @@ namespace isc.time.report.be.application.Services.Projects
             projectGet.WaitingStartDate = projectParaUpdate.WaitingStartDate;
             projectGet.WaitingEndDate = projectParaUpdate.WaitingEndDate;
             projectGet.Observation = projectParaUpdate.Observation;
+            projectGet.LeaderID = projectParaUpdate.LeaderID; 
 
             if (projectGet.StartDate > projectGet.EndDate)
             {
@@ -185,7 +218,6 @@ namespace isc.time.report.be.application.Services.Projects
 
         public async Task AssignEmployeesToProject(AssignEmployeesToProjectRequest request)
         {
-            //  Traer el proyecto
             Project project = await projectRepository.GetProjectByIDAsync(request.ProjectID);
 
             if (project == null)
@@ -193,7 +225,7 @@ namespace isc.time.report.be.application.Services.Projects
 
             DateTime now = DateTime.UtcNow;
 
-            
+
             foreach (var dto in request.EmployeeProjectMiddle)
             {
                 bool tieneEmpleado = dto.EmployeeId.HasValue;
@@ -293,7 +325,16 @@ namespace isc.time.report.be.application.Services.Projects
                 Budget = project.Budget,
                 WaitingEndDate = project.WaitingEndDate,
                 WaitingStartDate = project.WaitingStartDate,
+
                 Observation = project.Observation,
+                LeaderID = project.LeaderID,
+                Leader = project.Leader != null ? new isc.time.report.be.domain.Models.Response.Projects.Lider
+                {
+                    Id = project.Leader.Id,
+                    FirstName = project.Leader.FirstName,
+                    LastName = project.Leader.LastName,
+                    Email = project.Leader.Email
+                } : null,
 
                 EmployeeProjects = project.EmployeeProject.Select(ep => new GetEmployeeProjectResponse
                 {
@@ -321,7 +362,7 @@ namespace isc.time.report.be.application.Services.Projects
                         LastName = e.Person.LastName,
                         Status = e.Status
                     }).ToList()
-            };  
+            };
 
             return response;
         }
@@ -333,37 +374,36 @@ namespace isc.time.report.be.application.Services.Projects
         }
         public async Task<List<CreateDtoToExcelProject>> GetProjectsForExcelAsync()
         {
-            // 1️ Traer todos los proyectos
             var projects = await projectRepository.GetAllProjectsAsync();
             if (projects == null || !projects.Any())
                 return new List<CreateDtoToExcelProject>();
 
             var projectIds = projects.Select(p => p.Id).ToList();
 
-            // 2️ Traer líderes activos por proyecto
             var leaders = await _leaderRepository.GetActiveLeadersByProjectIdsAsync(projectIds);
 
-            // 3️ Traer clientes relacionados
             var clientIds = projects.Select(p => p.ClientID).Distinct().ToList();
             var clients = await _clientRepository.GetListOfClientsByIdsAsync(clientIds);
 
-            // 4️ Mapear a DTO listo para Excel
             var result = projects.Select((p, index) =>
             {
-                var projectLeaders = leaders
-                    .Where(l => l.ProjectID == p.Id)
-                    .Select(l => new LiderData
+                var currentLeader = p.Leader;
+                var leaderList = new List<LiderData>();
+
+                if (currentLeader != null)
+                {
+                    leaderList.Add(new LiderData
                     {
-                        Id = l.Id,
+                        Id = currentLeader.Id,
                         GetPersonResponse = new GetPersonResponse
                         {
-                            Id = l.Person.Id,
-                            FirstName = l.Person.FirstName,
-                            LastName = l.Person.LastName,
-                            Email = l.Person.Email
+                            FirstName = currentLeader.FirstName,
+                            LastName = currentLeader.LastName,
+                            Email = currentLeader.Email,
+                            Phone = currentLeader.Phone
                         }
-                    })
-                    .ToList();
+                    });
+                }
 
                 var projectClients = clients
                     .Where(c => c.Id == p.ClientID)
@@ -393,7 +433,7 @@ namespace isc.time.report.be.application.Services.Projects
                     WaitingStartDate = p.WaitingStartDate,
                     WaitingEndDate = p.WaitingEndDate,
                     Observation = p.Observation,
-                    LiderData = projectLeaders,
+                    LiderData = leaderList,
                     ClientData = projectClients,
 
                 };
@@ -401,9 +441,6 @@ namespace isc.time.report.be.application.Services.Projects
 
             return result;
         }
-
-
-
 
         public async Task<byte[]> GenerateProjectsExcelAsync()
         {
@@ -419,7 +456,6 @@ namespace isc.time.report.be.application.Services.Projects
                     var workbookPart = spreadsheetDocument.AddWorkbookPart();
                     workbookPart.Workbook = new Workbook();
 
-                    // ✅ Agregar estilos al workbook
                     var stylesPart = workbookPart.AddNewPart<WorkbookStylesPart>();
                     stylesPart.Stylesheet = CreateStylesheet();
                     stylesPart.Stylesheet.Save();
@@ -427,7 +463,7 @@ namespace isc.time.report.be.application.Services.Projects
                     var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
                     worksheetPart.Worksheet = new Worksheet();
 
-                    // 🔹 Definir anchos de columnas
+                    //Definir anchos de columnas
                     var columns = new Columns();
                     columns.Append(CreateColumn(1, 1, 6)); // NRO
                     columns.Append(CreateColumn(2, 2, CalculateColumnWidth(new[] { "Código Proyecto" }.Concat(projects.Select(p => p.Code)))));
@@ -449,9 +485,9 @@ namespace isc.time.report.be.application.Services.Projects
                     columns.Append(CreateColumn(14, 14, 22)); // Fecha fin espera
                     columns.Append(CreateColumn(15, 15, CalculateColumnWidth(new[] { "Observaciones" }.Concat(projects.Select(p => p.Observation ?? "")))));
 
-                    // 🔹 SheetData y fila 1 - título
+                    // SheetData y fila 1 - título
                     var sheetData = new SheetData();
-                    worksheetPart.Worksheet.Append(columns); // ⬅ Columnas primero
+                    worksheetPart.Worksheet.Append(columns); // Columnas primero
                     worksheetPart.Worksheet.Append(sheetData);
 
                     var sheets = workbookPart.Workbook.AppendChild(new Sheets());
@@ -463,7 +499,7 @@ namespace isc.time.report.be.application.Services.Projects
                     };
                     sheets.Append(sheet);
 
-                    // 🔹 MergeCells (después de sheetData pero antes de filas)
+                    // MergeCells (después de sheetData pero antes de filas)
                     var mergeCells = new MergeCells();
                     worksheetPart.Worksheet.InsertAfter(mergeCells, sheetData);
                     mergeCells.Append(new MergeCell() { Reference = new StringValue("A1:O1") });
@@ -472,7 +508,7 @@ namespace isc.time.report.be.application.Services.Projects
                     row1.Append(CreateCell("PROYECTOS", styleIndex: 2)); // Estilo 2 = título
                     sheetData.Append(row1);
 
-                    // 🔹 Cabecera
+                    // Cabecera
                     var headerRow = new Row();
                     headerRow.Append(
                         CreateCell("NRO", 1),
@@ -493,7 +529,7 @@ namespace isc.time.report.be.application.Services.Projects
                     );
                     sheetData.AppendChild(headerRow);
 
-                    // 🔹 Filas con los datos
+                    // Filas con los datos
                     int nro = 1;
                     foreach (var item in projects)
                     {
@@ -526,10 +562,6 @@ namespace isc.time.report.be.application.Services.Projects
             }
         }
 
-
-
-
-
         // Helpers
         private Cell CreateCell(string value, uint styleIndex = 0)
         {
@@ -559,23 +591,23 @@ namespace isc.time.report.be.application.Services.Projects
 
             int maxLength = values.Max(v => v?.Length ?? 0);
 
-            // Aproximación: cada carácter ~1.2 unidades en Excel
+            // Aproximación: cada carácter 1.2 unidades en Excel
             return Math.Min(100, maxLength * 1.2);
         }
         private Stylesheet CreateStylesheet()
         {
             return new Stylesheet(
                 new Fonts(
-                    new Font( // 0 - Default Calibri 11
+                    new Font( 
                         new FontSize { Val = 11 },
                         new FontName { Val = "Calibri" }
                     ),
-                    new Font( // 1 - Bold Calibri 11 (cabeceras)
+                    new Font(
                         new FontSize { Val = 11 },
                         new Bold(),
                         new FontName { Val = "Calibri" }
                     ),
-                    new Font( // 2 - Título Calibri 25, bold
+                    new Font( 
                         new FontSize { Val = 25 },
                         new Bold(),
                         new FontName { Val = "Calibri" }

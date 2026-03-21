@@ -9,15 +9,9 @@ using isc.time.report.be.domain.Entity.Modules;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.Auth;
 using isc.time.report.be.domain.Models.Response.Auth;
-using isc.time.report.be.domain.Models.Response.Menus;
 using isc.time.report.be.domain.Models.Response.Users;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.application.Services.Auth
 {
@@ -95,11 +89,16 @@ namespace isc.time.report.be.application.Services.Auth
 
             }).ToList() ?? new List<ModuleResponse>();
 
+            var modulePaths = accessibleBaseModule
+                .Select(m => m.ModulePath)
+                .Distinct()
+                .ToList();
+
             return new LoginResponse
             {
                 UserID = user.Id,
                 EmployeeID = user.EmployeeID,
-                TOKEN = jwtUtils.GenerateToken(user),
+                TOKEN = jwtUtils.GenerateToken(user, new List<string>()),// se pone null para no enviar el modulo porque la validacion se la hace desde el jwt
                 Roles = userRoles,
                 Modules = accessibleModules
             };
@@ -270,7 +269,7 @@ namespace isc.time.report.be.application.Services.Auth
             if (user == null || user.Employee == null || string.IsNullOrWhiteSpace(user.Employee.CorporateEmail))
                 return;
 
-            var token = jwtUtils.GenerateToken(user, 3 ,true);
+            var token = jwtUtils.GenerateToken(user, new List<string>(), 3, true);
 
             var baseUrl = _configuration["Infrastructure:RecoveryPasswordUrlBase"];
             var path = "/auth/reset-password";

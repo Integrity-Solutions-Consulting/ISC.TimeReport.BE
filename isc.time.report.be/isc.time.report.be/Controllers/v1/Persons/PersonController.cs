@@ -2,7 +2,6 @@
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Models.Dto;
 using isc.time.report.be.domain.Models.Request.Persons;
-using isc.time.report.be.domain.Models.Response.Leaders;
 using isc.time.report.be.domain.Models.Response.Persons;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +11,7 @@ namespace isc.time.report.be.api.Controllers.v1.Persons
     [ApiExplorerSettings(GroupName = "v1")]
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PersonController : ControllerBase
     {
         private readonly IPersonService _personService;
@@ -21,7 +21,6 @@ namespace isc.time.report.be.api.Controllers.v1.Persons
             _personService = personService;
         }
 
-        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpGet("GetAllPersons")]
         public async Task<ActionResult<SuccessResponse<PagedResult<GetPersonResponse>>>> GetAllPersons(
             [FromQuery] PaginationParams paginationParams,
@@ -31,7 +30,6 @@ namespace isc.time.report.be.api.Controllers.v1.Persons
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpGet("GetPersonByID/{id}")]
         public async Task<ActionResult<SuccessResponse<GetPersonResponse>>> GetPersonById(int id)
         {
@@ -39,7 +37,6 @@ namespace isc.time.report.be.api.Controllers.v1.Persons
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpPost("CreatePerson")]
         public async Task<ActionResult<SuccessResponse<CreatePersonResponse>>> CreatePerson([FromBody] CreatePersonRequest request)
         {
@@ -47,7 +44,6 @@ namespace isc.time.report.be.api.Controllers.v1.Persons
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpPut("UpdatePerson/{id}")]
         public async Task<ActionResult<SuccessResponse<UpdatePersonResponse>>> UpdatePerson(int id, [FromBody] UpdatePersonRequest request)
         {
@@ -55,7 +51,6 @@ namespace isc.time.report.be.api.Controllers.v1.Persons
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpDelete("InactivatePersonByID/{id}")]
         public async Task<ActionResult<SuccessResponse<ActiveInactivePersonResponse>>> InactivatePerson(int id)
         {
@@ -63,7 +58,6 @@ namespace isc.time.report.be.api.Controllers.v1.Persons
             return Ok(result);
         }
 
-        [Authorize(Roles = "Administrador,Gerente,Lider,Recursos Humanos,Administrativo")]
         [HttpDelete("ActivatePersonByID/{id}")]
         public async Task<ActionResult<SuccessResponse<ActiveInactivePersonResponse>>> ActivatePerson(int id)
         {

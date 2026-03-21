@@ -1,26 +1,25 @@
 using isc.time.report.be.api.Extentions;
-using isc.time.report.be.application.Interfaces.Repository;
-using isc.time.report.be.application.Interfaces.Repository.Auth;
-using isc.time.report.be.application.Interfaces.Service.Auth;
+using isc.time.report.be.api.Security;
 using isc.time.report.be.application.IOC;
-using isc.time.report.be.application.Services.Auth;
-using isc.time.report.be.application.Utils.Auth;
 using isc.time.report.be.domain.Entity.Emails;
-using isc.time.report.be.domain.Exceptions;
-using isc.time.report.be.domain.Models.Response.Shared;
 using isc.time.report.be.infrastructure.IOC;
-using isc.time.report.be.infrastructure.Repositories.Auth;
+using isc.time.report.be.infrastructure.Repositories.Sync;
+using isc.time.report.be.infrastructure.Utils.Secutiry;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var moduleSecurityJson = Environment.GetEnvironmentVariable("MODULE_SECURITY_JSON");
+
+if (!string.IsNullOrWhiteSpace(moduleSecurityJson))
+{
+    var formattedJson = $"{{\"ModuleSecurity\": {moduleSecurityJson} }}";
+    var stream = new MemoryStream(Encoding.UTF8.GetBytes(formattedJson));
+    builder.Configuration.AddJsonStream(stream);
+}
 
 // Add services to the container.
 
@@ -65,6 +64,8 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddScoped<CryptoHelper>(); // registro de la depencia 
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -72,7 +73,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "Time Report BE", Version = "v1" });
-
+    //options.SwaggerGeneratorOptions.
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -105,12 +106,18 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddDbConfiguration(builder.Configuration);
 builder.Services.AddInfraestructure(builder.Configuration);
+builder.Services.AddScoped<OutboxPositionRepository>();
+builder.Services.AddHostedService<isc.time.report.be.infrastructure.Workers.PositionSyncWorker>();
 
 
 
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings")
 );
+
+builder.Services.Configure<ModuleSecurityOptions>(
+    builder.Configuration.GetSection("ModuleSecurity"));
+
 
 
 var app = builder.Build();
@@ -129,8 +136,9 @@ app.ConfigureExcepcionHandler();
 app.UseCors("OrigenEspecificos");
 
 app.UseAuthentication();
-
 app.UseAuthorization();
+
+app.UseMiddleware<ModuleAuthorizationMiddleware>();
 
 app.MapControllers();
 

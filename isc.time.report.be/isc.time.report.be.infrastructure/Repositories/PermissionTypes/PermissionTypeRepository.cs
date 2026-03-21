@@ -1,15 +1,8 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.Permissions;
-using isc.time.report.be.application.Interfaces.Repository.PermissionTypes;
+﻿using isc.time.report.be.application.Interfaces.Repository.PermissionTypes;
 using isc.time.report.be.domain.Entity.Catalogs;
-using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace isc.time.report.be.infrastructure.Repositories.PermissionTypes
 {

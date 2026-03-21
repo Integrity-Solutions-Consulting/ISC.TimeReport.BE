@@ -1,6 +1,4 @@
-﻿using isc.time.report.be.domain.Entity.Persons;
-using isc.time.report.be.domain.Entity.Projects;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

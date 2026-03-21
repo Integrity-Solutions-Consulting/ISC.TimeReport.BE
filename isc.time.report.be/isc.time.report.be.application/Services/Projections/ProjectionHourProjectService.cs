@@ -1,23 +1,15 @@
 ﻿using AutoMapper;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.ExtendedProperties;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Vml.Office;
 using isc.time.report.be.application.Interfaces.Repository.Projections;
 using isc.time.report.be.application.Interfaces.Service.Projections;
 using isc.time.report.be.domain.Entity.Projections;
 using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Request.Projections;
 using isc.time.report.be.domain.Models.Response.Projections;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 
 namespace isc.time.report.be.application.Services.Projections
