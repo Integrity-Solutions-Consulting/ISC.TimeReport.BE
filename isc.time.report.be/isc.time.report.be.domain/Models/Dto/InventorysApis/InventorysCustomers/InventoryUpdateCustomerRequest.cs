@@ -1,7 +1,8 @@
-﻿namespace isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysCustomers
+namespace isc.time.report.be.domain.Models.Dto.InventorysApis.InventorysCustomers
 {
     public class InventoryUpdateCustomerRequest
     {
+        public int id { get; set; }
         public string name { get; set; } = default!;
         public string address { get; set; } = default!;
         public string email { get; set; } = default!;
