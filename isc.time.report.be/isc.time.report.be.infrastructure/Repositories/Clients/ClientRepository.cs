@@ -1,4 +1,4 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.Clients;
+using isc.time.report.be.application.Interfaces.Repository.Clients;
 using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.Persons;
 using isc.time.report.be.domain.Entity.Shared;
@@ -210,13 +210,12 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
                 // Enviar a inventario
                 var inventoryRequest = new InventoryCreateCustomerRequest
                 {
-
-                    Id = client.Id,
-                    Name = client.TradeName ?? "No definido",
-                    Address = client.Person.Address ?? "No definido",
-                    Email = client.Person.Email ?? "nodefinido@example.com",
-                    Phone = client.Person.Phone ?? "000000000",
-                    Ruc = client.Person.IdentificationNumber
+                    id = client.Id,
+                    name = client.TradeName ?? "No definido",
+                    address = client.Person.Address ?? "No definido",
+                    email = client.Person.Email ?? "nodefinido@example.com",
+                    phone = client.Person.Phone ?? "000000000",
+                    ruc = client.Person.IdentificationNumber ?? "000000000"
                 };
 
                 var result = await _inventoryApiRepository.CreateCustomerInventoryAsync(inventoryRequest);
@@ -321,6 +320,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
 
                 var updateRequest = new InventoryUpdateCustomerRequest
                 {
+                    id = existingClient.Id,
                     name = existingClient.TradeName ?? "No definido",
                     address = existingClient.Person.Address ?? "No definido",
                     email = existingClient.Person.Email ?? "noreply@example.com",
