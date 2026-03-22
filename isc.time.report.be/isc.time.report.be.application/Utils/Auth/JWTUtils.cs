@@ -1,4 +1,4 @@
-﻿using isc.time.report.be.domain.Entity.Auth;
+using isc.time.report.be.domain.Entity.Auth;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -32,11 +32,13 @@ namespace isc.time.report.be.application.Utils.Auth
                 .Distinct()
                 .ToList();
 
-            var roleId = user.UserRole?
-                .FirstOrDefault(r => r.Status)?.RoleID;
+            var activeRoles = user.UserRole?.Where(r => r.Status).ToList();
 
-            if (roleId == null)
+            if (activeRoles == null || !activeRoles.Any())
                 throw new Exception("Usuario sin rol asignado");
+
+            var primaryRoleId = activeRoles.First().RoleID;
+            var allRoleIds = activeRoles.Select(r => r.RoleID.ToString()).ToList();
 
             var claims = new List<Claim>
     {
@@ -44,7 +46,8 @@ namespace isc.time.report.be.application.Utils.Auth
         new Claim("UserID", user.Id.ToString()),
         new Claim("EmployeeID", user.EmployeeID.ToString()),
         new Claim("PersonID", user.Employee?.PersonID.ToString() ?? "0"),
-        new Claim("RoleID", roleId.Value.ToString()),
+        new Claim("RoleID", primaryRoleId.ToString()),
+        new Claim("RoleIDs", string.Join(",", allRoleIds)),
         new Claim("modules", JsonSerializer.Serialize(normalizedModules))
     };
 

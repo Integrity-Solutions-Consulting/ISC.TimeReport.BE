@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
 
@@ -49,25 +49,43 @@ namespace isc.time.report.be.api.Security
                 return;
             }
 
-            var roleId = user.FindFirst("RoleID")?.Value;
+            var roleIdsString = user.FindFirst("RoleIDs")?.Value;
+            var roleIds = new List<string>();
 
-            if (string.IsNullOrEmpty(roleId))
+            if (!string.IsNullOrEmpty(roleIdsString))
+            {
+                roleIds = roleIdsString.Split(',').ToList();
+            }
+            else
+            {
+                var singleRoleId = user.FindFirst("RoleID")?.Value;
+                if (!string.IsNullOrEmpty(singleRoleId))
+                    roleIds.Add(singleRoleId);
+            }
+
+            if (!roleIds.Any())
             {
                 await Deny(context, 403, "Token inválido (sin rol)");
                 return;
             }
 
-            // 🔹 NULL SAFE RoleModules
-            if (_options.RoleModules == null ||
-                !_options.RoleModules.TryGetValue(roleId, out var roleModules))
+            var hasGlobalWildcard = false;
+            if (_options.RoleModules != null)
             {
-                await Deny(context, 403, "Rol sin permisos");
-                return;
+                foreach (var rId in roleIds)
+                {
+                    if (_options.RoleModules.TryGetValue(rId, out var rModules) && rModules != null)
+                    {
+                        if (rModules.Contains("*"))
+                        {
+                            hasGlobalWildcard = true;
+                            break;
+                        }
+                    }
+                }
             }
 
-            roleModules ??= new List<string>();
-
-            if (roleModules.Contains("*"))
+            if (hasGlobalWildcard)
             {
                 await _next(context);
                 return;
@@ -81,30 +99,66 @@ namespace isc.time.report.be.api.Security
                 return;
             }
 
-            if (!roleModules.Contains(requiredModule))
-            {
-                await Deny(context, 403, $"Sin acceso al módulo {requiredModule}");
-                return;
-            }
-            if (IsOwnResourceEndpoint(context))
-            {
-                var selfOnlyRoles = _options.ResourceScope?.SelfOnlyRoles ?? new List<string>();
-                var fullAccessRoles = _options.ResourceScope?.FullAccessRoles ?? new List<string>();
+            var hasAccess = false;
+            var isOwnResourceEndpoint = IsOwnResourceEndpoint(context);
+            var selfOnlyRoles = _options.ResourceScope?.SelfOnlyRoles ?? new List<string>();
+            var fullAccessRoles = _options.ResourceScope?.FullAccessRoles ?? new List<string>();
+            var isAccessingOwnResource = false;
+            var hasModuleButNotResource = false;
 
-                if (fullAccessRoles.Contains(roleId))
+            if (isOwnResourceEndpoint)
+                isAccessingOwnResource = IsAccessingOwnResource(context);
+
+            foreach (var rId in roleIds)
+            {
+                if (_options.RoleModules != null && _options.RoleModules.TryGetValue(rId, out var rModules) && rModules != null)
                 {
-                    await _next(context);
+                    if (rModules.Contains(requiredModule))
+                    {
+                        if (isOwnResourceEndpoint)
+                        {
+                            if (fullAccessRoles.Contains(rId))
+                            {
+                                hasAccess = true;
+                                break;
+                            }
+                            else if (selfOnlyRoles.Contains(rId))
+                            {
+                                if (isAccessingOwnResource)
+                                {
+                                    hasAccess = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    hasModuleButNotResource = true;
+                                }
+                            }
+                            else
+                            {
+                                hasAccess = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            hasAccess = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (!hasAccess)
+            {
+                if (hasModuleButNotResource)
+                {
+                    await Deny(context, 403, "Solo puede acceder a su propio registro");
                     return;
                 }
 
-                if (selfOnlyRoles.Contains(roleId))
-                {
-                    if (!IsAccessingOwnResource(context))
-                    {
-                        await Deny(context, 403, "Solo puede acceder a su propio registro");
-                        return;
-                    }
-                }
+                await Deny(context, 403, $"Sin acceso al módulo {requiredModule}");
+                return;
             }
 
             await _next(context);
