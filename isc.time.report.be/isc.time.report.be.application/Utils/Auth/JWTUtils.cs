@@ -33,33 +33,39 @@ namespace isc.time.report.be.application.Utils.Auth
                 .ToList();
 
             var activeRoles = user.UserRole?.Where(r => r.Status).ToList();
-
-            if (activeRoles == null || !activeRoles.Any())
-                throw new Exception("Usuario sin rol asignado");
-
-            var primaryRoleId = activeRoles.First().RoleID;
-            var allRoleIds = activeRoles.Select(r => r.RoleID.ToString()).ToList();
-
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.Name, user.Username),
-        new Claim("UserID", user.Id.ToString()),
-        new Claim("EmployeeID", user.EmployeeID.ToString()),
-        new Claim("PersonID", user.Employee?.PersonID.ToString() ?? "0"),
-        new Claim("RoleID", primaryRoleId.ToString()),
-        new Claim("RoleIDs", string.Join(",", allRoleIds)),
-        new Claim("modules", JsonSerializer.Serialize(normalizedModules))
-    };
-
-            if (user.UserRole != null)
             {
-                foreach (var ur in user.UserRole.Where(ur => ur.Status))
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim("UserID", user.Id.ToString()),
+                new Claim("EmployeeID", user.EmployeeID.ToString()),
+                new Claim("PersonID", user.Employee?.PersonID.ToString() ?? "0"),
+                // En recuperación no es necesario asegurar roles; el endpoint solo valida `recover-password` y `UserID`.
+                new Claim("modules", JsonSerializer.Serialize(normalizedModules))
+            };
+
+            // En tokens de recuperación permitimos que el usuario no tenga roles cargados/activos.
+            if (activeRoles != null && activeRoles.Any())
+            {
+                var primaryRoleId = activeRoles.First().RoleID;
+                var allRoleIds = activeRoles.Select(r => r.RoleID.ToString()).ToList();
+
+                claims.Add(new Claim("RoleID", primaryRoleId.ToString()));
+                claims.Add(new Claim("RoleIDs", string.Join(",", allRoleIds)));
+
+                if (user.UserRole != null)
                 {
-                    if (ur.Role != null && !string.IsNullOrEmpty(ur.Role.RoleName))
+                    foreach (var ur in user.UserRole.Where(ur => ur.Status))
                     {
-                        claims.Add(new Claim(ClaimTypes.Role, ur.Role.RoleName));
+                        if (ur.Role != null && !string.IsNullOrEmpty(ur.Role.RoleName))
+                        {
+                            claims.Add(new Claim(ClaimTypes.Role, ur.Role.RoleName));
+                        }
                     }
                 }
+            }
+            else if (!isRecovery)
+            {
+                throw new Exception("Usuario sin rol asignado");
             }
 
             if (isRecovery)
