@@ -1,4 +1,4 @@
-﻿namespace isc.time.report.be.domain.Models.Response.Dashboards
+namespace isc.time.report.be.domain.Models.Response.Dashboards
 {
     public record DashboardHorasActividadDto(string TipoActividad, decimal TotalHoras);
     public record DashboardRecursosClienteDto(string ClientName, int TotalRecursos, decimal Porcentaje);
@@ -20,7 +20,10 @@
        int MesConsulta,
        int AnioConsulta,
        string TipoConsulta
-   );
+   )
+    {
+        public string Phone { get; init; } = string.Empty;
+    }
     public class DashboardResumenGeneralDto
     {
         public int TotalProyectosActivos { get; set; }
