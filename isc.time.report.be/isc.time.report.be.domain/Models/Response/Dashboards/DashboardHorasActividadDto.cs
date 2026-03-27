@@ -8,6 +8,7 @@
        string NombreCompletoEmpleado,
        string CodigoEmpleado,
        string Departamento,
+       string Phone,
        string ProyectosAsignados,
        string ClientesAsociados,
        string ClienteIDs,

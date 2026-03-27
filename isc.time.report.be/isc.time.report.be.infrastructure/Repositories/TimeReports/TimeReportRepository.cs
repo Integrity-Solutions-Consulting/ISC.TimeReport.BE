@@ -1,4 +1,4 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.TimeReports;
+using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.domain.Entity.DailyActivities;
 using isc.time.report.be.domain.Entity.Holidays;
 using isc.time.report.be.domain.Exceptions;
@@ -97,7 +97,17 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
                 throw new ServerFaultException("No se encontraron recursos pendientes para el Time Report");
             }
 
-            return list;
+            var employeeIds = list.Select(x => x.EmployeeID).Distinct().ToList();
+
+            var employeePhones = await _dbContext.Employees
+                .Include(e => e.Person)
+                .Where(e => employeeIds.Contains(e.Id))
+                .ToDictionaryAsync(e => e.Id, e => e.Person.Phone);
+
+            return list.Select(item => item with 
+            {
+                Phone = employeePhones.GetValueOrDefault(item.EmployeeID) ?? string.Empty
+            }).ToList();
         }
 
         public async Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteFiltradoAsync(int? month = null, int? year = null, bool mesCompleto = false, byte bancoGuayaquil = 0)
@@ -114,12 +124,24 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
                 .FromSqlRaw("EXEC dbo.sp_RecursosTimeReportPorClienteBG @Mes, @Anio, @MesCompleto, @BancoGuayaquil", parameters)
                 .ToListAsync();
 
+
+
             if (!list.Any())
             {
                 throw new ServerFaultException("No se encontraron recursos pendientes para el Time Report");
             }
 
-            return list;
+            var employeeIds = list.Select(x => x.EmployeeID).Distinct().ToList();
+
+            var employeePhones = await _dbContext.Employees
+                .Include(e => e.Person)
+                .Where(e => employeeIds.Contains(e.Id))
+                .ToDictionaryAsync(e => e.Id, e => e.Person.Phone);
+
+            return list.Select(item => item with 
+            {
+                Phone = employeePhones.GetValueOrDefault(item.EmployeeID) ?? string.Empty
+            }).ToList();
         }
 
     }
