@@ -1,4 +1,4 @@
-﻿using isc.time.report.be.domain.Entity.Auth;
+using isc.time.report.be.domain.Entity.Auth;
 using isc.time.report.be.domain.Entity.Catalogs;
 using isc.time.report.be.domain.Entity.Clients;
 using isc.time.report.be.domain.Entity.DailyActivities;
@@ -799,7 +799,7 @@ namespace isc.time.report.be.infrastructure.Database
             modelBuilder.Entity<DashboardHorasActividadDto>().HasNoKey();
             modelBuilder.Entity<DashboardRecursosClienteDto>().HasNoKey();
             modelBuilder.Entity<DashboardResumenProyectoDto>().HasNoKey();
-            modelBuilder.Entity<DashboardRecursosPendientesDto>().HasNoKey();
+            modelBuilder.Entity<DashboardRecursosPendientesDto>().HasNoKey().Ignore(x => x.Phone);
             modelBuilder.Entity<ProjectionHoursProjectResponse>().HasNoKey();
             modelBuilder.Entity<ProjectionWithoutProjectResponse>().HasNoKey();
             modelBuilder.Entity<ProjectResourcesReportDto>().HasNoKey();
