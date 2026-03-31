@@ -1,4 +1,4 @@
-﻿using isc.time.report.be.application.Interfaces.Service.Auth;
+using isc.time.report.be.application.Interfaces.Service.Auth;
 using isc.time.report.be.domain.Models.Request.Auth;
 using isc.time.report.be.domain.Models.Request.EncryptedRequest;
 using isc.time.report.be.domain.Models.Response.Auth;
@@ -100,9 +100,9 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
         }
 
         [HttpPost("change-password")]
-        public async Task<IActionResult> ChangePassword([FromQuery] string token, [FromBody] ChangePasswordRequest request)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
-            await authService.ChangePasswordWithToken(token, request);
+            await authService.ChangePasswordWithToken(request.Token, request);
             return Ok("Contraseña restablecida correctamente.");
         }
     }
