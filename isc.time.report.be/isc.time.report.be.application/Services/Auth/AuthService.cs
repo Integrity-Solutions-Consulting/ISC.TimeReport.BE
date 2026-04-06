@@ -1,4 +1,4 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.Auth;
+using isc.time.report.be.application.Interfaces.Repository.Auth;
 using isc.time.report.be.application.Interfaces.Repository.Employees;
 using isc.time.report.be.application.Interfaces.Repository.Menus;
 using isc.time.report.be.application.Interfaces.Repository.Users;
