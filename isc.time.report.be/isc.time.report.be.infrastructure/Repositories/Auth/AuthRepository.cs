@@ -1,4 +1,4 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.Auth;
+using isc.time.report.be.application.Interfaces.Repository.Auth;
 using isc.time.report.be.domain.Entity.Auth;
 using isc.time.report.be.domain.Entity.Modules;
 using isc.time.report.be.domain.Exceptions;
@@ -198,9 +198,6 @@ namespace isc.time.report.be.infrastructure.Repositories.Auth
             role.CreationDate = DateTime.Now;
             role.CreationUser = "SYSTEM";
             role.Status = true;
-
-            await _dbContext.Roles.AddAsync(role);
-            await _dbContext.SaveChangesAsync();
 
             await _dbContext.Roles.AddAsync(role);
             await _dbContext.SaveChangesAsync();
