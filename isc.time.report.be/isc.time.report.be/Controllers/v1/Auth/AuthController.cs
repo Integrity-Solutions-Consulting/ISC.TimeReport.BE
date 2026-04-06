@@ -92,18 +92,19 @@ namespace isc.time.report.be.api.Controllers.v1.Auth
             return Ok(new { message = "Si el usuario existe, se ha enviado un enlace de recuperación al correo registrado." });
         }
 
+        [AllowAnonymous]
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromQuery] string token, [FromBody] ResetPasswordRequest request)
         {
             await authService.ResetPasswordWithToken(token, request);
-            return Ok("Contraseña restablecida correctamente.");
+            return Ok(new { message = "Contraseña restablecida correctamente." });
         }
 
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
             await authService.ChangePasswordWithToken(request.Token, request);
-            return Ok("Contraseña restablecida correctamente.");
+            return Ok(new { message = "Contraseña restablecida correctamente." });
         }
     }
 }
