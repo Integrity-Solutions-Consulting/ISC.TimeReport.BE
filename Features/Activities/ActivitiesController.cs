@@ -1,5 +1,10 @@
 namespace isc_tmr_backend.Features.Activities;
 
+using isc_tmr_backend.Features.Activities.Application.Queries;
+using isc_tmr_backend.Infrastructure.Presentation;
+using FluentResults;
+using MediatR;
+
 public static class ActivitiesController
 {
 
@@ -15,13 +20,16 @@ public static class ActivitiesController
         group.MapGet("/activities", GetActivities)
              .WithName("GetActivities")
              .WithTags("Activities")
-             .Produces<IEnumerable<string>>(200);
+             .Produces<ResponseWithMetadata<IEnumerable<string>>>(200);
 
         return group;
     }
 
-    private static IResult GetActivities()
+    private static async Task<IResult> GetActivities(IMediator mediator, CancellationToken cancellationToken)
     {
+
+        Result<IEnumerable<string>> result = await mediator.Send(new GetAllActivitiesQuery(), cancellationToken);
+
         // aquí iría la lógica para obtener las actividades, por ahora devolvemos un ejemplo
         IEnumerable<string> activities = new List<string> { "Activity 1", "Activity 2", "Activity 3" };
         return Results.Ok(activities);

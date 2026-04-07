@@ -8,6 +8,5 @@ public record PaginationMetadata(
     int Total,
     bool HasPreviousPage,
     bool HasNextPage
-    
 );
     

@@ -8,10 +8,9 @@ builder.Services.AddVersioning();
 builder.Services.AddInfrastructure();
 builder.Services.AddMediatRConfig();
 builder.Services.AddDatabase(builder.Configuration);
+builder.Services.AddProblemDetailsConfig();
 
 WebApplication app = builder.Build();
-
-app.MapEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
@@ -19,5 +18,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference(app.Configuration["Docs:ScalarRoute"] ?? "/docs");
 }
 
+app.UseMapEndpoints();
 app.UseHttpsRedirection();
+app.UseProblemDetailsConfig();
 app.Run();
