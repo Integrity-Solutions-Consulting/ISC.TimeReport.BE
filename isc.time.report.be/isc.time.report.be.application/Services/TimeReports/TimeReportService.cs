@@ -1,4 +1,4 @@
-﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using isc.time.report.be.application.Interfaces.Repository.Clients;
@@ -11,7 +11,9 @@ using isc.time.report.be.application.Interfaces.Service.TimeReports;
 using isc.time.report.be.domain.Entity.DailyActivities;
 using isc.time.report.be.domain.Models.Dto.TimeReports;
 using isc.time.report.be.domain.Models.Response.Dashboards;
+using Microsoft.Extensions.Logging;
 using System.Globalization;
+using System.Text.Json;
 using A = DocumentFormat.OpenXml.Drawing;
 using Xdr = DocumentFormat.OpenXml.Drawing.Spreadsheet;
 
@@ -25,7 +27,8 @@ namespace isc.time.report.be.application.Services.TimeReports
         private readonly ILeaderRepository leaderRepository;
         private readonly IPermissionRepository permissionRepository;
         private readonly IProjectRepository projectRepository;
-        public TimeReportService(IClientRepository clientRepository, IEmployeeRepository employeeRepository, ITimeReportRepository timeReportRepository, ILeaderRepository leaderRepository, IPermissionRepository permissionRepository, IProjectRepository projectRepository)
+        private readonly ILogger<TimeReportService> _logger;
+        public TimeReportService(IClientRepository clientRepository, IEmployeeRepository employeeRepository, ITimeReportRepository timeReportRepository, ILeaderRepository leaderRepository, IPermissionRepository permissionRepository, IProjectRepository projectRepository, ILogger<TimeReportService> logger)
         {
             this.clientRepository = clientRepository;
             this.employeeRepository = employeeRepository;
@@ -33,13 +36,27 @@ namespace isc.time.report.be.application.Services.TimeReports
             this.leaderRepository = leaderRepository;
             this.permissionRepository = permissionRepository;
             this.projectRepository = projectRepository;
+            this._logger = logger;
         }
 
         public async Task<byte[]> GenerateExcelReportAsync(int employeeId, int clientId, int year, int month, bool fullMonth)
         {
-
+            _logger.LogInformation("Generando reporte para Empleado: {EmpId} y Cliente: {CliId}", employeeId, clientId);
             // Obtener datos reales
             var reportData = await GetTimeReportDataFillAsync(employeeId, clientId, year, month, fullMonth);
+            _logger.LogInformation("Despues de extraer informacion <GetTimeReportDataFillAsync>");
+
+
+            _logger.LogInformation("Despues de extraer informacion <GetTimeReportDataFillAsync>");
+            try
+            {
+                string jsonReport = JsonSerializer.Serialize(reportData);
+                _logger.LogInformation("Datos del reporte: {JsonData}", jsonReport);
+            }
+            catch
+            {
+                _logger.LogInformation(" no se pudop extraer informacion del objeto");
+            }
 
             if (reportData.Activities == null || reportData.Activities.Count == 0)
             {
@@ -987,6 +1004,7 @@ namespace isc.time.report.be.application.Services.TimeReports
 
         public async Task<TimeReportDataFillDto> GetTimeReportDataFillAsync(int employeeId, int clientId, int year, int month, bool fullMonth)
         {
+            
             var employee = await employeeRepository.GetEmployeeByIDAsync(employeeId);
             if (employee?.Person == null)
                 throw new Exception("Empleado o datos personales no encontrados.");
