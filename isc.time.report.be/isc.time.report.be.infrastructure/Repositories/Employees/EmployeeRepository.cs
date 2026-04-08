@@ -32,6 +32,9 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
             {
                 string normalizedSearch = search.Trim().ToLower();
 
+                bool isSearchingActivo = normalizedSearch == "activo" || normalizedSearch == "activos";
+                bool isSearchingInactivo = normalizedSearch == "inactivo" || normalizedSearch == "inactivos";
+
                 query = query.Where(e =>
                     (e.EmployeeCode != null && e.EmployeeCode.ToLower().Contains(normalizedSearch)) ||
                     (e.CorporateEmail != null && e.CorporateEmail.ToLower().Contains(normalizedSearch)) ||
@@ -39,7 +42,10 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
                         (e.Person.FirstName != null && e.Person.FirstName.ToLower().Contains(normalizedSearch)) ||
                         (e.Person.IdentificationNumber != null && e.Person.IdentificationNumber.Contains(normalizedSearch)) ||
                         (e.Person.LastName != null && e.Person.LastName.ToLower().Contains(normalizedSearch))
-                    )));
+                    )) ||
+                    (isSearchingActivo && e.Status == true) ||
+                    (isSearchingInactivo && e.Status == false)
+                );
             }
 
             query = query.OrderBy(p => p.Status ? 0 : 1)

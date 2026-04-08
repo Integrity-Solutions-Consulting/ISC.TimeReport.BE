@@ -31,6 +31,8 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
             if (!string.IsNullOrWhiteSpace(search))
             {
                 string normalizedSearch = search.Trim().ToLower();
+                bool isSearchingActivo = normalizedSearch == "activo" || normalizedSearch == "activos";
+                bool isSearchingInactivo = normalizedSearch == "inactivo" || normalizedSearch == "inactivos";
 
                 query = query.Where(c =>
                     (c.TradeName != null && c.TradeName.ToLower().Contains(normalizedSearch)) ||
@@ -40,7 +42,10 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
                         (c.Person.IdentificationNumber != null && c.Person.IdentificationNumber.ToLower().Contains(normalizedSearch)) ||
                         (c.Person.Email != null && c.Person.Email.ToLower().Contains(normalizedSearch)) ||
                         (c.Person.LastName != null && c.Person.LastName.ToLower().Contains(normalizedSearch))
-                    )));
+                    )) ||
+                    (isSearchingActivo && c.Status == true) ||
+                    (isSearchingInactivo && c.Status == false)
+                );
             }
 
             query = query.OrderBy(p => p.Status ? 0 : 1)
@@ -67,6 +72,8 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
             if (!string.IsNullOrWhiteSpace(search))
             {
                 string normalizedSearch = search.Trim().ToLower();
+                bool isSearchingActivo = normalizedSearch == "activo" || normalizedSearch == "activos";
+                bool isSearchingInactivo = normalizedSearch == "inactivo" || normalizedSearch == "inactivos";
 
                 query = query.Where(c =>
                     (c.TradeName != null && c.TradeName.ToLower().Contains(normalizedSearch)) ||
@@ -76,7 +83,10 @@ namespace isc.time.report.be.infrastructure.Repositories.Clients
                         (c.Person.IdentificationNumber != null && c.Person.IdentificationNumber.ToLower().Contains(normalizedSearch)) ||
                         (c.Person.Email != null && c.Person.Email.ToLower().Contains(normalizedSearch)) ||
                         (c.Person.LastName != null && c.Person.LastName.ToLower().Contains(normalizedSearch))
-                    )));
+                    )) ||
+                    (isSearchingActivo && c.Status == true) ||
+                    (isSearchingInactivo && c.Status == false)
+                );
             }
 
             return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);

@@ -9,6 +9,7 @@ using isc.time.report.be.application.Interfaces.Repository.Projects;
 using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.application.Interfaces.Service.TimeReports;
 using isc.time.report.be.domain.Entity.DailyActivities;
+using isc.time.report.be.domain.Exceptions;
 using isc.time.report.be.domain.Models.Dto.TimeReports;
 using isc.time.report.be.domain.Models.Response.Dashboards;
 using Microsoft.Extensions.Logging;
@@ -60,7 +61,7 @@ namespace isc.time.report.be.application.Services.TimeReports
 
             if (reportData.Activities == null || reportData.Activities.Count == 0)
             {
-                throw new InvalidOperationException("No se puede generar el reporte: no hay actividades registradas.");
+                throw new ClientFaultException("No se puede generar el reporte: el colaborador no tiene actividades registradas en el mes seleccionado.");
             }
             var holidays = await timeReportRepository.GetActiveHolidaysByMonthAndYearAsync(month, year);
 
