@@ -14,8 +14,7 @@ public static class SendNotificationEndpoint
         group.MapPost("/notifications", SendNotification)
              .WithName("SendNotification")
              .WithTags("Notifications")
-             .Produces<SendNotificationResponse>(201)
-             .ProducesValidationProblem();
+             .Produces<SendNotificationResponse>(201);
 
         group.MapGet("/notifications", GetNotifications)
              .WithName("GetNotifications")

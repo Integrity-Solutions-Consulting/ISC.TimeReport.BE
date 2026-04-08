@@ -9,7 +9,10 @@ public static class WebApplicationExtensions
     {
         RouteGroupBuilder versionedApi = app
             .NewVersionedApi()
-            .MapGroup(app.Configuration["Server:Prefix"] ?? "/api");
+            .MapGroup(app.Configuration["Server:Prefix"] ?? "/api")
+            .ProducesValidationProblem(300)
+            .ProducesValidationProblem(400)
+            .ProducesValidationProblem(500);
 
         NotificationModule.MapEndpoints(versionedApi);
         ActivitiesModule.MapEndpoints(versionedApi);
