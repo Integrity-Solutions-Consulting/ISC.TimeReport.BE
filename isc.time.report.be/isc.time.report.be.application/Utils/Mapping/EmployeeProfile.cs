@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Models.Request.Employees;
 using isc.time.report.be.domain.Models.Response.Employees;
@@ -28,7 +28,14 @@ namespace isc.time.report.be.application.Utils.Mapping
             CreateMap<Employee, CreateEmployeeResponse>();
             CreateMap<CreateEmployeeResponse, Employee>();
 
-            CreateMap<Employee, GetEmployeeDetailsResponse>();
+            CreateMap<Employee, GetEmployeeDetailsResponse>()
+                .ForMember(dest => dest.AssignedProjects, opt => opt.MapFrom(src => src.EmployeeProject));
+
+            CreateMap<EmployeeProject, EmployeeProjectDetailDto>()
+                .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.Project.Name))
+                .ForMember(dest => dest.ClientID, opt => opt.MapFrom(src => src.Project.ClientID))
+                .ForMember(dest => dest.ClientName, opt => opt.MapFrom(src => src.Project.Client.TradeName));
+            
             CreateMap<GetEmployeeDetailsResponse, Employee>();
 
             CreateMap<Employee, UpdateEmployeeResponse>();
