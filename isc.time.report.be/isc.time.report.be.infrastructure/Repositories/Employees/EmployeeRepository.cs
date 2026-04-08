@@ -1,4 +1,4 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.Employees;
+using isc.time.report.be.application.Interfaces.Repository.Employees;
 using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
@@ -57,6 +57,9 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
 
             var employee = await _dbContext.Employees
                 .Include(e => e.Person)
+                .Include(e => e.EmployeeProject)
+                    .ThenInclude(ep => ep.Project)
+                        .ThenInclude(p => p.Client)
                 .FirstOrDefaultAsync(e => e.Id == employeeId);
             return employee;
         }
