@@ -107,13 +107,13 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
             var activeProjectsByEmployee = await _dbContext.EmployeeProjects
                 .Include(ep => ep.Project)
                     .ThenInclude(p => p.Client)
-                .Where(ep => employeeIds.Contains(ep.EmployeeID)
+                .Where(ep => ep.EmployeeID.HasValue && employeeIds.Contains(ep.EmployeeID.Value)
                           && ep.Project != null && ep.Project.Status == true
                           && ep.Project.Client != null && ep.Project.Client.Status == true)
                 .ToListAsync();
 
             var projectGroups = activeProjectsByEmployee
-                .GroupBy(ep => ep.EmployeeID)
+                .GroupBy(ep => ep.EmployeeID!.Value)
                 .ToDictionary(g => g.Key, g => new
                 {
                     ProyectosAsignados = string.Join(" - ", g.Select(x => x.Project.Name).Distinct()),
@@ -165,13 +165,13 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
             var activeProjectsByEmployee = await _dbContext.EmployeeProjects
                 .Include(ep => ep.Project)
                     .ThenInclude(p => p.Client)
-                .Where(ep => employeeIds.Contains(ep.EmployeeID)
+                .Where(ep => ep.EmployeeID.HasValue && employeeIds.Contains(ep.EmployeeID.Value)
                           && ep.Project != null && ep.Project.Status == true
                           && ep.Project.Client != null && ep.Project.Client.Status == true)
                 .ToListAsync();
 
             var projectGroups = activeProjectsByEmployee
-                .GroupBy(ep => ep.EmployeeID)
+                .GroupBy(ep => ep.EmployeeID!.Value)
                 .ToDictionary(g => g.Key, g => new
                 {
                     ProyectosAsignados = string.Join(" - ", g.Select(x => x.Project.Name).Distinct()),
