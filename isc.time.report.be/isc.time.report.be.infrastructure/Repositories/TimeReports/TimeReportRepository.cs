@@ -104,9 +104,33 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
                 .Where(e => employeeIds.Contains(e.Id))
                 .ToDictionaryAsync(e => e.Id, e => e.Person.Phone);
 
-            return list.Select(item => item with 
+            var activeProjectsByEmployee = await _dbContext.EmployeeProjects
+                .Include(ep => ep.Project)
+                    .ThenInclude(p => p.Client)
+                .Where(ep => employeeIds.Contains(ep.EmployeeID)
+                          && ep.Project != null && ep.Project.Status == true
+                          && ep.Project.Client != null && ep.Project.Client.Status == true)
+                .ToListAsync();
+
+            var projectGroups = activeProjectsByEmployee
+                .GroupBy(ep => ep.EmployeeID)
+                .ToDictionary(g => g.Key, g => new
+                {
+                    ProyectosAsignados = string.Join(" - ", g.Select(x => x.Project.Name).Distinct()),
+                    ClientesAsociados = string.Join(" - ", g.Select(x => x.Project.Client.TradeName ?? x.Project.Client.LegalName).Distinct()),
+                    ClienteIDs = string.Join(",", g.Select(x => x.Project.ClientID).Distinct())
+                });
+
+            return list.Select(item => 
             {
-                Phone = employeePhones.GetValueOrDefault(item.EmployeeID) ?? string.Empty
+                var dictValues = projectGroups.GetValueOrDefault(item.EmployeeID);
+                return item with 
+                {
+                    Phone = employeePhones.GetValueOrDefault(item.EmployeeID) ?? string.Empty,
+                    ProyectosAsignados = dictValues?.ProyectosAsignados ?? string.Empty,
+                    ClientesAsociados = dictValues?.ClientesAsociados ?? string.Empty,
+                    ClienteIDs = dictValues?.ClienteIDs ?? string.Empty
+                };
             }).ToList();
         }
 
@@ -138,9 +162,33 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
                 .Where(e => employeeIds.Contains(e.Id))
                 .ToDictionaryAsync(e => e.Id, e => e.Person.Phone);
 
-            return list.Select(item => item with 
+            var activeProjectsByEmployee = await _dbContext.EmployeeProjects
+                .Include(ep => ep.Project)
+                    .ThenInclude(p => p.Client)
+                .Where(ep => employeeIds.Contains(ep.EmployeeID)
+                          && ep.Project != null && ep.Project.Status == true
+                          && ep.Project.Client != null && ep.Project.Client.Status == true)
+                .ToListAsync();
+
+            var projectGroups = activeProjectsByEmployee
+                .GroupBy(ep => ep.EmployeeID)
+                .ToDictionary(g => g.Key, g => new
+                {
+                    ProyectosAsignados = string.Join(" - ", g.Select(x => x.Project.Name).Distinct()),
+                    ClientesAsociados = string.Join(" - ", g.Select(x => x.Project.Client.TradeName ?? x.Project.Client.LegalName).Distinct()),
+                    ClienteIDs = string.Join(",", g.Select(x => x.Project.ClientID).Distinct())
+                });
+
+            return list.Select(item => 
             {
-                Phone = employeePhones.GetValueOrDefault(item.EmployeeID) ?? string.Empty
+                var dictValues = projectGroups.GetValueOrDefault(item.EmployeeID);
+                return item with 
+                {
+                    Phone = employeePhones.GetValueOrDefault(item.EmployeeID) ?? string.Empty,
+                    ProyectosAsignados = dictValues?.ProyectosAsignados ?? string.Empty,
+                    ClientesAsociados = dictValues?.ClientesAsociados ?? string.Empty,
+                    ClienteIDs = dictValues?.ClienteIDs ?? string.Empty
+                };
             }).ToList();
         }
 
