@@ -1,4 +1,4 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.Leaders;
+using isc.time.report.be.application.Interfaces.Repository.Leaders;
 using isc.time.report.be.domain.Entity.Leaders;
 using isc.time.report.be.domain.Entity.Shared;
 using isc.time.report.be.domain.Exceptions;
@@ -23,11 +23,15 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                string normalizedSearch = search.Trim();
+                string normalizedSearch = search.Trim().ToLower();
+                bool isSearchingActivo = normalizedSearch == "activo" || normalizedSearch == "activos";
+                bool isSearchingInactivo = normalizedSearch == "inactivo" || normalizedSearch == "inactivos";
 
                 query = query.Where(l =>
-                    (l.FirstName != null && l.FirstName.Contains(normalizedSearch)) ||
-                    (l.LastName != null && l.LastName.Contains(normalizedSearch))
+                    (l.FirstName != null && l.FirstName.ToLower().Contains(normalizedSearch)) ||
+                    (l.LastName != null && l.LastName.ToLower().Contains(normalizedSearch)) ||
+                    (isSearchingActivo && l.Status == true) ||
+                    (isSearchingInactivo && l.Status == false)
                 );
             }
 

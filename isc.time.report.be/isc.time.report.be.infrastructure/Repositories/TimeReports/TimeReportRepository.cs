@@ -59,7 +59,7 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
                 .Include(a => a.ActivityType)
                 .Include(a => a.Project)
                 .Where(a => a.EmployeeID == employeeId
-                    && projectIds.Contains(a.ProjectID ?? 0)
+                    && (projectIds.Contains(a.ProjectID ?? 0) || a.ProjectID == null || a.ProjectID == 0)
                     && a.Status
                     && a.ActivityDate >= startDate
                     && a.ActivityDate <= endDate)
