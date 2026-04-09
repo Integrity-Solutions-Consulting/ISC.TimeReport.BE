@@ -29,7 +29,8 @@ namespace isc.time.report.be.application.Utils.Mapping
             CreateMap<CreateEmployeeResponse, Employee>();
 
             CreateMap<Employee, GetEmployeeDetailsResponse>()
-                .ForMember(dest => dest.AssignedProjects, opt => opt.MapFrom(src => src.EmployeeProject));
+                .ForMember(dest => dest.AssignedProjects, opt => opt.MapFrom(src =>
+                    src.EmployeeProject.Where(ep => ep.Status).ToList()));
 
             CreateMap<EmployeeProject, EmployeeProjectDetailDto>()
                 .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.Project.Name))
