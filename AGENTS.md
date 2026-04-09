@@ -7,64 +7,66 @@ dotnet build
 dotnet run
 ```
 
-Dev server runs on `http://localhost:5188`. API docs (Scalar) at `/docs`.
+Dev server: `http://localhost:5188`. Docs: `/docs`.
 
 ## Architecture
 
-- **.NET 10.0** ASP.NET Core Web API with Minimal APIs (endpoint routing)
-- **MediatR** for CQRS (Commands/Queries pattern in `Application/` folders)
-- **FluentValidation** for request validation
-- **FluentResults** for error handling (not exceptions)
-- **EF Core + PostgreSQL** via `AppDbContext` in `Infrastructure/Persistence/`
-- **API versioning** via `X-Api-Version` header (default v1.0)
-- **API prefix**: `/api` (configured in `appsettings.json` `Server:Prefix`)
+- **.NET 10.0** Minimal APIs
+- **CQRS** with Read/Write separation
+- **MediatR** for Commands/Queries
+- **FluentValidation** for validation
+- **FluentResults** for error handling
+- **EF Core + PostgreSQL** (WriteDbContext/ReadDbContext)
 
-## Directory Layout
+## Database Schema (3NF)
 
 ```
-Program.cs                      # Entry point; wires up extensions
-Infrastructure/
-  Extensions/                   # Service registration (Add* methods)
-  Persistence/                   # DbContext, entity configs
+users ──────┬────── projects
+  │         │        │
+  │         │ 1:N   │
+  │         └────────┤
+  │                  │ 1:N
+  └──────────────────┴──── tasks
+            (assignee)
+```
+
+### Tables
+- **users**: id, email, display_name, timestamps
+- **projects**: id, name, description, owner_id (FK→users), timestamps
+- **tasks**: id, title, description, is_completed, project_id (FK→projects), assignee_id (FK→users, nullable), created_by (FK→users), timestamps
+
+## Features
+
+```
 Features/
-  Notifications/                # Feature slice (CQRS: Commands, Queries, Domain, Infrastructure)
-  Todo/                         # Minimal API feature (uses Controllers)
+├── Users/     # CRUD users
+├── Projects/  # CRUD projects
+└── Tasks/     # Nested under projects
 ```
 
 ## Key Patterns
 
-### Adding a Feature
-1. Create `Features/{Name}/` folder
-2. Add `Add{Name}Services()` extension method in `Infrastructure/Extensions/`
-3. Add `Map{Name}Endpoints()` extension method in `Infrastructure/Extensions/WebApplicationExtensions.cs`
-4. Register services in `Program.cs`
+### Feature Structure
+```
+Features/{Name}/
+├── Domain/           # Entity, IRepository, Errors
+├── Application/      # Commands, Queries, Validators
+├── Infrastructure/   # Repository implementation
+├── Endpoint/         # API endpoints
+└── {Name}Module.cs  # Service registration
+```
 
-### Endpoints return `Result<T>` (FluentResults)
-- `Result.IsSuccess` → HTTP success (201/200)
-- `Result.IsFailed` → 400 Bad Request with error messages
+### Response Format
+- Success: `ResponseWithMetadata<T>` wrapper
+- Error: RFC 7807 ProblemDetails
 
-### Validation
-- Validators inherit from `FluentValidation.AbstractValidator<T>`
-- Endpoints call `validator.ValidateAsync()` before MediatR dispatch
-
-## Known Issues
-
-- `WebApplicationExtensions.cs` references `ActivitiesModule` but it does not exist (commented out references may be needed)
-- `DatabaseExtensions.cs` registers two `AppDbContext` instances (both PostgreSQL and DefaultConnection) — likely unintentional duplication
-
-## EF Core Migrations
+## Database Migrations
 
 ```bash
-dotnet tool install --global dotnet-ef  # one-time
-dotnet ef migrations add <Name>
-dotnet ef database update
+dotnet ef migrations add <Name> --context WriteDbContext
+dotnet ef database update --context WriteDbContext
 ```
 
 ## API Testing
 
-Use `isc-tmr-backend.http` for REST testing (VS Code REST Client extension).
-
-## Environment
-
-- `ASPNETCORE_ENVIRONMENT=Development` enables sensitive data logging and detailed errors
-- Connection strings in `appsettings.json` (use `.env` for secrets — already gitignored)
+Use `isc-tmr-backend.http` for REST testing.

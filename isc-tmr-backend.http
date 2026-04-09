@@ -1,6 +1,132 @@
 @isc_tmr_backend_HostAddress = http://localhost:5188
 
-GET {{isc_tmr_backend_HostAddress}}/weatherforecast/
-Accept: application/json
+### ===================== USERS =====================
 
-###
+### List Users
+GET {{isc_tmr_backend_HostAddress}}/api/users
+Accept: application/json
+X-Api-Version: 1.0
+
+### Get User by ID
+GET {{isc_tmr_backend_HostAddress}}/api/users/00000000-0000-0000-0000-000000000000
+Accept: application/json
+X-Api-Version: 1.0
+
+### Create User
+POST {{isc_tmr_backend_HostAddress}}/api/users
+Content-Type: application/json
+X-Api-Version: 1.0
+
+{
+  "email": "john@example.com",
+  "displayName": "John Doe"
+}
+
+### Update User
+PUT {{isc_tmr_backend_HostAddress}}/api/users/00000000-0000-0000-0000-000000000000
+Content-Type: application/json
+X-Api-Version: 1.0
+
+{
+  "email": "john.updated@example.com",
+  "displayName": "John Updated"
+}
+
+### Delete User
+DELETE {{isc_tmr_backend_HostAddress}}/api/users/00000000-0000-0000-0000-000000000000
+X-Api-Version: 1.0
+
+### ===================== PROJECTS =====================
+
+### List Projects
+GET {{isc_tmr_backend_HostAddress}}/api/projects
+Accept: application/json
+X-Api-Version: 1.0
+
+### Get Project by ID
+GET {{isc_tmr_backend_HostAddress}}/api/projects/00000000-0000-0000-0000-000000000000
+Accept: application/json
+X-Api-Version: 1.0
+
+### Get Projects by Owner
+GET {{isc_tmr_backend_HostAddress}}/api/projects/owner/00000000-0000-0000-0000-000000000000
+Accept: application/json
+X-Api-Version: 1.0
+
+### Create Project
+POST {{isc_tmr_backend_HostAddress}}/api/projects
+Content-Type: application/json
+X-Api-Version: 1.0
+
+{
+  "name": "My First Project",
+  "description": "Project description here",
+  "ownerId": "00000000-0000-0000-0000-000000000000"
+}
+
+### Update Project
+PUT {{isc_tmr_backend_HostAddress}}/api/projects/00000000-0000-0000-0000-000000000000
+Content-Type: application/json
+X-Api-Version: 1.0
+
+{
+  "name": "Updated Project Name",
+  "description": "Updated description"
+}
+
+### Delete Project
+DELETE {{isc_tmr_backend_HostAddress}}/api/projects/00000000-0000-0000-0000-000000000000
+X-Api-Version: 1.0
+
+### ===================== TASKS =====================
+
+### List All Tasks
+GET {{isc_tmr_backend_HostAddress}}/api/tasks
+Accept: application/json
+X-Api-Version: 1.0
+
+### Get Tasks by Project
+GET {{isc_tmr_backend_HostAddress}}/api/projects/00000000-0000-0000-0000-000000000000/tasks
+Accept: application/json
+X-Api-Version: 1.0
+
+### Get Tasks by Assignee
+GET {{isc_tmr_backend_HostAddress}}/api/tasks/assignee/00000000-0000-0000-0000-000000000000
+Accept: application/json
+X-Api-Version: 1.0
+
+### Get Task by ID
+GET {{isc_tmr_backend_HostAddress}}/api/projects/00000000-0000-0000-0000-000000000000/tasks/00000000-0000-0000-0000-000000000000
+Accept: application/json
+X-Api-Version: 1.0
+
+### Create Task
+POST {{isc_tmr_backend_HostAddress}}/api/projects/00000000-0000-0000-0000-000000000000/tasks
+Content-Type: application/json
+X-Api-Version: 1.0
+
+{
+  "title": "My First Task",
+  "description": "Task description here",
+  "createdBy": "00000000-0000-0000-0000-000000000000",
+  "assigneeId": "00000000-0000-0000-0000-000000000000"
+}
+
+### Update Task
+PUT {{isc_tmr_backend_HostAddress}}/api/projects/00000000-0000-0000-0000-000000000000/tasks/00000000-0000-0000-0000-000000000000
+Content-Type: application/json
+X-Api-Version: 1.0
+
+{
+  "title": "Updated Task Title",
+  "description": "Updated description",
+  "assigneeId": "00000000-0000-0000-0000-000000000000"
+}
+
+### Complete Task
+PATCH {{isc_tmr_backend_HostAddress}}/api/projects/00000000-0000-0000-0000-000000000000/tasks/00000000-0000-0000-0000-000000000000/complete
+X-Api-Version: 1.0
+
+### Delete Task
+DELETE {{isc_tmr_backend_HostAddress}}/api/projects/00000000-0000-0000-0000-000000000000/tasks/00000000-0000-0000-0000-000000000000
+X-Api-Version: 1.0

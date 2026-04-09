@@ -5,5 +5,5 @@ using System.Net;
 public record ResponseMetadata(
     string Message,
     HttpStatusCode Status,
-    PaginationMetadata Pagination
+    PaginationMetadata? Pagination
 );

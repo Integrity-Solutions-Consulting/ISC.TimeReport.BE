@@ -1,13 +1,15 @@
 using isc_tmr_backend.Infrastructure.Extensions;
+using isc_tmr_backend.Features.Auth;
 using Scalar.AspNetCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddVersioning();
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddMediatRConfig();
-builder.Services.AddDatabase(builder.Configuration);
+builder.Services.AddWriteDatabase(builder.Configuration);
+builder.Services.AddReadDatabase(builder.Configuration);
 builder.Services.AddProblemDetailsConfig();
 
 WebApplication app = builder.Build();
@@ -18,6 +20,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference(app.Configuration["Docs:ScalarRoute"] ?? "/docs");
 }
 
+app.UseAuthMiddleware();
 app.UseMapEndpoints();
 app.UseHttpsRedirection();
 app.UseProblemDetailsConfig();

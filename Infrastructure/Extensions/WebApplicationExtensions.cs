@@ -1,7 +1,9 @@
 namespace isc_tmr_backend.Infrastructure.Extensions;
 
-using isc_tmr_backend.Features.Notifications;
-using isc_tmr_backend.Features.Activities;
+using isc_tmr_backend.Features.Auth;
+using isc_tmr_backend.Features.Tasks;
+using isc_tmr_backend.Features.Projects;
+using isc_tmr_backend.Features.Users;
 
 public static class WebApplicationExtensions
 {
@@ -14,26 +16,18 @@ public static class WebApplicationExtensions
             .ProducesValidationProblem(400)
             .ProducesValidationProblem(500);
 
-        NotificationModule.MapEndpoints(versionedApi);
-        ActivitiesModule.MapEndpoints(versionedApi);
+        UsersModule.MapEndpoints(versionedApi);
+        ProjectsModule.MapEndpoints(versionedApi);
+        TasksModule.MapEndpoints(versionedApi);
+        AuthModule.MapAuthEndpoints(versionedApi);
 
         return app;
     }
 
-
-    // configura el middleware que captura excepciones no controladas
-    // y las convierte automáticamente al formato RFC 7807
-    // equivalente al @ExceptionHandler global de Spring
     public static WebApplication UseProblemDetailsConfig(this WebApplication app)
     {
-        // captura cualquier excepción no controlada en toda la app
-        // sin este middleware las excepciones retornarían HTML en lugar de JSON
         app.UseExceptionHandler();
-
-        // retorna RFC 7807 para cualquier respuesta de error sin body
-        // por ejemplo un 404 de una ruta que no existe
         app.UseStatusCodePages();
-
         return app;
     }
 }

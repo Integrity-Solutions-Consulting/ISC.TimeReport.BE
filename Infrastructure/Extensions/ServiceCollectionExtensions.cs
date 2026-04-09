@@ -1,14 +1,18 @@
 namespace isc_tmr_backend.Infrastructure.Extensions;
 
-using isc_tmr_backend.Features.Notifications;
+using isc_tmr_backend.Features.Auth;
+using isc_tmr_backend.Features.Tasks;
+using isc_tmr_backend.Features.Projects;
+using isc_tmr_backend.Features.Users;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        // Slices
-        services.AddNotificationServices();
-
+        services.AddUsersServices();
+        services.AddProjectsServices();
+        services.AddTasksServices();
+        services.AddAuthServices(configuration);
         return services;
     }
 }
