@@ -24,15 +24,26 @@ namespace isc.time.report.be.infrastructure.Repositories.Leaders
             if (!string.IsNullOrWhiteSpace(search))
             {
                 string normalizedSearch = search.Trim().ToLower();
-                bool isSearchingActivo = normalizedSearch == "activo" || normalizedSearch == "activos";
-                bool isSearchingInactivo = normalizedSearch == "inactivo" || normalizedSearch == "inactivos";
 
-                query = query.Where(l =>
-                    (l.FirstName != null && l.FirstName.ToLower().Contains(normalizedSearch)) ||
-                    (l.LastName != null && l.LastName.ToLower().Contains(normalizedSearch)) ||
-                    (isSearchingActivo && l.Status == true) ||
-                    (isSearchingInactivo && l.Status == false)
-                );
+                // Detect and strip status tokens before using the string as a text filter
+                bool filterInactivo = normalizedSearch.Contains("|inactivo|");
+                bool filterActivo   = !filterInactivo && normalizedSearch.Contains("|activo|");
+
+                normalizedSearch = normalizedSearch
+                    .Replace("|inactivo|", "")
+                    .Replace("|activo|", "")
+                    .Trim();
+
+                if (!string.IsNullOrEmpty(normalizedSearch))
+                    query = query.Where(l =>
+                        (l.FirstName != null && l.FirstName.ToLower().Contains(normalizedSearch)) ||
+                        (l.LastName  != null && l.LastName.ToLower().Contains(normalizedSearch))  ||
+                        (l.Email     != null && l.Email.ToLower().Contains(normalizedSearch)));
+
+                if (filterActivo)
+                    query = query.Where(l => l.Status == true);
+                else if (filterInactivo)
+                    query = query.Where(l => l.Status == false);
             }
 
             return await PaginationHelper.CreatePagedResultAsync(query, paginationParams);
