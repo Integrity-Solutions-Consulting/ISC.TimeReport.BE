@@ -32,20 +32,29 @@ namespace isc.time.report.be.infrastructure.Repositories.Employees
             {
                 string normalizedSearch = search.Trim().ToLower();
 
-                bool isSearchingActivo = normalizedSearch == "activo" || normalizedSearch == "activos";
-                bool isSearchingInactivo = normalizedSearch == "inactivo" || normalizedSearch == "inactivos";
+                // Detect and strip status tokens before using the string as a text filter
+                bool filterInactivo = normalizedSearch.Contains("|inactivo|");
+                bool filterActivo   = !filterInactivo && normalizedSearch.Contains("|activo|");
 
-                query = query.Where(e =>
-                    (e.EmployeeCode != null && e.EmployeeCode.ToLower().Contains(normalizedSearch)) ||
-                    (e.CorporateEmail != null && e.CorporateEmail.ToLower().Contains(normalizedSearch)) ||
-                    (e.Person != null && (
-                        (e.Person.FirstName != null && e.Person.FirstName.ToLower().Contains(normalizedSearch)) ||
-                        (e.Person.IdentificationNumber != null && e.Person.IdentificationNumber.Contains(normalizedSearch)) ||
-                        (e.Person.LastName != null && e.Person.LastName.ToLower().Contains(normalizedSearch))
-                    )) ||
-                    (isSearchingActivo && e.Status == true) ||
-                    (isSearchingInactivo && e.Status == false)
-                );
+                normalizedSearch = normalizedSearch
+                    .Replace("|inactivo|", "")
+                    .Replace("|activo|", "")
+                    .Trim();
+
+                if (!string.IsNullOrEmpty(normalizedSearch))
+                    query = query.Where(e =>
+                        (e.EmployeeCode   != null && e.EmployeeCode.ToLower().Contains(normalizedSearch))   ||
+                        (e.CorporateEmail != null && e.CorporateEmail.ToLower().Contains(normalizedSearch)) ||
+                        (e.Person != null && (
+                            (e.Person.FirstName            != null && e.Person.FirstName.ToLower().Contains(normalizedSearch))            ||
+                            (e.Person.LastName             != null && e.Person.LastName.ToLower().Contains(normalizedSearch))             ||
+                            (e.Person.IdentificationNumber != null && e.Person.IdentificationNumber.ToLower().Contains(normalizedSearch)) ||
+                            (e.Person.Email                != null && e.Person.Email.ToLower().Contains(normalizedSearch)))));
+
+                if (filterActivo)
+                    query = query.Where(e => e.Status == true);
+                else if (filterInactivo)
+                    query = query.Where(e => e.Status == false);
             }
 
             query = query.OrderBy(p => p.Status ? 0 : 1)
