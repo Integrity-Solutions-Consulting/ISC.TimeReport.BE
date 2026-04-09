@@ -1,4 +1,4 @@
-﻿using isc.time.report.be.application.Interfaces.Repository.Projects;
+using isc.time.report.be.application.Interfaces.Repository.Projects;
 using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Projects;
 using isc.time.report.be.domain.Entity.Shared;
@@ -270,10 +270,11 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
             }
 
             var project = await _dbContext.EmployeeProjects
-                .Where(ep => ep.EmployeeID == employeeId)
+                .Where(ep => ep.EmployeeID == employeeId && ep.Status)
                 .Select(ep => ep.Project)
                 .Distinct()
                 .ToListAsync();
+
             if (!project.Any())
             {
                 throw new ServerFaultException($"No se encontraron proyectos asignados al empleado con ID {employeeId}.");

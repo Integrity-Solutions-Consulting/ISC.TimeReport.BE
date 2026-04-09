@@ -97,41 +97,7 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
                 throw new ServerFaultException("No se encontraron recursos pendientes para el Time Report");
             }
 
-            var employeeIds = list.Select(x => x.EmployeeID).Distinct().ToList();
-
-            var employeePhones = await _dbContext.Employees
-                .Include(e => e.Person)
-                .Where(e => employeeIds.Contains(e.Id))
-                .ToDictionaryAsync(e => e.Id, e => e.Person.Phone);
-
-            var activeProjectsByEmployee = await _dbContext.EmployeeProjects
-                .Include(ep => ep.Project)
-                    .ThenInclude(p => p.Client)
-                .Where(ep => ep.EmployeeID.HasValue && employeeIds.Contains(ep.EmployeeID.Value)
-                          && ep.Project != null && ep.Project.Status == true
-                          && ep.Project.Client != null && ep.Project.Client.Status == true)
-                .ToListAsync();
-
-            var projectGroups = activeProjectsByEmployee
-                .GroupBy(ep => ep.EmployeeID!.Value)
-                .ToDictionary(g => g.Key, g => new
-                {
-                    ProyectosAsignados = string.Join(" - ", g.Select(x => x.Project.Name).Distinct()),
-                    ClientesAsociados = string.Join(" - ", g.Select(x => x.Project.Client.TradeName ?? x.Project.Client.LegalName).Distinct()),
-                    ClienteIDs = string.Join(",", g.Select(x => x.Project.ClientID).Distinct())
-                });
-
-            return list.Select(item => 
-            {
-                var dictValues = projectGroups.GetValueOrDefault(item.EmployeeID);
-                return item with 
-                {
-                    Phone = employeePhones.GetValueOrDefault(item.EmployeeID) ?? string.Empty,
-                    ProyectosAsignados = dictValues?.ProyectosAsignados ?? string.Empty,
-                    ClientesAsociados = dictValues?.ClientesAsociados ?? string.Empty,
-                    ClienteIDs = dictValues?.ClienteIDs ?? string.Empty
-                };
-            }).ToList();
+            return list;
         }
 
         public async Task<List<DashboardRecursosPendientesDto>> GetRecursosTimeReportPendienteFiltradoAsync(int? month = null, int? year = null, bool mesCompleto = false, byte bancoGuayaquil = 0)
@@ -148,48 +114,12 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
                 .FromSqlRaw("EXEC dbo.sp_RecursosTimeReportPorClienteBG @Mes, @Anio, @MesCompleto, @BancoGuayaquil", parameters)
                 .ToListAsync();
 
-
-
             if (!list.Any())
             {
                 throw new ServerFaultException("No se encontraron recursos pendientes para el Time Report");
             }
 
-            var employeeIds = list.Select(x => x.EmployeeID).Distinct().ToList();
-
-            var employeePhones = await _dbContext.Employees
-                .Include(e => e.Person)
-                .Where(e => employeeIds.Contains(e.Id))
-                .ToDictionaryAsync(e => e.Id, e => e.Person.Phone);
-
-            var activeProjectsByEmployee = await _dbContext.EmployeeProjects
-                .Include(ep => ep.Project)
-                    .ThenInclude(p => p.Client)
-                .Where(ep => ep.EmployeeID.HasValue && employeeIds.Contains(ep.EmployeeID.Value)
-                          && ep.Project != null && ep.Project.Status == true
-                          && ep.Project.Client != null && ep.Project.Client.Status == true)
-                .ToListAsync();
-
-            var projectGroups = activeProjectsByEmployee
-                .GroupBy(ep => ep.EmployeeID!.Value)
-                .ToDictionary(g => g.Key, g => new
-                {
-                    ProyectosAsignados = string.Join(" - ", g.Select(x => x.Project.Name).Distinct()),
-                    ClientesAsociados = string.Join(" - ", g.Select(x => x.Project.Client.TradeName ?? x.Project.Client.LegalName).Distinct()),
-                    ClienteIDs = string.Join(",", g.Select(x => x.Project.ClientID).Distinct())
-                });
-
-            return list.Select(item => 
-            {
-                var dictValues = projectGroups.GetValueOrDefault(item.EmployeeID);
-                return item with 
-                {
-                    Phone = employeePhones.GetValueOrDefault(item.EmployeeID) ?? string.Empty,
-                    ProyectosAsignados = dictValues?.ProyectosAsignados ?? string.Empty,
-                    ClientesAsociados = dictValues?.ClientesAsociados ?? string.Empty,
-                    ClienteIDs = dictValues?.ClienteIDs ?? string.Empty
-                };
-            }).ToList();
+            return list;
         }
 
     }
