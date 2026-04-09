@@ -274,6 +274,7 @@ namespace isc.time.report.be.infrastructure.Repositories.Projects
                 .Select(ep => ep.Project)
                 .Distinct()
                 .ToListAsync();
+
             if (!project.Any())
             {
                 throw new ServerFaultException($"No se encontraron proyectos asignados al empleado con ID {employeeId}.");
