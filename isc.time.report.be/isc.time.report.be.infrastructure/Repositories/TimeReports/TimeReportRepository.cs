@@ -109,7 +109,8 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
                     .ThenInclude(p => p.Client)
                 .Where(ep => ep.EmployeeID.HasValue && employeeIds.Contains(ep.EmployeeID.Value)
                           && ep.Project != null && ep.Project.Status == true
-                          && ep.Project.Client != null && ep.Project.Client.Status == true)
+                          && ep.Project.Client != null && ep.Project.Client.Status == true
+                          && (ep.AssignmentEndDate == null || ep.AssignmentEndDate > DateTime.UtcNow))
                 .ToListAsync();
 
             var projectGroups = activeProjectsByEmployee
@@ -167,7 +168,8 @@ namespace isc.time.report.be.infrastructure.Repositories.TimeReports
                     .ThenInclude(p => p.Client)
                 .Where(ep => ep.EmployeeID.HasValue && employeeIds.Contains(ep.EmployeeID.Value)
                           && ep.Project != null && ep.Project.Status == true
-                          && ep.Project.Client != null && ep.Project.Client.Status == true)
+                          && ep.Project.Client != null && ep.Project.Client.Status == true
+                          && (ep.AssignmentEndDate == null || ep.AssignmentEndDate > DateTime.UtcNow))
                 .ToListAsync();
 
             var projectGroups = activeProjectsByEmployee
