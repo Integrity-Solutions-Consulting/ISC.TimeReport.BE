@@ -70,7 +70,7 @@ public static class TaskEndpoint
         CancellationToken cancellationToken = default
     )
     {
-        GetPagedTasksQuery? query = new(pagination, orderBy, projectId, assigneeId,  search);
+        GetPagedTasksQuery query = new(pagination, orderBy, projectId, assigneeId,  search);
 
         var result = await mediator.Send(query, cancellationToken);
 
