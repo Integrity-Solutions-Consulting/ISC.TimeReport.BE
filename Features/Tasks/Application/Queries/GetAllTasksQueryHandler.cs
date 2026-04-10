@@ -4,14 +4,9 @@ using FluentResults;
 using isc_tmr_backend.Features.Tasks.Domain;
 using MediatR;
 
-public class GetAllTasksQueryHandler : IRequestHandler<GetAllTasksQuery, Result<IEnumerable<GetTaskResponse>>>
+public class GetAllTasksQueryHandler(ITaskRepository repository) : IRequestHandler<GetAllTasksQuery, Result<IEnumerable<GetTaskResponse>>>
 {
-    private readonly ITaskRepository _repository;
-
-    public GetAllTasksQueryHandler(ITaskRepository repository)
-    {
-        _repository = repository;
-    }
+    private readonly ITaskRepository _repository = repository;
 
     public async Task<Result<IEnumerable<GetTaskResponse>>> Handle(GetAllTasksQuery query, CancellationToken cancellationToken)
     {

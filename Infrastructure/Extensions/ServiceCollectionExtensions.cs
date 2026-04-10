@@ -10,9 +10,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddUsersServices();
-        services.AddProjectsServices();
         services.AddTasksServices();
-        services.AddAuthServices(configuration);
+        services.AddProjectsServices();
+
         return services;
     }
 }

@@ -17,17 +17,11 @@ public static class WebApplicationExtensions
             .ProducesValidationProblem(500);
 
         UsersModule.MapEndpoints(versionedApi);
-        ProjectsModule.MapEndpoints(versionedApi);
         TasksModule.MapEndpoints(versionedApi);
         AuthModule.MapAuthEndpoints(versionedApi);
+        ProjectsModule.MapEndpoints(versionedApi);
 
         return app;
     }
 
-    public static WebApplication UseProblemDetailsConfig(this WebApplication app)
-    {
-        app.UseExceptionHandler();
-        app.UseStatusCodePages();
-        return app;
-    }
 }

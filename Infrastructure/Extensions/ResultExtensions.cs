@@ -1,28 +1,26 @@
 namespace isc_tmr_backend.Infrastructure.Extensions;
 
-using FluentResults;
 using isc_tmr_backend.Infrastructure.Presentation;
+using FluentResults;
 using Microsoft.AspNetCore.Http;
 using System.Net;
 
 public static class ResultExtensions
 {
-    public static IResult ToSuccessResponse<T>(
-        this Result<T> result,
-        string message,
-        HttpStatusCode statusCode = HttpStatusCode.OK)
+    public static IResult ToSuccessResponse<T>(this Result<T> result, string message, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
-        if (result.IsFailed)
-            return result.ToErrorResponse(HttpStatusCode.BadRequest);
+        if (result.IsFailed) return result.ToErrorResponse(HttpStatusCode.BadRequest);
 
-        var response = new ResponseWithMetadata<T>
+        ResponseMetadata metadata = new()
+        {
+            Message = message,
+            Status = statusCode,
+        };
+
+        ResponseWithMetadata<T> response = new()
         {
             Data = result.Value,
-            Metadata = new ResponseMetadata(
-                Message: message,
-                Status: statusCode,
-                Pagination: null
-            )
+            Metadata = metadata
         };
 
         return statusCode switch
@@ -33,39 +31,35 @@ public static class ResultExtensions
         };
     }
 
-    public static IResult ToSuccessResponse<T>(
-        this Result<T> result,
-        string message,
-        PaginationMetadata pagination,
-        HttpStatusCode statusCode = HttpStatusCode.OK)
+    public static IResult ToSuccessResponse<T>(this Result<T> result, string message, PaginationMetadata pagination, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
-        if (result.IsFailed)
-            return result.ToErrorResponse(HttpStatusCode.BadRequest);
+        if (result.IsFailed) return result.ToErrorResponse(HttpStatusCode.BadRequest);
 
-        var response = new ResponseWithMetadata<T>
+        ResponseMetadata metadata = new()
+        {
+            Message = message,
+            Status = statusCode,
+            Pagination = pagination
+        };
+
+        ResponseWithMetadata<T> response = new()
         {
             Data = result.Value,
-            Metadata = new ResponseMetadata(
-                Message: message,
-                Status: statusCode,
-                Pagination: pagination
-            )
+            Metadata = metadata
         };
 
         return Results.Ok(response);
     }
 
-    public static IResult ToErrorResponse<T>(
-        this Result<T> result,
-        HttpStatusCode statusCode = HttpStatusCode.BadRequest)
+    public static IResult ToErrorResponse<T>(this Result<T> result, HttpStatusCode statusCode = HttpStatusCode.BadRequest)
     {
-        var errorResponse = new ErrorResponse(
-            Message: "Operation failed",
-            Errors: result.Errors.Select(e => e.Message).ToList(),
-            Status: statusCode,
-            TraceId: httpContextAccessor?.HttpContext?.TraceIdentifier ?? Guid.NewGuid().ToString(),
-            Timestamp: DateTime.UtcNow
-        );
+        // var errorResponse = new ErrorResponse(
+        //     Message: "Operation failed",
+        //     Errors: [.. result.Errors.Select(e => e.Message)],
+        //     Status: statusCode,
+        //     TraceId: httpContextAccessor?.HttpContext?.TraceIdentifier ?? Guid.NewGuid().ToString(),
+        //     Timestamp: DateTime.UtcNow
+        // );
 
         return statusCode switch
         {
@@ -88,9 +82,7 @@ public static class ResultExtensions
         };
     }
 
-    public static IResult ToErrorResponse(
-        this Result result,
-        HttpStatusCode statusCode = HttpStatusCode.BadRequest)
+    public static IResult ToErrorResponse(this Result result, HttpStatusCode statusCode = HttpStatusCode.BadRequest)
     {
         return Results.Problem(
             detail: string.Join(", ", result.Errors.Select(e => e.Message)),
@@ -98,36 +90,34 @@ public static class ResultExtensions
         );
     }
 
-    private static IHttpContextAccessor? httpContextAccessor;
-    public static void SetHttpContextAccessor(IHttpContextAccessor accessor) => httpContextAccessor = accessor;
+    // private static IHttpContextAccessor? httpContextAccessor;
+    // public static void SetHttpContextAccessor(IHttpContextAccessor accessor) => httpContextAccessor = accessor;
 
-    public static IResult ToPagedResponse<T>(
-        this Result<PagedResult<T>> result,
-        string message,
-        int page,
-        int take,
-        HttpStatusCode statusCode = HttpStatusCode.OK)
+    public static IResult ToPagedResponse<T>(this Result<PagedResult<T>> result, string message, int page, int take, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
-        if (result.IsFailed)
-            return result.ToErrorResponse(HttpStatusCode.BadRequest);
+        if (result.IsFailed) return result.ToErrorResponse(HttpStatusCode.BadRequest);
 
-        var pagination = new PaginationMetadata(
-            Page: page,
-            Take: take,
-            Count: result.Value.Data.Count(),
-            Total: result.Value.TotalCount,
-            HasPreviousPage: page > 1,
-            HasNextPage: (page * take) < result.Value.TotalCount
-        );
+        var pagination = new PaginationMetadata
+        {
+            Page = page,
+            Take = take,
+            Count = result.Value.Data.Count(),
+            Total = result.Value.TotalCount,
+            HasPreviousPage = page > 1,
+            HasNextPage = (page * take) < result.Value.TotalCount
+        };
 
-        var response = new ResponseWithMetadata<IEnumerable<T>>
+        ResponseMetadata metadata = new()
+        {
+            Message = message,
+            Status = statusCode,
+            Pagination = pagination
+        };
+
+        ResponseWithMetadata<IEnumerable<T>>response = new()
         {
             Data = result.Value.Data,
-            Metadata = new ResponseMetadata(
-                Message: message,
-                Status: statusCode,
-                Pagination: pagination
-            )
+            Metadata = metadata,
         };
 
         return Results.Ok(response);

@@ -62,23 +62,22 @@ public static class TaskEndpoint
         return group;
     }
 
-    private static async Task<IResult> GetAllTasks(
-        int page = 1,
-        int take = 10,
+    private static async Task<IResult> GetAllTasks([AsParameters] RequestPagination pagination, [AsParameters] RequestOrderBy orderBy,
         Guid? projectId = null,
         Guid? assigneeId = null,
-        string? sortBy = null,
-        bool ascending = true,
         string? search = null,
         IMediator mediator = null!,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
-        var query = new GetPagedTasksQuery(page, take, projectId, assigneeId, sortBy, ascending, search);
-        var result = await mediator.Send(query, cancellationToken);
-        return result.ToPagedResponse("Tasks retrieved successfully", page, take);
-    }
+        GetPagedTasksQuery? query = new(pagination, orderBy, projectId, assigneeId,  search);
 
-    private static async Task<IResult> GetTasksByProject(
+        var result = await mediator.Send(query, cancellationToken);
+
+        return result.ToPagedResponse("Tasks retrieved successfully", pagination.Page, pagination.Take);
+    }
+    
+    private static async Task<IResult> GetTasksByProject([AsParameters] RequestPagination pagination, [AsParameters] RequestOrderBy orderBy,
         Guid projectId,
         int page = 1,
         int take = 10,
@@ -89,23 +88,21 @@ public static class TaskEndpoint
         IMediator mediator = null!,
         CancellationToken cancellationToken = default)
     {
-        var query = new GetPagedTasksQuery(page, take, projectId, assigneeId, sortBy, ascending, search);
+        GetPagedTasksQuery? query = new(pagination, orderBy, projectId, assigneeId,  search);
         var result = await mediator.Send(query, cancellationToken);
         return result.ToPagedResponse("Tasks retrieved successfully", page, take);
     }
 
-    private static async Task<IResult> GetTasksByAssignee(
+    private static async Task<IResult> GetTasksByAssignee([AsParameters] RequestPagination pagination, [AsParameters] RequestOrderBy orderBy,
         Guid assigneeId,
         int page = 1,
         int take = 10,
         Guid? projectId = null,
-        string? sortBy = null,
-        bool ascending = true,
         string? search = null,
         IMediator mediator = null!,
         CancellationToken cancellationToken = default)
     {
-        var query = new GetPagedTasksQuery(page, take, projectId, assigneeId, sortBy, ascending, search);
+        GetPagedTasksQuery? query = new(pagination, orderBy, projectId, assigneeId,  search);
         var result = await mediator.Send(query, cancellationToken);
         return result.ToPagedResponse("Tasks retrieved successfully", page, take);
     }

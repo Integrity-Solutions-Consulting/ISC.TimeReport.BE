@@ -6,11 +6,12 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddVersioning();
-builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddMediatRConfig();
-builder.Services.AddWriteDatabase(builder.Configuration);
-builder.Services.AddReadDatabase(builder.Configuration);
 builder.Services.AddProblemDetailsConfig();
+builder.Services.AddReadDatabase(builder.Configuration);
+builder.Services.AddAuthServices(builder.Configuration);
+builder.Services.AddWriteDatabase(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration);
 
 WebApplication app = builder.Build();
 
@@ -20,8 +21,9 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference(app.Configuration["Docs:ScalarRoute"] ?? "/docs");
 }
 
-app.UseAuthMiddleware();
 app.UseMapEndpoints();
+app.UseAuthMiddleware();
+app.UseStatusCodePages();
 app.UseHttpsRedirection();
-app.UseProblemDetailsConfig();
+app.UseExceptionHandler();
 app.Run();
