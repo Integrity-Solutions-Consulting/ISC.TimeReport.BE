@@ -1,9 +1,9 @@
-using isc.time.report.be.application.Interfaces.Repository.Homologacion;
-using isc.time.report.be.domain.Entity.Homologacion;
+using isc.time.report.be.application.Interfaces.Repository.Homologaciones;
+using isc.time.report.be.domain.Entity.Homologaciones;
 using isc.time.report.be.infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
-namespace isc.time.report.be.infrastructure.Repositories.Homologacion
+namespace isc.time.report.be.infrastructure.Repositories.Homologaciones
 {
     public class HomologacionRepository : IHomologacionRepository
     {

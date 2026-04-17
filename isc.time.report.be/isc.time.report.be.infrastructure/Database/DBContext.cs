@@ -5,7 +5,7 @@ using isc.time.report.be.domain.Entity.DailyActivities;
 using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Historycs;
 using isc.time.report.be.domain.Entity.Holidays;
-using isc.time.report.be.domain.Entity.Homologacion;
+using isc.time.report.be.domain.Entity.Homologaciones;
 using isc.time.report.be.domain.Entity.Leaders;
 using isc.time.report.be.domain.Entity.Modules;
 using isc.time.report.be.domain.Entity.Permisions;

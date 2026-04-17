@@ -4,7 +4,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using isc.time.report.be.application.Interfaces.Repository.Catalogs;
 using isc.time.report.be.application.Interfaces.Repository.DailyActivities;
 using isc.time.report.be.application.Interfaces.Repository.Employees;
-using isc.time.report.be.application.Interfaces.Repository.Homologacion;
+using isc.time.report.be.application.Interfaces.Repository.Homologaciones;
 using isc.time.report.be.application.Interfaces.Repository.Permissions;
 using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.application.Interfaces.Service.DailyActivities;

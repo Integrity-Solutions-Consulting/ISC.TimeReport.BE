@@ -1,10 +1,10 @@
-using isc.time.report.be.application.Interfaces.Repository.Homologacion;
+using isc.time.report.be.application.Interfaces.Repository.Homologaciones;
 using isc.time.report.be.application.Interfaces.Service.Homologacion;
-using isc.time.report.be.domain.Entity.Homologacion;
+using isc.time.report.be.domain.Entity.Homologaciones;
 using isc.time.report.be.domain.Models.Request.Homologacion;
 using isc.time.report.be.domain.Models.Response.Homologacion;
 
-namespace isc.time.report.be.application.Services.Homologacion
+namespace isc.time.report.be.application.Services.Homologaciones
 {
     public class HomologacionService : IHomologacionService
     {

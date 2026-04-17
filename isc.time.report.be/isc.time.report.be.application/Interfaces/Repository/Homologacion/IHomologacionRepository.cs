@@ -1,6 +1,6 @@
-using isc.time.report.be.domain.Entity.Homologacion;
+using isc.time.report.be.domain.Entity.Homologaciones;
 
-namespace isc.time.report.be.application.Interfaces.Repository.Homologacion
+namespace isc.time.report.be.application.Interfaces.Repository.Homologaciones
 {
     public interface IHomologacionRepository
     {

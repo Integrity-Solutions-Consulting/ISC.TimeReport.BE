@@ -1,7 +1,7 @@
 using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Shared;
 
-namespace isc.time.report.be.domain.Entity.Homologacion
+namespace isc.time.report.be.domain.Entity.Homologaciones
 {
     public class Homologacion : BaseEntity
     {

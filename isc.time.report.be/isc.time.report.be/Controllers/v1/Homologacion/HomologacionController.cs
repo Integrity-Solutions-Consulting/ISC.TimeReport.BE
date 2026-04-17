@@ -1,4 +1,4 @@
-using isc.time.report.be.application.Interfaces.Service.Homologacion;
+using isc.time.report.be.application.Interfaces.Service.Homologaciones;
 using isc.time.report.be.domain.Models.Request.Homologacion;
 using isc.time.report.be.domain.Models.Response.Shared;
 using Microsoft.AspNetCore.Authorization;
