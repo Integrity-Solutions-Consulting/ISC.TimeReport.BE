@@ -190,9 +190,22 @@ namespace isc.time.report.be.application.Services.DailyActivities
             // 1️⃣ Validar y mapear filas
             var activitiesToInsert = await MapAndValidateRowsAsync(excelRows, results);
 
-            // 2️⃣ Insertar en bulk
-            if (activitiesToInsert.Any())
+            // 2️⃣ Verificar si hubo errores en alguna fila
+            bool hasErrors = results.Activities.Any(a => a.Status != null && a.Status.StartsWith("Error"));
+
+            // 3️⃣ Solo insertar si NO hubo errores en ninguna fila
+            if (!hasErrors && activitiesToInsert.Any())
+            {
                 await _repository.AddRangeAsync(activitiesToInsert);
+            }
+            else if (hasErrors)
+            {
+                // Opcional: Marcar las filas que estaban "bien" como "Cancelled" o similar para indicar que no se guardaron
+                foreach (var row in results.Activities.Where(a => a.Status == "Inserted"))
+                {
+                    row.Status = "Not saved due to other errors";
+                }
+            }
 
             return results;
         }
@@ -359,7 +372,11 @@ namespace isc.time.report.be.application.Services.DailyActivities
                     string columnLetter = new string(cell.CellReference.Value.Where(c => Char.IsLetter(c)).ToArray());
                     int columnIndex = ColumnLetterToNumber(columnLetter) - 1; // índice 0-based
 
-                    rowValues[columnIndex] = GetCellValue(cell, workbookPart);
+                    // Validar que el índice esté dentro del rango esperado (Máximo 8 columnas: A-H)
+                    if (columnIndex >= 0 && columnIndex < 8)
+                    {
+                        rowValues[columnIndex] = GetCellValue(cell, workbookPart);
+                    }
                 }
 
                 // Mapear a tu objeto
