@@ -1,9 +1,10 @@
-﻿using AutoMapper;
+using AutoMapper;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using isc.time.report.be.application.Interfaces.Repository.Catalogs;
 using isc.time.report.be.application.Interfaces.Repository.DailyActivities;
 using isc.time.report.be.application.Interfaces.Repository.Employees;
+using isc.time.report.be.application.Interfaces.Repository.Homologaciones;
 using isc.time.report.be.application.Interfaces.Repository.Permissions;
 using isc.time.report.be.application.Interfaces.Repository.TimeReports;
 using isc.time.report.be.application.Interfaces.Service.DailyActivities;
@@ -24,9 +25,10 @@ namespace isc.time.report.be.application.Services.DailyActivities
         private readonly IEmployeeRepository _employeeRepository;
         private readonly ICatalogRepository _catalogRepository;
         private readonly JWTUtils _jwtUtils;
+        private readonly IHomologacionRepository _homologacionRepository;
 
 
-        public DailyActivityService(IDailyActivityRepository repository, IMapper mapper, ITimeReportRepository timeReportRepository, IPermissionRepository permissionRepository, IEmployeeRepository employeeRepository, ICatalogRepository catalogRepository, JWTUtils jwtUtils)
+        public DailyActivityService(IDailyActivityRepository repository, IMapper mapper, ITimeReportRepository timeReportRepository, IPermissionRepository permissionRepository, IEmployeeRepository employeeRepository, ICatalogRepository catalogRepository, JWTUtils jwtUtils, IHomologacionRepository homologacionRepository)
         {
             _repository = repository;
             _mapper = mapper;
@@ -35,6 +37,7 @@ namespace isc.time.report.be.application.Services.DailyActivities
             _employeeRepository = employeeRepository;
             _catalogRepository = catalogRepository;
             _jwtUtils = jwtUtils;
+            _homologacionRepository = homologacionRepository;
         }
 
         public async Task<List<GetDailyActivityResponse>> GetAllAsync(int employeeId, int month, int year)
@@ -187,9 +190,22 @@ namespace isc.time.report.be.application.Services.DailyActivities
             // 1️⃣ Validar y mapear filas
             var activitiesToInsert = await MapAndValidateRowsAsync(excelRows, results);
 
-            // 2️⃣ Insertar en bulk
-            if (activitiesToInsert.Any())
+            // 2️⃣ Verificar si hubo errores en alguna fila
+            bool hasErrors = results.Activities.Any(a => a.Status != null && a.Status.StartsWith("Error"));
+
+            // 3️⃣ Solo insertar si NO hubo errores en ninguna fila
+            if (!hasErrors && activitiesToInsert.Any())
+            {
                 await _repository.AddRangeAsync(activitiesToInsert);
+            }
+            else if (hasErrors)
+            {
+                // Opcional: Marcar las filas que estaban "bien" como "Cancelled" o similar para indicar que no se guardaron
+                foreach (var row in results.Activities.Where(a => a.Status == "Inserted"))
+                {
+                    row.Status = "Not saved due to other errors";
+                }
+            }
 
             return results;
         }
@@ -226,14 +242,40 @@ namespace isc.time.report.be.application.Services.DailyActivities
             // Limpiar el EmployeeCode y validar que no esté vacío
             var employeeCode = row.EmployeeCode?.Trim();
 
-            if (string.IsNullOrEmpty(employeeCode))
-                throw new ClientFaultException($"El empleado {row.Username} tiene un código de empleado vacío o inválido.");
+            isc.time.report.be.domain.Entity.Employees.Employee employee;
 
-            // 1. Obtener Employee
-            var employee = await _employeeRepository.GetEmployeeByCodeAsync(employeeCode);
+            if (!string.IsNullOrEmpty(employeeCode))
+            {
+                // 1a. Intentar buscar por EmployeeCode (flujo original)
+                try
+                {
+                    employee = await _employeeRepository.GetEmployeeByCodeAsync(employeeCode);
+                }
+                catch
+                {
+                    employee = null;
+                }
+
+                // 1b. Si no encontró por código, buscar en tabla de Homologación por Username del sistema externo
+                if (employee == null)
+                {
+                    var homologacion = await _homologacionRepository.GetByNombreExternoAsync(row.Username?.Trim());
+                    if (homologacion == null)
+                        throw new ClientFaultException($"No se encontró empleado con código '{employeeCode}' ni homologación para '{row.Username}'.");
+                    employee = await _employeeRepository.GetEmployeeByIDAsync(homologacion.EmployeeID);
+                }
+            }
+            else
+            {
+                // Sin EmployeeCode: buscar directamente en tabla de Homologación por Username
+                var homologacion = await _homologacionRepository.GetByNombreExternoAsync(row.Username?.Trim());
+                if (homologacion == null)
+                    throw new ClientFaultException($"El registro de '{row.Username}' no tiene código de empleado ni homologación registrada.");
+                employee = await _employeeRepository.GetEmployeeByIDAsync(homologacion.EmployeeID);
+            }
 
             // 2. Verificar si el empleado está asignado a un proyecto del Cliente Banco Guayaquil
-            var projectIdVerify = await _employeeRepository.GetProjectIdForEmployeeAsync(employeeCode);
+            var projectIdVerify = await _employeeRepository.GetProjectIdForEmployeeAsync(employee.EmployeeCode);
 
             if (projectIdVerify == null)
                 throw new ClientFaultException($"El empleado {row.Username} no está asignado a proyectos del Cliente Banco Guayaquil.");
@@ -280,9 +322,9 @@ namespace isc.time.report.be.application.Services.DailyActivities
 
 
             // 6️ Obtener ProjectID desde EmployeeProject (solo Banco Guayaquil)
-            var projectId = await _employeeRepository.GetProjectIdForEmployeeAsync(employeeCode);
+            var projectId = await _employeeRepository.GetProjectIdForEmployeeAsync(employee.EmployeeCode);
             if (projectId == null)
-                throw new ClientFaultException($"El empleado {employeeCode} no tiene proyecto asignado para Banco Guayaquil");
+                throw new ClientFaultException($"El empleado {employee.EmployeeCode} no tiene proyecto asignado para Banco Guayaquil");
 
             // 7 Mapear a DailyActivity
             return new DailyActivity
@@ -330,7 +372,11 @@ namespace isc.time.report.be.application.Services.DailyActivities
                     string columnLetter = new string(cell.CellReference.Value.Where(c => Char.IsLetter(c)).ToArray());
                     int columnIndex = ColumnLetterToNumber(columnLetter) - 1; // índice 0-based
 
-                    rowValues[columnIndex] = GetCellValue(cell, workbookPart);
+                    // Validar que el índice esté dentro del rango esperado (Máximo 8 columnas: A-H)
+                    if (columnIndex >= 0 && columnIndex < 8)
+                    {
+                        rowValues[columnIndex] = GetCellValue(cell, workbookPart);
+                    }
                 }
 
                 // Mapear a tu objeto

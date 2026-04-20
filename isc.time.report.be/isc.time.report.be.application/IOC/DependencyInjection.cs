@@ -1,7 +1,8 @@
-﻿using isc.time.report.be.application.Interfaces.Service.Auth;
+using isc.time.report.be.application.Interfaces.Service.Auth;
 using isc.time.report.be.application.Interfaces.Service.Catalogs;
 using isc.time.report.be.application.Interfaces.Service.Clients;
 using isc.time.report.be.application.Interfaces.Service.DailyActivities;
+using isc.time.report.be.application.Interfaces.Service.Homologaciones;
 using isc.time.report.be.application.Interfaces.Service.Dashboards;
 using isc.time.report.be.application.Interfaces.Service.Employees;
 using isc.time.report.be.application.Interfaces.Service.Holidays;
@@ -21,6 +22,7 @@ using isc.time.report.be.application.Services.Auth;
 using isc.time.report.be.application.Services.Catalogs;
 using isc.time.report.be.application.Services.Clients;
 using isc.time.report.be.application.Services.DailyActivities;
+using isc.time.report.be.application.Services.Homologaciones;
 using isc.time.report.be.application.Services.Dashboards;
 using isc.time.report.be.application.Services.Employees;
 using isc.time.report.be.application.Services.Holidays;
@@ -70,6 +72,7 @@ namespace isc.time.report.be.application.IOC
             services.AddScoped<IProjectionHourProjectService, ProjectionHourProjectService>();
             services.AddScoped<IProjectionHourService, ProjectionHourService>();
             services.AddScoped<IReportService, ReportService>();
+            services.AddScoped<IHomologacionService, HomologacionService>();
 
 
 

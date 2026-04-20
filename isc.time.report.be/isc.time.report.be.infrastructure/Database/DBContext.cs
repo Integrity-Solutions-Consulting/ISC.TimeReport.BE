@@ -5,6 +5,7 @@ using isc.time.report.be.domain.Entity.DailyActivities;
 using isc.time.report.be.domain.Entity.Employees;
 using isc.time.report.be.domain.Entity.Historycs;
 using isc.time.report.be.domain.Entity.Holidays;
+using isc.time.report.be.domain.Entity.Homologaciones;
 using isc.time.report.be.domain.Entity.Leaders;
 using isc.time.report.be.domain.Entity.Modules;
 using isc.time.report.be.domain.Entity.Permisions;
@@ -805,6 +806,25 @@ namespace isc.time.report.be.infrastructure.Database
             modelBuilder.Entity<ProjectResourcesReportDto>().HasNoKey();
             modelBuilder.Entity<ClientHourlyResourceAmountDto>().HasNoKey();
 
+            modelBuilder.Entity<Homologacion>(entity =>
+            {
+                entity.ToTable("Homologacion");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnName("HomologacionID");
+                entity.Property(e => e.EmployeeID).HasColumnName("EmployeeID");
+                entity.Property(e => e.NombreExterno).HasColumnName("nombre_externo");
+
+                entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.CreationUser).HasColumnName("creation_user");
+                entity.Property(e => e.ModificationUser).HasColumnName("modification_user");
+                entity.Property(e => e.CreationDate).HasColumnName("creation_date");
+                entity.Property(e => e.ModificationDate).HasColumnName("modification_date");
+                entity.Property(e => e.CreationIp).HasColumnName("creation_ip");
+                entity.Property(e => e.ModificationIp).HasColumnName("modification_ip");
+
+                entity.HasOne(e => e.Employee).WithMany().HasForeignKey(e => e.EmployeeID);
+            });
+
 
 
 
@@ -846,6 +866,7 @@ namespace isc.time.report.be.infrastructure.Database
         public DbSet<ProjectionHourProject> ProjectionHoursProjects { get; set; }
         public DbSet<ProjectionHour> ProjectionHour { get; set; }
         public DbSet<OutboxPosition> OutboxPositions { get; set; }
+        public DbSet<Homologacion> Homologaciones { get; set; }
 
     }
 }
